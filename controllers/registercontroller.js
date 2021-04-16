@@ -28,7 +28,6 @@ exports.register_post = [
 
     if (!errors.isEmpty()) {
       // Errors
-      console.log(JSON.stringify(errors));
       res.render("register", { title: "Register", messages: errors.array() });
     } else {
       User.findOne({ email: req.body.email }).exec(function (err, found_user) {
