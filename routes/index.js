@@ -5,30 +5,15 @@ let UserProfile = require('../models/user_profile');
 let device_controller = require('../controllers/devicecontroller');
 let register_controller = require('../controllers/registercontroller');
 let login_controller = require('../controllers/logincontroller');
+let auth = require('../controllers/AuthController');
 
 // GET home page.
 router.get('/', function(req, res, next) {
-  let authenticated = req.cookies['authenticated'];
-  console.log(authenticated);
-  if (authenticated) {
+  // checking if user is logged in
+  if (auth.isAuthenticated(req, res))
 
-
-    UserProfile.findOne({'user': authenticated}).
-    exec(function(err, profile) {
-      // Connection or other errors
-      if (err) {return next(err)}
-      if(profile) {
-        console.log(profile.money_saved);
-      } else {
-        console.log("no profile");
-      }
-    })
-
-    res.render('index', { title: 'Express'});
-  } else {
-    res.redirect("/login");
-  }
-
+  // User is logged in
+  res.render('index', { title: 'Express'});
 });
 
 /* ======= DEVICE ======= */

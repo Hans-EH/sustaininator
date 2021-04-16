@@ -38,7 +38,7 @@ exports.auth_post = [
                 if (found_user) {
                     bcrypt.compare(req.body.password, found_user.password, (err, result) => {
                         if (result) {
-                            res.cookie("authenticated", found_user.id, { maxAge: 900000, httpOnly: true })
+                            res.cookie("auth", found_user.id, { maxAge: 900000, httpOnly: true })
                             res.json({
                                 "email": found_user.email,
                                 "tried_pass": tried_pass,
