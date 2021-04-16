@@ -1,12 +1,19 @@
 var express = require('express');
 var router = express.Router();
+
+let UserProfile = require('../models/user_profile');
 let device_controller = require('../controllers/devicecontroller');
 let register_controller = require('../controllers/registercontroller');
 let login_controller = require('../controllers/logincontroller');
+let auth = require('../controllers/AuthController');
 
 // GET home page.
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  // checking if user is logged in
+  if (auth.isAuthenticated(req, res))
+  
+  // User is logged in
+  res.render('index', { title: 'Express'});
 });
 
 /* ======= DEVICE ======= */
@@ -43,6 +50,6 @@ router.post('/register', register_controller.register_post);
 router.get('/login', login_controller.auth_get);
 
 // POST request for authentication page
-router.get('/login', login_controller.auth_post);
+router.post('/login', login_controller.auth_post);
 
 module.exports = router;

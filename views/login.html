@@ -1,7 +1,12 @@
 {% extends 'authnon_base.html' %} {% block content %}
 <div id="logincontainer" class="container mt-3 px-6">
   <h1>Login</h1>
-  <form>
+
+  {% for message in messages %}
+  <div class="alert alert-danger" role="alert">{{ message }}</div>
+  {% endfor %}
+
+  <form action="/login" method="POST">
     <!-- Email field-->
 
     <div class="form-group mb-3">
@@ -16,6 +21,7 @@
           placeholder="Username"
           aria-label="Username"
           aria-describedby="basic-addon1"
+          name="email"
         />
       </div>
     </div>
@@ -32,6 +38,7 @@
           class="form-control"
           id="exampleInputPassword1"
           placeholder="Password"
+          name="password"
         />
       </div>
     </div>
@@ -46,19 +53,4 @@
   </form>
 </div>
 
-<!-- Login database confirmation script -->
-<script>
-  $(document).ready(function(){
-    var user,pass;
-    $("#submit").click(function(){
-      user=$("#email").val();
-      pass=$("#password").val();
-      $.post("mongodb://localhost:27017",{user: email,password: pass}, function(data){
-        if(data === 'yes') {
-            alert("login success");
-          }
-      });
-    });
-  });
-</script>
 {% endblock content %}
