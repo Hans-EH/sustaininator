@@ -4,7 +4,6 @@ let User = require('../models/user');
 let saltRounds = 10; // maybe
 
 exports.auth_get = function(req,res, next) {
-    console.log(req.cookies._mc);
     res.render('login', {title: 'Login'});
 };
 
@@ -47,13 +46,15 @@ exports.auth_post = [
                                 "user_id": found_user.id,
                             });
                         } else {
-                            let user_not_found = ["email and passsword didn't match.. Try again!"];
-                            res.render('login', {title: 'Login', messages: user_not_found});
+                            console.log("email and passsword didn't match.. Try again!");
+                            let user_bad_match = ["email and passsword didn't match.. Try again!"];
+                            res.render('login', {title: 'Login', messages: user_bad_match});
                         }
                     });
                 } 
                 // If user is not found in our database
                 else {
+                    console.log("The request user haven't been found, want to register?");
                     let user_not_found = ["The request user haven't been found, want to register?"];
                     res.render('login', {title: 'Login', messages: user_not_found});
                 }

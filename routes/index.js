@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+
+let UserProfile = require('../models/user_profile');
 let device_controller = require('../controllers/devicecontroller');
 let register_controller = require('../controllers/registercontroller');
 let login_controller = require('../controllers/logincontroller');
@@ -7,8 +9,22 @@ let login_controller = require('../controllers/logincontroller');
 // GET home page.
 router.get('/', function(req, res, next) {
   let authenticated = req.cookies['authenticated'];
+  console.log(authenticated);
   if (authenticated) {
-    res.render('index', { title: 'Express' });
+
+
+    UserProfile.findOne({'user': authenticated}).
+    exec(function(err, profile) {
+      // Connection or other errors
+      if (err) {return next(err)}
+      if(profile) {
+        console.log(profile.money_saved);
+      } else {
+        console.log("no profile");
+      }
+    })
+
+    res.render('index', { title: 'Express'});
   } else {
     res.redirect("/login");
   }
