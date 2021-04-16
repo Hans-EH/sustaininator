@@ -11,7 +11,7 @@ let auth = require('../controllers/AuthController');
 router.get('/', function(req, res, next) {
   // checking if user is logged in
   if (auth.isAuthenticated(req, res))
-
+  
   // User is logged in
   res.render('index', { title: 'Express'});
 });
