@@ -1,0 +1,297 @@
+{% extends 'auth_base.html'%}
+{% block content %}
+<h1>Edit: {{device.name}}</h1>
+<!-- Tab content -->
+<div class="container-fluid px-0">
+    <form action="" method="POST">
+
+      <!-- Device Name field -->
+      {% if name_taken %}
+            <span class="text-warning"> Name already in use!</span>
+      {% endif %}
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          name="devicename"
+          class="form-control"
+          id="floatingInput"
+          placeholder="Device Name"
+          required
+          value="{{device.name}}"
+        />
+        <label for="floatingInput">Name</label>
+      </div>
+
+      <!-- Energy usage field -->
+      <div class="form-floating mb-3">
+        <input
+          type="number"
+          name="energyusage"
+          class="form-control"
+          id="floatingInput"
+          placeholder="name@example.com"
+          value="{{device.power}}"
+          required
+        />
+        <label for="floatingInput">Energy consumption in watts (W)</label>
+      </div>
+
+      <div class="wrapper mb-3">
+        <div class="d-flex justify-content-center mb-1">
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-00"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-00"
+            >00:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-01"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-01"
+            >01:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-02"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-02"
+            >02:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-03"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-03"
+            >03:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-04"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-04"
+            >04:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-05"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-05"
+            >05:00</label
+          ><br />
+        </div>
+
+        <div class="d-flex justify-content-center mb-1">
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-06"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-06"
+            >06:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-07"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-07"
+            >07:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-08"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-08"
+            >08:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-09"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-09"
+            >09:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-10"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-10"
+            >10:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-11"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-11"
+            >11:00</label
+          >
+        </div>
+
+        <div class="d-flex justify-content-center mb-1">
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-12"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-12"
+            >12:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-13"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-13"
+            >13:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-14"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-14"
+            >14:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-15"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-15"
+            >15:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-16"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-16"
+            >16:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-17"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-17"
+            >17:00</label
+          >
+        </div>
+
+        <div class="d-flex justify-content-center mb-1">
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-18"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-18"
+            >18:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-19"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-19"
+            >19:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-20"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-20"
+            >20:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-21"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-21"
+            >21:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-22"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-22"
+            >22:00</label
+          >
+          <input
+            type="checkbox"
+            class="btn-check"
+            id="btn-check-23"
+            checked
+            autocomplete="off"
+          />
+          <label class="btn btn-secondary mx-1" for="btn-check-23"
+            >23:00</label
+          >
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary w-25">Update</button>
+    </form>
+  </div>
+{% endblock %}

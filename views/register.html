@@ -1,0 +1,114 @@
+{% extends 'authnon_base.html'%} {% block content %}
+<div class="container">
+  <div id="main" class="justify-content-center">
+    <h1>Register</h1>
+
+    {% for message in messages %}
+    <div class="alert alert-danger" role="alert">{{ message.msg }}</div>
+    {% endfor %}
+
+    <form action="/register" method="POST">
+      <div class="mb-3">
+        <label for="email" class="form-label">Email address</label>
+        <div class="input-group mb-2 mr-sm-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="bi bi-person-circle"></i>
+            </div>
+          </div>
+          <input
+            type="email"
+            class="form-control"
+            id="email1"
+            placeholder="E-mail"
+            name="email"
+          />
+          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label">Password</label>
+        <div class="input-group mb-2 mr-sm-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="bi bi-key-fill"></i>
+            </div>
+          </div>
+          <input
+            type="password"
+            class="form-control"
+            id="password1"
+            placeholder="Password"
+            name="password"
+          />
+          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="exampleInputPassword1" class="form-label"
+          >Confirm Password</label
+        >
+        <div class="input-group mb-2 mr-sm-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="bi bi-key-fill"></i>
+            </div>
+          </div>
+          <input
+            type="password"
+            class="form-control"
+            id="password2"
+            placeholder="Re-enter password"
+            name="password_confirm"
+          />
+          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+        </div>
+      </div>
+
+      <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
+        <label class="form-check-label" for="exampleCheck1">Check me out</label>
+      </div>
+
+      <div class="text-center form-group mb-3">
+        <button type="submit" class="btn btn-primary w-100">Submit</button>
+      </div>
+    </form>
+    <div class="text-center">
+      <p>Already have an account? <a href="/login">Login</a></p>
+    </div>
+  </div>
+</div>
+<div class="container">
+  <script>
+    function validateRegInfo(form) {
+      email = form.email1.value;
+      password1 = form.password1.value;
+      password2 = form.password2.value;
+
+      if (email == "") {
+        //document.getElementById("email-icon").innerHTML = <i class="bi bi-exclamation-diamond-fill colorfailure iconsize"></i>;
+        alert("Please enter a valid email on the form name@mail.com");
+      }
+      // If password not entered
+      else if (password1 == "") alert("Please enter Password");
+      // If confirm password not entered
+      else if (password2 == "") alert("Please confirm password");
+      // If Not same return False.
+      else if (password1 != password2) {
+        alert("\nPassword did not match: Please try again...");
+        return false;
+      }
+
+      // If same return True.
+      else {
+        alert("User Registration Complete: Welcome to Sustanify!!");
+        document.location.href = "https://www.youtube.com";
+        return true;
+      }
+    }
+  </script>
+</div>
+{% endblock content %}

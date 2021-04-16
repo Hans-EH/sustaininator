@@ -1,0 +1,71 @@
+{% extends 'auth_base.html' %} {% block content %}
+
+<!-- Chart.js dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<h1>{{ device.name }}</h1><br>
+
+<body>
+   <div class="row mb-3">
+        <div class="col-12">
+          <div class="card">
+            <div class="card-header d-flex justify-content-between">
+              <div class="d-flex align-items-center">
+                <p class="my-0">Energy Consumption</p>
+                <!-- Time stamp -->
+                <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
+              </div>
+              <!-- Refresh Button -->
+              <button class="btn btn-secondary" id="refreshGreenEnergy">
+                <i class="bi bi-arrow-repeat"></i>
+              </button>
+            </div>
+
+            <div class="card-body">
+              <canvas id="chartGreenEnergy"></canvas>
+            </div>
+      <script>
+      async function greenEnergyDataEMI() {
+          try {
+            // Arrays for labels and values
+            let dataLabels = [];
+            let dataValuesOffWind = [];
+
+            var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
+            var chart = new Chart(ctx, {
+              // The type of chart we want to create
+              type: "line",
+              data: {
+                labels: dataLabels,
+                datasets: [
+                  {
+                    label: "Offshore Energy Production (Vest) (5min) (MWh)",
+                    borderColor: "rgb(99, 132, 255)",
+                    fill: false,
+                    data: dataValuesOffWind, //data: dataValuesOffWind.slice(0, 20),
+                  },
+                  {
+                    label: "Onshore Energy Production (Vest) (5min) (MWh)",
+                    borderColor: "rgb(132, 255, 99)",
+                    fill: false,
+                    data: dataValuesOnWind,
+                  },
+                ],
+              },
+
+              // Configuration options go here
+              options: {},
+            });
+
+            // return labels and values as object
+            //   return {
+            //     dataValues,
+            //     dataLabels,
+            //   };
+          } catch {
+            console.log("Forhelvede....");
+          }
+        }
+      </script>
+</body>
+
+{% endblock %}

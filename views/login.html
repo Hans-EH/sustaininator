@@ -1,0 +1,64 @@
+{% extends 'authnon_base.html' %} {% block content %}
+<div id="logincontainer" class="container mt-3 px-6">
+  <h1>Login</h1>
+  <form>
+    <!-- Email field-->
+
+    <div class="form-group mb-3">
+      <label for="email">Email address</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">
+          <i class="bi bi-person-circle"></i>
+        </span>
+        <input
+          type="email"
+          class="form-control"
+          placeholder="Username"
+          aria-label="Username"
+          aria-describedby="basic-addon1"
+        />
+      </div>
+    </div>
+
+    <!-- Password field-->
+    <div class="form-group mb-3">
+      <label for="exampleInputEmail1">Password</label>
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon1">
+          <i class="bi bi-key-fill"></i>
+        </span>
+        <input
+          type="password"
+          class="form-control"
+          id="exampleInputPassword1"
+          placeholder="Password"
+        />
+      </div>
+    </div>
+
+    <!-- Submit button -->
+    <div class="text-center form-group mb-3">
+      <button type="submit" class="btn btn-success w-100">Login</button>
+    </div>
+    <div class="text-center">
+      <p>Don't have an account? <a href="register">Register</a></p>
+    </div>
+  </form>
+</div>
+
+<!-- Login database confirmation script -->
+<script>
+  $(document).ready(function(){
+    var user,pass;
+    $("#submit").click(function(){
+      user=$("#email").val();
+      pass=$("#password").val();
+      $.post("mongodb://localhost:27017",{user: email,password: pass}, function(data){
+        if(data === 'yes') {
+            alert("login success");
+          }
+      });
+    });
+  });
+</script>
+{% endblock content %}
