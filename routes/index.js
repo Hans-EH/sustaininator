@@ -6,7 +6,13 @@ let login_controller = require('../controllers/logincontroller');
 
 // GET home page.
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  let authenticated = req.cookies['authenticated'];
+  if (authenticated) {
+    res.render('index', { title: 'Express' });
+  } else {
+    res.redirect("/login");
+  }
+
 });
 
 /* ======= DEVICE ======= */
@@ -43,6 +49,6 @@ router.post('/register', register_controller.register_post);
 router.get('/login', login_controller.auth_get);
 
 // POST request for authentication page
-router.get('/login', login_controller.auth_post);
+router.post('/login', login_controller.auth_post);
 
 module.exports = router;

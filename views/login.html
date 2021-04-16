@@ -1,7 +1,7 @@
 {% extends 'authnon_base.html' %} {% block content %}
 <div id="logincontainer" class="container mt-3 px-6">
   <h1>Login</h1>
-  <form>
+  <form action="/login" method="POST">
     <!-- Email field-->
 
     <div class="form-group mb-3">
@@ -48,16 +48,20 @@
 
 <!-- Login database confirmation script -->
 <script>
-  $(document).ready(function(){
-    var user,pass;
-    $("#submit").click(function(){
-      user=$("#email").val();
-      pass=$("#password").val();
-      $.post("mongodb://localhost:27017",{user: email,password: pass}, function(data){
-        if(data === 'yes') {
+  $(document).ready(function () {
+    var user, pass;
+    $("#submit").click(function () {
+      user = $("#email").val();
+      pass = $("#password").val();
+      $.post(
+        "mongodb://localhost:27017",
+        { user: email, password: pass },
+        function (data) {
+          if (data === "yes") {
             alert("login success");
           }
-      });
+        }
+      );
     });
   });
 </script>
