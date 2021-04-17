@@ -2,69 +2,102 @@
 
 <!-- Chart.js dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-<h1>{{ device.name }}</h1><br>
+<h1>{{ device.name }}</h1>
 
 <body>
-   <div class="row mb-3">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header d-flex justify-content-between">
-              <div class="d-flex align-items-center">
-                <p class="my-0">Energy Consumption</p>
-                <!-- Time stamp -->
-                <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
-              </div>
-              <!-- Refresh Button -->
-              <button class="btn btn-secondary" id="refreshGreenEnergy">
-                <i class="bi bi-arrow-repeat"></i>
-              </button>
-            </div>
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <div class="d-flex align-items-center">
+            <p class="my-0">Energy Consumption</p>
+            <!-- Time stamp -->
+            <small class="ms-2 me-0 my-0" id="lastUpdateEnergyConsumption"></small>
+          </div>
+          <!-- Refresh Button -->
+          <button class="btn btn-secondary" id="refreshEnergyConsumption">
+            <i class="bi bi-arrow-repeat"></i>
+          </button>
+        </div>
 
             <div class="card-body">
-              <canvas id="chartGreenEnergy"></canvas>
+              <canvas id="deviceEnergy"></canvas>
             </div>
       <script>
-      async function greenEnergyDataEMI() {
-          try {
-            // Arrays for labels and values
-            let dataLabels = [];
-            let dataValuesOffWind = [];
+      //Finding the minimum integer in array - function
+      function arrayMin(array) {
+        let minVal = array.reduce((a, b) => {
+        return a < b? a : b});
+        return minVal;
+      }
 
-            var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
-            var chart = new Chart(ctx, {
-              // The type of chart we want to create
-              type: "line",
-              data: {
-                labels: dataLabels,
-                datasets: [
-                  {
-                    label: "Offshore Energy Production (Vest) (5min) (MWh)",
-                    borderColor: "rgb(99, 132, 255)",
-                    fill: false,
-                    data: dataValuesOffWind, //data: dataValuesOffWind.slice(0, 20),
-                  },
-                  {
-                    label: "Onshore Energy Production (Vest) (5min) (MWh)",
-                    borderColor: "rgb(132, 255, 99)",
-                    fill: false,
-                    data: dataValuesOnWind,
-                  },
-                ],
-              },
-
-              // Configuration options go here
-              options: {},
-            });
-
-            // return labels and values as object
-            //   return {
-            //     dataValues,
-            //     dataLabels,
-            //   };
-          } catch {
-            console.log("Forhelvede....");
+      let onVector = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0];
+      
+      async function activeProbability(onVector) {
+        try {
+          let propVector = [];
+          let activeIndex = [];
+          
+          /* Find the indexes with an on state in the onVector */
+          for (let i = 0; i < onVector.length; i++){
+            if (onVector[i] === 1){
+                activeIndex.push(i)
+            }
           }
+          //activeIndex => [1, 9, 18]
+          activeIndex = activeIndex.map(n=>n*12);
+          
+          //activeIndex => [12, (108), (216)]
+          
+          /* Find the index distance to the next active  */
+          for (let i = 0; i < 24*12; i++){
+              propVector[i] = arrayMin(activeIndex.map(n => {
+                  return (Math.abs(n - i))/6
+              }))
+          }
+          /* gaussian function */
+          propVector = propVector.map(x => {
+              return Math.exp(-(x**2)).toFixed(4);
+          })
+          //[9, 8, 7, 6, 5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5]
+          //                            9                          18
+          
+          var x = 5; //minutes interval
+          var times = []; // time array
+          var tt = 0; // start time
+          var ap = ['AM', 'PM']; // AM-PM
+
+          //loop to increment the time and push results in array
+          for (var i=0;tt<24*60; i++) {
+            var hh = Math.floor(tt/60); // getting hours of day in 0-24 format
+            var mm = (tt%60); // getting minutes of the hour in 0-55 format
+            times[i] = ("0" + (hh % 12)).slice(-2) + ':' + ("0" + mm).slice(-2) + ap[Math.floor(hh/12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
+            tt = tt + x;
+          }
+          
+          var ctx = document.getElementById("deviceEnergy").getContext("2d");
+          var chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: "line",
+            data: {
+              labels: times,
+              datasets: [
+                {
+                  label: "Device Energy Consumption (5min) (1/12Wh)",
+                  borderColor: "rgb(99, 132, 255)",
+                  fill: false,
+                  data: propVector,
+                },
+              ],
+            },
+            // Configuration options go here
+            options: {},
+          });
+        } catch {
+          console.log("Forhelvede....");
         }
+      }
+      activeProbability(onVector);
       </script>
 </body>
 
