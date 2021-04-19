@@ -28,3 +28,12 @@ deviceCreate('Ming', 1000, [false, true, false, false]);
 deviceCreate('Jakob', 1200, [false, true, false, false]);
 deviceCreate('Sture', 1500, [false, true, false, false]);
 deviceCreate('Frederik', 800, [false, true, false, false]);
+
+let Profile = require('./models/user_profile');
+
+function showProfile(money_saved) {
+
+    let profile = new Profile({
+        money_saved: money_saved,
+    });
+};
