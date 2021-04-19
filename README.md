@@ -1,8 +1,13 @@
 # Project-skarp
 
 # GITIGNORE RULES
+
 - https://www.toptal.com/developers/gitignore
 - Add: Package-lock.json
+
+## Nodemon command to automatically run the newest code every time
+
+- nodemon app --ext css,html,js
 
 ## MongoDB documentation
 
@@ -16,7 +21,5 @@
 - check process: brew services list
 
 ## Ubuntu commands
-- https://gist.github.com/jctosta/af918e1618682638aa82
 
-## Nodemon command to automatically run the newest code every time
-nodemon app --ext css,html,js
+- https://gist.github.com/jctosta/af918e1618682638aa82

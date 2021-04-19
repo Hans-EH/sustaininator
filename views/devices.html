@@ -98,13 +98,13 @@
           <label for="floatingInput">Energy consumption in watts (W)</label>
         </div>
 
+        <!-- Active times fields-->
         <div class="wrapper mb-3">
           <div class="d-flex justify-content-center mb-1">
             <input
               type="checkbox"
               class="btn-check"
               id="btn-check-00"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-00"
@@ -114,8 +114,8 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-01"
-              checked
               autocomplete="off"
+              checked
             />
             <label class="btn btn-secondary mx-1" for="btn-check-01"
               >01:00</label
@@ -124,7 +124,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-02"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-02"
@@ -134,7 +133,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-03"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-03"
@@ -144,7 +142,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-04"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-04"
@@ -154,7 +151,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-05"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-05"
@@ -167,7 +163,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-06"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-06"
@@ -177,7 +172,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-07"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-07"
@@ -187,7 +181,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-08"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-08"
@@ -197,7 +190,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-09"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-09"
@@ -207,7 +199,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-10"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-10"
@@ -217,7 +208,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-11"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-11"
@@ -230,7 +220,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-12"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-12"
@@ -240,7 +229,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-13"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-13"
@@ -250,7 +238,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-14"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-14"
@@ -260,7 +247,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-15"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-15"
@@ -270,7 +256,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-16"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-16"
@@ -280,7 +265,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-17"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-17"
@@ -293,7 +277,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-18"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-18"
@@ -303,7 +286,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-19"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-19"
@@ -313,7 +295,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-20"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-20"
@@ -323,7 +304,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-21"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-21"
@@ -333,7 +313,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-22"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-22"
@@ -343,7 +322,6 @@
               type="checkbox"
               class="btn-check"
               id="btn-check-23"
-              checked
               autocomplete="off"
             />
             <label class="btn btn-secondary mx-1" for="btn-check-23"
@@ -367,6 +345,12 @@
 {% endif %}
 <!--Alerts the user if the really want to delete the device-->
 <script>
+
+  /* Select all activetimes checkboxes with a checked mark
+  let checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
+  alert(checkboxes.length)
+  */
+
   function deleteCheck(id) {
     if (confirm("Are you sure you want to delete this device?")) {
       window.location.replace("/devices/delete/" + id);

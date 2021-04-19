@@ -1,472 +1,441 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'auth_base.html' %} {% block content %}
 
-<head link rel="shortcut icon" href="#">
-  <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Express</title>
-  <!-- Bootstrap CSS dependency-->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous" />
+<h1>Homepage</h1>
+<div class="row mb-3">
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>Money saved</h5>
+      </div>
+      <div class="card-body">
+        <p>3452 DKK</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>CO<sub>2</sub> saved</h5>
+      </div>
+      <div class="card-body">
+        <p>230g CO<sub>2</sub>e</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>Carbon footprint</h5>
+      </div>
+      <div class="card-body">
+        <p>1.23kg CO<sub>2</sub>e</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>
+          <a href="/devices">Devices</a>
+        </h5>
+      </div>
+      <div class="card-body">
+        <p>12</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <!-- Bootstrap JS dependency-->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
-    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
-    crossorigin="anonymous"></script>
+<!-- Main chart -->
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <p class="m-0">CO<sub>2</sub> Emission</p>
+          <!-- Time stamp -->
+          <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
+        </div>
+        <!-- Refresh Button -->
+        <button class="btn btn-secondary" id="refreshCO2">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </div>
 
+      <div class="card-body p-3">
+        <canvas id="chartCO2"></canvas>
+      </div>
+      <div class="slidecontainer">
+        <p>
+          How much CO<sub>2</sub> do you wish to save?* Only use electricity
+          when the green line is under the black line to reach your target:
+        </p>
 
-  <!-- Chart.js dependencies -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+        <h3>
+          <strong>
+            <p id="demo">50%</p>
+          </strong>
+        </h3>
+        <input
+          type="range"
+          min="1"
+          max="100"
+          value="50"
+          class="slider"
+          id="myRange"
+        />
+        <div class="card-footer">
+          <small
+            >Data from
+            <a
+              href="https://www.energidataservice.dk/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              energidataservice.dk
+            </a>
+            <br /><br />
+            *The amount there can be saved is based on how much the CO<sub
+              >2</sub
+            >
+            fluctuates through a 30 day period. Saving 90% is the same as saving
+            90% of what is currently possible to save when using electricity
+            based upon the last 30 days. All electricity usage gives out some
+            degree of CO<sub>2</sub>.
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Energy production chart -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between">
+          <div class="d-flex align-items-center">
+            <p class="my-0">Green Energy Production</p>
+            <!-- Time stamp -->
+            <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
+          </div>
+          <!-- Refresh Button -->
+          <button class="btn btn-secondary" id="refreshGreenEnergy">
+            <i class="bi bi-arrow-repeat"></i>
+          </button>
+        </div>
+
+        <div class="card-body">
+          <canvas id="chartGreenEnergy"></canvas>
+        </div>
+
+        <div class="card-footer">
+          <small
+            >Data from
+            <a
+              href="https://www.energidataservice.dk/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              energidataservice.dk
+            </a>
+          </small>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script>
-    var toastElList = [].slice.call(document.querySelectorAll(".toast"));
-    var toastList = toastElList.map(function (toastEl) {
-      return new bootstrap.Toast(toastEl, option);
+    let percentileSaved = 50;
+    //to update the slider:
+    var slider = document.getElementById("myRange");
+    var output = document.getElementById("demo");
+    output.innerHTML = [slider.value + "%"]; // Display the default slider value
+
+    // Update the current slider value (each time you drag the slider handle)
+    slider.oninput = function () {
+      output.innerHTML = [this.value + "%"];
+      percentileSaved = 100 - this.value;
+    };
+    async function energiDataEMI() {
+      try {
+        const DAYSAMOUNT = 30; //change in URI if this is changed.
+        const URI =
+          'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
+        let data = await fetch(URI).then((response) => response.json());
+
+        // Arrays for labels and values
+        let dataLabels = [];
+        let dataValues = [];
+        let dataValuesMonth = [];
+        let daysMonth = 30;
+        let dataValuesWeek = [];
+        let daysWeek = 7;
+        let dataValuesDays = [];
+        let daysDays = 3;
+        let dataTestAccuracy = [];
+        //datapoints on 1 day
+        let dataDay = (60 * 24) / 5;
+        // Iterate over reponse results
+        console.log("Total CO2 Rows:" + data.result.records.length);
+
+        for (let i = 0; i < data.result.records.length; i++) {
+          // Push labels and values
+          if (data.result.records[i].PriceArea == "DK1") {
+            dataValues.push(data.result.records[i].CO2Emission);
+            dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3));
+          }
+        }
+        // Reverse Arrays
+        dataLabels = dataLabels.reverse();
+        dataValues = dataValues.reverse();
+
+        //Function that creates a moving average dataset depended on amount of days.
+        function createData(days, newDataValues) {
+          //total data points
+          let dataTotal = days * dataDay;
+          for (let j = 0; j < dataDay; j++) {
+            newDataValues[j] = 0;
+            for (let i = j; i < dataTotal; i += dataDay) {
+              //compounds the values
+              newDataValues[j] +=
+                dataValues[i + (dataDay * DAYSAMOUNT - dataTotal)];
+            }
+            //finds average for that time
+            newDataValues[j] = newDataValues[j] / days;
+          }
+        }
+
+        createData(daysMonth, dataValuesMonth);
+        createData(daysWeek, dataValuesWeek);
+        createData(daysDays, dataValuesDays);
+        createData(1, dataTestAccuracy);
+        console.log("DataValues length" + dataValues.length + "\n");
+        console.log("DataValuesMonth length" + dataValuesMonth.length + "\n");
+        console.log("DataLabels length" + dataLabels.length + "\n");
+
+        //a function that creates the percentile line using preexisting moving average and a percentile.
+        function createPercentileLine(p, inputData) {
+          //percentile to calculate to.
+          //p = Math.ceil(100 / p);
+          inputData.sort(compareNumbers);
+          //calculating percentile
+          let percentileNr = Math.floor((inputData.length / 100) * p);
+          //new dataline to be filled for use as a graph.
+          let newDataLine = [];
+          console.log(
+            100 -
+              p +
+              "% saving, nr: " +
+              percentileNr +
+              ", value: " +
+              inputData[percentileNr]
+          );
+          //duplicate the result to every datapoint through the day
+          //in order for it to be plottet nicely
+          for (let i = 0; i < dataDay; i++) {
+            newDataLine[i] = inputData[percentileNr];
+          }
+          return newDataLine;
+        }
+        //comparenumbers function, to be used with sort.
+        function compareNumbers(a, b) {
+          return a - b;
+        }
+        var ctx = document.getElementById("chartCO2").getContext("2d");
+        var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: "line",
+          data: {
+            labels: dataLabels.slice(
+              dataLabels.length - dataDay,
+              dataLabels.length
+            ),
+            datasets: [
+              {
+                label: "CO2 Emission last 24 hours (5min) (g/kWh)",
+                borderColor: "rgb(0, 255, 0)",
+                data: dataValues.slice(
+                  dataValues.length - dataDay,
+                  dataValues.length
+                ),
+                //steppedLine: "true",
+              },
+              {
+                label:
+                  "CO2 Emission " +
+                  daysDays +
+                  " days running average (5min) (g/kWh)",
+                borderColor: "rgb(255, 255, 0)",
+                data: dataValuesDays.slice(0, dataDay),
+                hidden: true,
+                //steppedLine: "true",
+              },
+              {
+                label:
+                  "CO2 Emission " +
+                  daysWeek +
+                  " days running average (5min) (g/kWh)",
+                borderColor: "rgb(255, 153, 0)",
+                data: dataValuesWeek.slice(0, dataDay),
+                hidden: true,
+                //steppedLine: "true",
+              },
+              {
+                label:
+                  "CO2 Emission " +
+                  daysMonth +
+                  " days running average (5min) (g/kWh)",
+                borderColor: "rgb(255, 0, 0)",
+                data: dataValuesMonth.slice(0, dataDay),
+                //steppedLine: "true",
+              },
+              {
+                label:
+                  "Saving " +
+                  (100 - percentileSaved) +
+                  "% of CO2 when the green line is under the black line (based upon red line minima and maxima).",
+                borderColor: "rgb(0, 0, 0)",
+                data: createPercentileLine(
+                  percentileSaved,
+                  dataValuesMonth
+                ).slice(0, dataDay),
+                steppedLine: true,
+              },
+
+              // {
+              //     label: "CO2 Emission " + "test" + " days running average (5min) (g/kWh)",
+              //     borderColor: "rgb(0, 255, 150)",
+              //     data: dataTestAccuracy.slice(0, 288),
+              //     //steppedLine: "true",
+              // },
+            ],
+          },
+          // Configuration options go here
+          options: {},
+        });
+
+        // return labels and values as object
+        //   return {
+        //     dataValues,
+        //     dataLabels,
+        //   };
+      } catch {
+        console.log("Forhelvede....");
+      }
+    }
+
+    // Kode til hentning of visning af energiproduktion
+    async function greenEnergyDataEMI() {
+      try {
+        const URI =
+          'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+        let data = await fetch(URI).then((response) => response.json());
+
+        // Arrays for labels and values
+        let dataLabels = [];
+        let dataValuesOffWind = [];
+        let dataValuesOnWind = [];
+        let dataValuesSolar = [];
+
+        // Iterate over reponse results
+        for (let i = 0; i < data.result.records.length; i++) {
+          // Push labels and values
+          if (data.result.records[i].PriceArea == "DK1") {
+            dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3)); // we extract HH:MM
+            dataValuesOffWind.push(data.result.records[i].OffshoreWindPower);
+            dataValuesOnWind.push(data.result.records[i].OnshoreWindPower);
+            dataValuesSolar.push(data.result.records[i].SolarPower);
+          }
+        }
+        // Reverse Arrays
+        dataLabels = dataLabels.reverse();
+        dataValuesOffWind = dataValuesOffWind.reverse();
+        dataValuesOnWind = dataValuesOnWind.reverse();
+        dataValuesSolar = dataValuesSolar.reverse();
+
+        var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
+        var chart = new Chart(ctx, {
+          // The type of chart we want to create
+          type: "line",
+          data: {
+            labels: dataLabels,
+            datasets: [
+              {
+                label: "Offshore Energy Production (Vest) (5min) (MWh)",
+                borderColor: "rgb(99, 132, 255)",
+                fill: false,
+                data: dataValuesOffWind, //data: dataValuesOffWind.slice(0, 20),
+              },
+              {
+                label: "Onshore Energy Production (Vest) (5min) (MWh)",
+                borderColor: "rgb(132, 255, 99)",
+                fill: false,
+                data: dataValuesOnWind,
+              },
+              {
+                label: "Solar Energy Production (Vest) (5min) (MWh)",
+                borderColor: "rgb(255, 255, 55)",
+                fill: false,
+                data: dataValuesSolar,
+              },
+            ],
+          },
+
+          // Configuration options go here
+          options: {},
+        });
+
+        // return labels and values as object
+        //   return {
+        //     dataValues,
+        //     dataLabels,
+        //   };
+      } catch {
+        console.log("Forhelvede....");
+      }
+    }
+
+    // Test funktion indtil videre
+    // til at displaye sidste update
+    const setLastUpdate = (lastUpdate) => {
+      let date = new Date();
+      let dateString = `${date.getDate()}/${date.getMonth()}-${date.getFullYear()}`;
+      let hours = date.getHours < 10 ? "0" + date.getHours() : date.getHours();
+      let mins =
+        date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+      let secs =
+        date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+      let timeString = `${dateString} ${hours}:${mins}:${secs}`;
+      document.getElementById(lastUpdate).innerText = timeString;
+    };
+
+    // Fetch data after page contnet has loaded
+    window.addEventListener("load", function () {
+      energiDataEMI();
+      setLastUpdate("lastUpdateCO2");
+      greenEnergyDataEMI();
+      setLastUpdate("lastUpdateGreenEnergy");
     });
+
+    // onClick eventlistner for refresh button
+    document.getElementById("refreshCO2").addEventListener("click", () => {
+      energiDataEMI();
+      setLastUpdate("lastUpdateCO2");
+    });
+    //onClick eventlistner for co2 bar.
+    document.getElementById("myRange").addEventListener("click", () => {
+      energiDataEMI();
+      setLastUpdate("lastUpdateCO2");
+    });
+
+    // onClick eventlistner for Energy refresh button
+    document
+      .getElementById("refreshGreenEnergy")
+      .addEventListener("click", () => {
+        greenEnergyDataEMI();
+        setLastUpdate("lastUpdateGreenEnergy");
+      });
   </script>
-
-  <!-- Bootstrap Icons-->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.0/font/bootstrap-icons.css" />
-  <!-- Project Styles -->
-  <link rel="stylesheet" href="/stylesheets/style.css" />
-</head>
-
-<body>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-      <a class="navbar-brand" href="/">Sustainify</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-          <li class="nav-item">
-            <a class="nav-link" aria-current="page" href="/">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link active" href="/devices">Devices</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/register">Register</a>
-          </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="/settings">Settings</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-
-  <div class="container pb-3">
-    <script></script>
-
-    <h1>Homepage</h1>
-    <div class="row mb-3">
-      <div class="col-3">
-        <div class="mini-card card h-100 text-center">
-          <div class="card-header">
-            <h5>Money saved</h5>
-          </div>
-          <div class="card-body">
-            <p>34522 DKK</p>
-            <td>{{profile.money_saved}}</td>
-
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="mini-card card h-100 text-center">
-          <div class="card-header">
-            <h5>CO<sub>2</sub> saved</h5>
-          </div>
-          <div class="card-body">
-            <p>230g CO<sub>2</sub>e</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="mini-card card h-100 text-center">
-          <div class="card-header">
-            <h5>Carbon footprint</h5>
-          </div>
-          <div class="card-body">
-            <p>1.23kg CO<sub>2</sub>e</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-3">
-        <div class="mini-card card h-100 text-center">
-          <div class="card-header">
-            <h5>
-              <a href="/devices">Devices</a>
-            </h5>
-          </div>
-          <div class="card-body">
-            <p>12</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main chart -->
-    <div class="row mb-3">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between">
-            <div class="d-flex align-items-center">
-              <p class="m-0">CO<sub>2</sub> Emission</p>
-              <!-- Time stamp -->
-              <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
-            </div>
-            <!-- Refresh Button -->
-            <button class="btn btn-secondary" id="refreshCO2">
-              <i class="bi bi-arrow-repeat"></i>
-            </button>
-          </div>
-
-          <div class="card-body p-3">
-            <canvas id="chartCO2"></canvas>
-          </div>
-          <div class="slidecontainer">
-            <p> How much CO<sub>2</sub> do you wish to save?* Only use electricity when the green line is under the
-              black line to reach your target:
-            <h3><strong>
-                <p id="demo">50%</p>
-              </strong></h3>
-            <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-            <div class="card-footer">
-              <small>Data from
-                <a href="https://www.energidataservice.dk/" target="_blank" rel="noreferrer">
-                  energidataservice.dk
-                </a>
-                <br><br>
-                *The amount there can be saved is based on how much the CO<sub>2</sub> fluctuates through a 30 day period. Saving 90% is the
-                same as saving 90% of what is currently possible to save when using electricity based upon the last 30 days. All electricity usage
-                gives out some degree of CO<sub>2</sub>.
-              </small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Energy production chart -->
-      <div class="row mb-3">
-        <div class="col-12">
-          <div class="card">
-            <div class="card-header d-flex justify-content-between">
-              <div class="d-flex align-items-center">
-                <p class="my-0">Green Energy Production</p>
-                <!-- Time stamp -->
-                <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
-              </div>
-              <!-- Refresh Button -->
-              <button class="btn btn-secondary" id="refreshGreenEnergy">
-                <i class="bi bi-arrow-repeat"></i>
-              </button>
-            </div>
-
-            <div class="card-body">
-              <canvas id="chartGreenEnergy"></canvas>
-            </div>
-
-            <div class="card-footer">
-              <small>Data from
-                <a href="https://www.energidataservice.dk/" target="_blank" rel="noreferrer">
-                  energidataservice.dk
-                </a>
-              </small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <script>
-        let percentileSaved = 50;
-        //to update the slider:
-        var slider = document.getElementById("myRange");
-        var output = document.getElementById("demo");
-        output.innerHTML = [slider.value + "%"]; // Display the default slider value
-
-        // Update the current slider value (each time you drag the slider handle)
-        slider.oninput = function () {
-          output.innerHTML = [this.value + "%"];
-          percentileSaved = 100-this.value;
-        }
-        async function energiDataEMI() {
-          try {
-            const DAYSAMOUNT = 30; //change in URI if this is changed.
-            const URI =
-              'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
-            let data = await fetch(URI).then((response) => response.json());
-
-            // Arrays for labels and values
-            let dataLabels = [];
-            let dataValues = [];
-            let dataValuesMonth = [];
-            let daysMonth = 30;
-            let dataValuesWeek = [];
-            let daysWeek = 7;
-            let dataValuesDays = [];
-            let daysDays = 3;
-            let dataTestAccuracy = [];
-            //datapoints on 1 day
-            let dataDay = (60 * 24) / 5;
-            // Iterate over reponse results
-            console.log("Total CO2 Rows:" + data.result.records.length);
-
-            for (let i = 0; i < data.result.records.length; i++) {
-              // Push labels and values
-              if (data.result.records[i].PriceArea == "DK1") {
-                dataValues.push(data.result.records[i].CO2Emission);
-                dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3));
-              }
-            }
-            // Reverse Arrays
-            dataLabels = dataLabels.reverse();
-            dataValues = dataValues.reverse();
-
-            //Function that creates a moving average dataset depended on amount of days.
-            function createData(days, newDataValues) {
-              //total data points
-              let dataTotal = days * dataDay;
-              for (let j = 0; j < dataDay; j++) {
-                newDataValues[j] = 0;
-                for (let i = j; i < dataTotal; i += dataDay) {
-                  //compounds the values
-                  newDataValues[j] +=
-                    dataValues[i + (dataDay * DAYSAMOUNT - dataTotal)];
-                }
-                //finds average for that time
-                newDataValues[j] = newDataValues[j] / days;
-              }
-            }
-
-            createData(daysMonth, dataValuesMonth);
-            createData(daysWeek, dataValuesWeek);
-            createData(daysDays, dataValuesDays);
-            createData(1, dataTestAccuracy);
-            console.log("DataValues length" + dataValues.length + "\n");
-            console.log("DataValuesMonth length" + dataValuesMonth.length + "\n");
-            console.log("DataLabels length" + dataLabels.length + "\n");
-
-            //a function that creates the percentile line using preexisting moving average and a percentile.
-            function createPercentileLine(p, inputData) {
-              //percentile to calculate to.
-              //p = Math.ceil(100 / p);
-              inputData.sort(compareNumbers); 
-              //calculating percentile
-              let percentileNr = Math.floor((inputData.length/100)*p);
-              //new dataline to be filled for use as a graph.
-              let newDataLine = [];
-              console.log((100-p)+"% saving, nr: "+percentileNr+", value: "+inputData[percentileNr]);
-              //duplicate the result to every datapoint through the day
-              //in order for it to be plottet nicely
-              for (let i = 0; i < dataDay; i++) {
-                newDataLine[i] = inputData[percentileNr];
-              };
-              return newDataLine;
-            };
-            //comparenumbers function, to be used with sort.
-            function compareNumbers(a, b) {
-              return a - b;
-            }
-            var ctx = document.getElementById("chartCO2").getContext("2d");
-            var chart = new Chart(ctx, {
-              // The type of chart we want to create
-              type: "line",
-              data: {
-                labels: dataLabels.slice(dataLabels.length - dataDay, dataLabels.length),
-                datasets: [
-                  {
-                    label: "CO2 Emission last 24 hours (5min) (g/kWh)",
-                    borderColor: "rgb(0, 255, 0)",
-                    data: dataValues.slice(
-                      dataValues.length - dataDay,
-                      dataValues.length
-                    ),
-                    //steppedLine: "true",
-                  },
-                  {
-                    label:
-                      "CO2 Emission " +
-                      daysDays +
-                      " days running average (5min) (g/kWh)",
-                    borderColor: "rgb(255, 255, 0)",
-                    data: dataValuesDays.slice(0, dataDay),
-                    hidden: true,
-                    //steppedLine: "true",
-                  },
-                  {
-                    label:
-                      "CO2 Emission " +
-                      daysWeek +
-                      " days running average (5min) (g/kWh)",
-                    borderColor: "rgb(255, 153, 0)",
-                    data: dataValuesWeek.slice(0, dataDay),
-                    hidden: true,
-                    //steppedLine: "true",
-                  },
-                  {
-                    label:
-                      "CO2 Emission " +
-                      daysMonth +
-                      " days running average (5min) (g/kWh)",
-                    borderColor: "rgb(255, 0, 0)",
-                    data: dataValuesMonth.slice(0, dataDay),
-                    //steppedLine: "true",
-                  },
-                  {
-                    label: "Saving "+(100-percentileSaved)+"% of CO2 when the green line is under the black line (based upon red line minima and maxima).",
-                    borderColor: "rgb(0, 0, 0)",
-                    data: createPercentileLine(percentileSaved, dataValuesMonth).slice(0, dataDay),
-                    steppedLine: true,
-                  },
-
-                  // {
-                  //     label: "CO2 Emission " + "test" + " days running average (5min) (g/kWh)",
-                  //     borderColor: "rgb(0, 255, 150)",
-                  //     data: dataTestAccuracy.slice(0, 288),
-                  //     //steppedLine: "true",
-                  // },
-                ],
-              },
-              // Configuration options go here
-              options: {},
-            });
-
-            // return labels and values as object
-            //   return {
-            //     dataValues,
-            //     dataLabels,
-            //   };
-          } catch {
-            console.log("Forhelvede....");
-          }
-        }
-
-        // Kode til hentning of visning af energiproduktion
-        async function greenEnergyDataEMI() {
-          try {
-            const URI =
-              'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
-            let data = await fetch(URI).then((response) => response.json());
-
-            // Arrays for labels and values
-            let dataLabels = [];
-            let dataValuesOffWind = [];
-            let dataValuesOnWind = [];
-            let dataValuesSolar = [];
-
-            // Iterate over reponse results
-            for (let i = 0; i < data.result.records.length; i++) {
-              // Push labels and values
-              if (data.result.records[i].PriceArea == "DK1") {
-                dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3)); // we extract HH:MM
-                dataValuesOffWind.push(data.result.records[i].OffshoreWindPower);
-                dataValuesOnWind.push(data.result.records[i].OnshoreWindPower);
-                dataValuesSolar.push(data.result.records[i].SolarPower);
-              }
-            }
-            // Reverse Arrays
-            dataLabels = dataLabels.reverse();
-            dataValuesOffWind = dataValuesOffWind.reverse();
-            dataValuesOnWind = dataValuesOnWind.reverse();
-            dataValuesSolar = dataValuesSolar.reverse();
-
-            var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
-            var chart = new Chart(ctx, {
-              // The type of chart we want to create
-              type: "line",
-              data: {
-                labels: dataLabels,
-                datasets: [
-                  {
-                    label: "Offshore Energy Production (Vest) (5min) (MWh)",
-                    borderColor: "rgb(99, 132, 255)",
-                    fill: false,
-                    data: dataValuesOffWind, //data: dataValuesOffWind.slice(0, 20),
-                  },
-                  {
-                    label: "Onshore Energy Production (Vest) (5min) (MWh)",
-                    borderColor: "rgb(132, 255, 99)",
-                    fill: false,
-                    data: dataValuesOnWind,
-                  },
-                  {
-                    label: "Solar Energy Production (Vest) (5min) (MWh)",
-                    borderColor: "rgb(255, 255, 55)",
-                    fill: false,
-                    data: dataValuesSolar,
-                  },
-                ],
-              },
-
-              // Configuration options go here
-              options: {},
-            });
-
-            // return labels and values as object
-            //   return {
-            //     dataValues,
-            //     dataLabels,
-            //   };
-          } catch {
-            console.log("Forhelvede....");
-          }
-        }
-
-        // Test funktion indtil videre
-        // til at displaye sidste update
-        const setLastUpdate = (lastUpdate) => {
-          let date = new Date();
-          let dateString = `${date.getDate()}/${date.getMonth()}-${date.getFullYear()}`;
-          let hours = date.getHours < 10 ? "0" + date.getHours() : date.getHours();
-          let mins =
-            date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-          let secs =
-            date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
-
-          let timeString = `${dateString} ${hours}:${mins}:${secs}`;
-          document.getElementById(lastUpdate).innerText = timeString;
-        };
-
-        // Fetch data after page contnet has loaded
-        window.addEventListener("load", function () {
-          energiDataEMI();
-          setLastUpdate("lastUpdateCO2");
-          greenEnergyDataEMI();
-          setLastUpdate("lastUpdateGreenEnergy");
-        });
-
-        // onClick eventlistner for refresh button
-        document.getElementById("refreshCO2").addEventListener("click", () => {
-          energiDataEMI();
-          setLastUpdate("lastUpdateCO2");
-        });
-        //onClick eventlistner for co2 bar.
-        document.getElementById("myRange").addEventListener("click", () => {
-          energiDataEMI();
-          setLastUpdate("lastUpdateCO2");
-        });
-
-        // onClick eventlistner for Energy refresh button
-        document
-          .getElementById("refreshGreenEnergy")
-          .addEventListener("click", () => {
-            greenEnergyDataEMI();
-            setLastUpdate("lastUpdateGreenEnergy");
-          });
-      </script>
-
-    </div>
-</body>
-
-</html>
+</div>
+{% endblock content %}

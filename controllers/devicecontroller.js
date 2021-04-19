@@ -122,33 +122,58 @@ exports.device_edit_post = [
             res.render('device_edit', {title: 'Edit device', device: req.body, errors: errors.array()});
         }
         else {
-            //Data is valid
             // Check if the name tried to be editted already exist
             Device.findOne({ 'name': req.body.devicename })
             .exec(function(err, found_device) {
                 if (err) { return next(err); }
                 if (found_device) {
-                    // Device exists - Send back the form and display a "name taken msg"
+                    /* Device name already exists! 
+                       - Check if the power consumption and activetime on the found device matches the found device
+                    */
+                    if(found_device.power == req.body.energyusage) {
+                        /* Nothings was updated in the form
+                           - Send back the form and display a name taken msg 
+                        */
+
+                        //Find the current device in the db to send back with an error message
+                        async.parallel({
+                            device: function(callback) {
+                                Device.findById(req.params.id).exec(callback)
+                            }
+                        }, function(err, results) {
+                            if (err) {return next(err) ;}
+                            if (results.device == null) {
+                                let err = new Error('Device not found!');
+                                err.status = 404;
+                                return next(err);
+                            };
                     
-                    //Find the current device in the db to send back with an error message
-                    async.parallel({
-                        device: function(callback) {
-                            Device.findById(req.params.id).exec(callback)
-                        }
-                    }, function(err, results) {
-                        if (err) {return next(err) ;}
-                        if (results.device == null) {
-                            let err = new Error('Device not found!');
-                            err.status = 404;
-                            return next(err);
-                        };
-                
-                        //Render the page with an additional name_taken keyword
-                        res.render('device_edit', {title: 'Edit device', device: results.device, name_taken: true})
-                    });
+                            //Render the edit page with an additional name_taken keyword
+                            res.render('device_edit', {title: 'Edit device', device: results.device, name_taken: true})
+                        });
+                    }
+                    else {
+                        /* The name was taken but the power consumption or activetimes has changed 
+                           - Create new device with old id and new power consumption and activetimes 
+                        */
+                        let device = new Device({
+                            power: req.body.energyusage,
+                            //NOT IMPLEMENTED activetime update
+                            _id: req.params.id,
+                        })
+                        //Find and update the device
+                        Device.findByIdAndUpdate(req.params.id, device, {}, function (err) {
+                            if (err) {return next(err); }
+                            //Success - redirect back to device list page
+                            res.redirect('/devices');
+                        });
+                    }
+
                 }
                 else {
-                    //The name was not taken - //Create new device with old id and new information
+                    /* The name was not taken 
+                       - Create new device with old id and new information
+                    */
                     let device = new Device({
                         name: req.body.devicename,
                         power: req.body.energyusage,

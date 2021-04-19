@@ -63,3 +63,12 @@
   background: #4caf50;
   cursor: pointer;
 }
+
+input[type=checkbox] + label {
+  background-color:lightgray
+}
+
+input[type=checkbox]:hover + label {
+  background-color: gray;
+}
+
