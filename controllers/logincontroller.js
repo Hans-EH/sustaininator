@@ -65,3 +65,11 @@ exports.auth_post = [
     }
   },
 ];
+
+exports.auth_logout = function (req, res, next) {
+  console.table(req.cookies);
+  if (req.cookies["auth"]) {
+    res.clearCookie("auth");
+    res.redirect("/login");
+  }
+};
