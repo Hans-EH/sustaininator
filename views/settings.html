@@ -1,13 +1,14 @@
 {% extends 'auth_base.html' %} {% block content %}
-<p>Settings page</p>
-<p>Hej med dig!</p>
-<button onmouseover="test()">Click</button>
+<h1 class="display-6 mb-3">{{ title }}</h1>
 
-<script>
-  let count = 0;
-  let test = () => {
-    console.log(count);
-    count += 1;
-  };
-</script>
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <h2>Heeeeeello</h2>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}

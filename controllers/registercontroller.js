@@ -6,7 +6,10 @@ let UserProfile = require("../models/user_profile");
 let saltRounds = 10;
 
 exports.register_get = function (req, res, next) {
-  res.render("register", { title: "Register", messages: null });
+  res.render("register", {
+    title: "Register",
+    route: "/register",
+  });
 };
 
 exports.register_post = [
@@ -48,6 +51,9 @@ exports.register_post = [
             // Create UserProfile from Model
             let user_profile = new UserProfile({
               user: new_user,
+              money_saved: 0,
+              carbon_saved: 0,
+              carbon_footprint: 0,
             });
 
             // Save new user
