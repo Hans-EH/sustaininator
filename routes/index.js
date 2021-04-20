@@ -12,10 +12,19 @@ let auth = require("../controllers/AuthController");
 router.get("/", function (req, res, next) {
   // checking if user is logged in
   if (auth.isAuthenticated(req, res))
-    // User is logged in
-    res.render("index", {
-      title: "Homepage",
-      route: "/",
+    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (
+      err,
+      profile_data
+    ) {
+      if (err) {
+        return next(err);
+      }
+      // render data to settings page
+      res.render("index", {
+        title: "Homepage",
+        route: "/",
+        profile_data: profile_data,
+      });
     });
 });
 
