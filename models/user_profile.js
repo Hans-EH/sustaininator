@@ -8,6 +8,8 @@ let userProfileSchema = new Schema({
     firstname: {type: String},
     lastname: {type: String},
     money_saved: {type: Number},
+    carbon_saved: {type: Number},
+    carbon_footprint: {type: Number},
 })
 
 module.exports = mongoose.model('UserProfile', userProfileSchema);
