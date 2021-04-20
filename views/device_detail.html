@@ -19,17 +19,16 @@
             <i class="bi bi-arrow-repeat"></i>
           </button>
         </div>
-
-            <div class="card-body">
-              <canvas id="deviceEnergy"></canvas>
-            </div>
-      <script>
-      //Finding the minimum integer in array - function
-      function arrayMin(array) {
-        let minVal = array.reduce((a, b) => {
-        return a < b? a : b});
-        return minVal;
-      }
+        <div class="card-body">
+          <canvas id="deviceEnergy"></canvas>
+        </div>
+        <script>
+        /*  //Finding the minimum integer in array - function
+          function arrayMin(array) {
+          let minVal = array.reduce((a, b) => {
+          return a < b? a : b});
+          return minVal;
+          }
 
       let onVector = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0];
       
@@ -38,7 +37,7 @@
           let propVector = [];
           let activeIndex = [];
           
-          /* Find the indexes with an on state in the onVector */
+          /* Find the indexes with an on state in the onVector *//*
           for (let i = 0; i < onVector.length; i++){
             if (onVector[i] === 1){
                 activeIndex.push(i)
@@ -49,13 +48,13 @@
           
           //activeIndex => [12, (108), (216)]
           
-          /* Find the index distance to the next active  */
+          /* Find the index distance to the next active  *//*
           for (let i = 0; i < 24*12; i++){
               propVector[i] = arrayMin(activeIndex.map(n => {
                   return (Math.abs(n - i))/6
               }))
           }
-          /* gaussian function */
+          /* gaussian function *//*
           propVector = propVector.map(x => {
               return Math.exp(-(x**2)).toFixed(4);
           })
@@ -98,6 +97,47 @@
         }
       }
       activeProbability(onVector);
+      */
+      
+      /*var propVector = "{{ device.power }}"; // device.name?
+      console.log(name);
+      var times = "{{ name }}";
+      console.log(name);
+      */
+      var probVector = "{{ probVector }}";
+      console.log(probVector);
+
+      var x = 5; //minutes interval
+      var times = []; // time array
+      var tt = 0; // start time
+      var ap = ['AM', 'PM']; // AM-PM
+
+      //loop to increment the time and push results in array
+      for (var i = 0; tt < 24 * 60; i++) {
+        var hh = Math.floor(tt / 60); // getting hours of day in 0-24 format
+        var mm = (tt % 60); // getting minutes of the hour in 0-55 format
+        times[i] = ("0" + (hh % 12)).slice(-2) + ':' + ("0" + mm).slice(-2) + ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
+        tt = tt + x;
+      }
+
+      var ctx = document.getElementById("deviceEnergy").getContext("2d");
+      var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: "line",
+        data: {
+          labels: times,
+          datasets: [
+            {
+              label: "Device Energy Consumption (5min) (1/12Wh)",
+              borderColor: "rgb(99, 132, 255)",
+              fill: false,
+              data: probVector,
+            },
+          ],
+        },
+        // Configuration options go here
+        options: {},
+      });
       </script>
 </body>
 

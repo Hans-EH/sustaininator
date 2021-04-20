@@ -1,6 +1,7 @@
 let Device = require('../models/device');
 const { body, validationResult } = require('express-validator');
 let async = require('async');
+let { activeProbability }= require('../scripts/active_probability');
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) {
@@ -27,12 +28,22 @@ exports.device_detail = function(req, res, next) {
           err.status = 404;
           return next(err);
       }
-
+      let probVector = activeProbability(results.device.activetime);
+      console.log(results.device.activetime);
       // Successful, so render.
-      res.render('device_detail', { title: results.device.title, device: results.device} );
+      res.render('device_detail', { title: results.device.title, device: results.device, probVector: probVector} );
 
   });
 };
+
+/*//Finding the minimum integer in array - function
+function arrayMin(array) {
+let minVal = array.reduce((a, b) => {
+return a < b? a : b});
+return minVal;
+}
+*/
+//let onVector = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0];
 
 /* Create Device from form */
 exports.device_create_post = [ 
