@@ -1,7 +1,6 @@
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 let User = require("../models/user");
-let saltRounds = 10; // maybe
 
 exports.auth_get = function (req, res, next) {
   res.render("login", { title: "Login" });
@@ -25,9 +24,6 @@ exports.auth_post = [
       let tried_email = req.body.email;
       let tried_pass = req.body.password;
 
-      console.log(tried_email);
-      console.log(tried_pass);
-
       User.findOne({ email: tried_email }).exec(function (err, found_user) {
         // Connection or other errors
         if (err) {
@@ -47,7 +43,6 @@ exports.auth_post = [
                 });
                 res.redirect("/");
               } else {
-                console.log("email and passsword didn't match.. Try again!");
                 let user_bad_match = [
                   "email and passsword didn't match.. Try again!",
                 ];
@@ -61,7 +56,6 @@ exports.auth_post = [
         }
         // If user is not found in our database
         else {
-          console.log("The request user haven't been found, want to register?");
           let user_not_found = [
             "The request user haven't been found, want to register?",
           ];
@@ -71,3 +65,11 @@ exports.auth_post = [
     }
   },
 ];
+
+exports.auth_logout = function (req, res, next) {
+  console.table(req.cookies);
+  if (req.cookies["auth"]) {
+    res.clearCookie("auth");
+    res.redirect("/login");
+  }
+};

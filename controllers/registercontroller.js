@@ -1,5 +1,6 @@
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
 let saltRounds = 10;

@@ -35,6 +35,8 @@
     <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
+    {% include 'navbar_nonauth.html' %}
+
     <div class="container pb-3">{% block content %} {% endblock %}</div>
   </body>
 </html>
