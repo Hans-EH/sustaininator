@@ -44,14 +44,19 @@ exports.device_create_post = [
 
   // Process request after validation and sanitization.
   (req, res, next) => {
+    //console.log(req.params('check_list[]'))
+    console.log(req.body)
 
     const errors = validationResult(req);
 
-    //res.json({"ok":01}); // what does this do?
+    //Format the activetimes from string "1,0,1,...1" to array [1,0,1,...,1]
+    let activeArr = req.body.activeArr.split(',').map(val => Number(val));
+    
+    //Create new device instance with request inputs
     let device = new Device({
       name: req.body.devicename,
       power: req.body.energyusage,
-      //activetime: req.body.activetime
+      activetime: activeArr
     });
 
     if (!errors.isEmpty()) {

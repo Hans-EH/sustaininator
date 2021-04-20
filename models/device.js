@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 let deviceSchema = new Schema({
     name: {type: String, required: true},
     power: {type: Number, required: true},
-    activetime: {type: [Boolean], default: new Array(24).fill(false)},
+    activetime: {type: [], default: new Array(24).fill(0)},
 });
 
 // Virtual for device's URL
@@ -16,5 +16,3 @@ let deviceSchema = new Schema({
 //    });
 
 module.exports = mongoose.model('Device', deviceSchema);
-
-
