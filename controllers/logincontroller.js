@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 let User = require("../models/user");
 
 exports.auth_get = function (req, res, next) {
-  res.render("login", { title: "Login" });
+  res.render("login", { title: "Login", route: "/login" });
 };
 
 exports.auth_post = [

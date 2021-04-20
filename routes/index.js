@@ -3,6 +3,7 @@ var router = express.Router();
 
 let UserProfile = require("../models/user_profile");
 let device_controller = require("../controllers/devicecontroller");
+let settings_controller = require("../controllers/SettingsController");
 let register_controller = require("../controllers/registercontroller");
 let login_controller = require("../controllers/logincontroller");
 let auth = require("../controllers/AuthController");
@@ -13,7 +14,8 @@ router.get("/", function (req, res, next) {
   if (auth.isAuthenticated(req, res))
     // User is logged in
     res.render("index", {
-      title: "Express",
+      title: "Homepage",
+      route: "/",
     });
 });
 
@@ -36,6 +38,14 @@ router.post("/devices/edit/:id", device_controller.device_edit_post);
 
 // GET request to delete a device
 router.get("/devices/delete/:id", device_controller.device_delete_get);
+
+/* ======= SETTINGS ======== */
+
+// GET request for settings page
+router.get("/settings", settings_controller.settings_get);
+
+// POST request to make changes in user settings
+router.post("/settings", settings_controller.settings_post);
 
 /* ======= USER REGISTER ======= */
 
