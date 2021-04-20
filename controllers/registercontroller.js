@@ -6,7 +6,10 @@ let UserProfile = require("../models/user_profile");
 let saltRounds = 10;
 
 exports.register_get = function (req, res, next) {
-  res.render("register", { title: "Register", messages: null });
+  res.render("register", {
+    title: "Register",
+    route: "/register",
+  });
 };
 
 exports.register_post = [
