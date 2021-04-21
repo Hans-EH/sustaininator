@@ -8,6 +8,45 @@
     {% endfor %}
 
     <form action="/register" method="POST">
+
+              <div class="mb-3">
+        <label for="email" class="form-label">First Name</label>
+        <div class="input-group mb-2 mr-sm-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="bi bi-person-circle"></i>
+            </div>
+          </div>
+          <input
+            type="firstname"
+            class="form-control"
+            id="firstname"
+            placeholder="First Name"
+            name="firstname"
+          />
+          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+        </div>
+      </div>
+
+          <div class="mb-3">
+        <label for="email" class="form-label">Last Name</label>
+        <div class="input-group mb-2 mr-sm-2">
+          <div class="input-group-prepend">
+            <div class="input-group-text">
+              <i class="bi bi-person-circle"></i>
+            </div>
+          </div>
+          <input
+            type="lastname"
+            class="form-control"
+            id="lastname"
+            placeholder="Last Name"
+            name="lastname"
+          />
+          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+        </div>
+      </div>
+
       <div class="mb-3">
         <label for="email" class="form-label">Email address</label>
         <div class="input-group mb-2 mr-sm-2">
@@ -87,6 +126,8 @@
       email = form.email1.value;
       password1 = form.password1.value;
       password2 = form.password2.value;
+      lastname = form.lastname.value;
+      firstname = form.firstname.value;
 
       if (email == "") {
         //document.getElementById("email-icon").innerHTML = <i class="bi bi-exclamation-diamond-fill colorfailure iconsize"></i>;

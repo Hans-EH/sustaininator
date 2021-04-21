@@ -28,6 +28,26 @@ router.get("/", function (req, res, next) {
     });
 });
 
+//GET navbar
+router.get("/navbar", function (req, res, next) {
+  // checking if user is logged in
+  if (auth.isAuthenticated(req, res))
+    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (
+      err,
+      profile_data
+    ) {
+      if (err) {
+        return next(err);
+      }
+      // render data to navbar
+      res.render("navbar", {
+        title: "navbar",
+        route: "/navbar",
+        profile_data: profile_data,
+      });
+    });
+});
+
 /* ======= DEVICE ======= */
 
 // GET request for device page
