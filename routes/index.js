@@ -95,4 +95,6 @@ router.post("/login", login_controller.auth_post);
 // GET request for loguout
 router.get("/logout", login_controller.auth_logout);
 
+router.get("/welcome", login_controller.welcome_get);
+
 module.exports = router;
