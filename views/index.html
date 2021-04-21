@@ -146,7 +146,7 @@
 </div>
 
 <script>
-  let percentileSaved = 50;
+  let percentileSaved = profile_data.sustainable_goals;
   //to update the slider:
   var slider = document.getElementById("myRange");
   var output = document.getElementById("demo");
@@ -411,7 +411,7 @@
     document.getElementById(lastUpdate).innerText = timeString;
   };
 
-  // Fetch data after page contnet has loaded
+  // Fetch data after page content has loaded
   window.addEventListener("load", function () {
     energiDataEMI();
     setLastUpdate("lastUpdateCO2");
