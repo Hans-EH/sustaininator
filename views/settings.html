@@ -8,7 +8,7 @@
         <h3>User Settings</h3>
       </div>
       <div class="card-body">
-        <form method="/user_settings" method="POST">
+        <form action="/user_settings" method="POST">
           <div class="row g-3">
             <div class="col-md">
               <div class="form-floating">
@@ -16,6 +16,7 @@
                   type="text"
                   class="form-control mb-3"
                   id="FirstNameValue"
+                  name="FirstNameValue"
                   value="{{profile_data.firstname}}"
                 />
                 <label for="FirstNameValue">Firstname</label>
@@ -28,6 +29,7 @@
                   type="text"
                   class="form-control mb-3"
                   id="LastNameValue"
+                  name="LastNameValue"
                   value="{{profile_data.lastname}}"
                 />
                 <label for="LastNameValue">Lastname</label>
@@ -39,14 +41,23 @@
             <select
               class="form-select mb-3"
               id="floatingSelect"
+              name="prefered_currency"
               aria-label="Floating label select example"
             >
+              {% profile_data.pref_currency == NULL %}
               <option selected>Open this select menu</option>
               <option value="DKK">DKK</option>
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
+              
             </select>
             <label for="floatingSelect">Currency</label>
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-primary me-md-2" type="submit">
+              Update
+            </button>
           </div>
         </form>
       </div>
@@ -61,26 +72,35 @@
         <h3>Sustainability Goals</h3>
       </div>
       <div class="card-body">
-        <form class="form-floating" method="/user_settings" method="POST">
-          <input
-            type="number"
-            min="0"
-            max="100"
-            class="form-control"
-            id="floatingInputValue"
-            placeholder="name@example.com"
-            value="{{ profile_data.sustainable_goals}}"
-          />
-          <label for="floatingInputValue"
-            >Set the percentage you want to save on energy</label
-          >
-          <small
-            >*The amount there can be saved is based on how much the CO2
-            fluctuates through a 30 day period. Saving 90% is the same as saving
-            90% of what is currently possible to save when using electricity
-            based upon the last 30 days. All electricity usage gives out some
-            degree of CO2.</small
-          >
+        <form action="/sustain_settings" method="POST">
+          <div class="form-floating">
+            <input
+              type="number"
+              min="0"
+              max="100"
+              class="form-control"
+              id="floatingInputValue"
+              name="sustainable_goals"
+              placeholder="name@example.com"
+              value="{{ profile_data.sustainable_goals}}"
+            />
+            <label for="floatingInputValue"
+              >Set the percentage you want to save on energy</label
+            >
+            <small
+              >*The amount there can be saved is based on how much the CO2
+              fluctuates through a 30 day period. Saving 90% is the same as
+              saving 90% of what is currently possible to save when using
+              electricity based upon the last 30 days. All electricity usage
+              gives out some degree of CO2.</small
+            >
+          </div>
+
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button class="btn btn-primary me-md-2" type="submit">
+              Update
+            </button>
+          </div>
         </form>
       </div>
     </div>

@@ -74,7 +74,10 @@ router.get("/devices/delete/:id", device_controller.device_delete_get);
 router.get("/settings", settings_controller.settings_get);
 
 // POST request to make changes in user settings
-router.post("/settings", settings_controller.settings_post);
+router.post("/user_settings", settings_controller.user_settings_post);
+
+// POST request to make changes in sustianable settings
+router.post("/sustain_settings", settings_controller.sustain_settings_post);
 
 /* ======= USER REGISTER ======= */
 
