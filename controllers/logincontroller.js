@@ -57,7 +57,7 @@ exports.auth_post = [
         // If user is not found in our database
         else {
           let user_not_found = [
-            "The request user haven't been found, want to register?",
+            "The requested user hasn't been found, want to register?",
           ];
           res.render("login", { title: "Login", messages: user_not_found });
         }
@@ -73,3 +73,4 @@ exports.auth_logout = function (req, res, next) {
     res.redirect("/login");
   }
 };
+
