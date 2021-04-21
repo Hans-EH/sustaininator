@@ -65,45 +65,17 @@
       <div class="card-body p-3">
         <canvas id="chartCO2"></canvas>
       </div>
-      <div class="slidecontainer">
-        <p>
-          How much CO<sub>2</sub> do you wish to save?* Only use electricity
-          when the green line is under the black line to reach your target:
-        </p>
-
-        <h3>
-          <strong>
-            <p id="demo">50%</p>
-          </strong>
-        </h3>
-        <input
-          type="range"
-          min="1"
-          max="100"
-          value="50"
-          class="slider"
-          id="myRange"
-        />
-        <div class="card-footer">
-          <small
-            >Data from
-            <a
-              href="https://www.energidataservice.dk/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              energidataservice.dk
-            </a>
-            <br /><br />
-            *The amount there can be saved is based on how much the CO<sub
-              >2</sub
-            >
-            fluctuates through a 30 day period. Saving 90% is the same as saving
-            90% of what is currently possible to save when using electricity
-            based upon the last 30 days. All electricity usage gives out some
-            degree of CO<sub>2</sub>.
-          </small>
-        </div>
+            <div class="card-footer">
+        <small
+          >Data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
       </div>
     </div>
   </div>
@@ -146,17 +118,7 @@
 </div>
 
 <script>
-  let percentileSaved = profile_data.sustainable_goals;
-  //to update the slider:
-  var slider = document.getElementById("myRange");
-  var output = document.getElementById("demo");
-  output.innerHTML = [slider.value + "%"]; // Display the default slider value
-
-  // Update the current slider value (each time you drag the slider handle)
-  slider.oninput = function () {
-    output.innerHTML = [this.value + "%"];
-    percentileSaved = 100 - this.value;
-  };
+  let percentileSaved = 100-"{{profile_data.sustainable_goals}}"
   async function energiDataEMI() {
     try {
       const DAYSAMOUNT = 30; //change in URI if this is changed.
