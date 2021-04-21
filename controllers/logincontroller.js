@@ -1,6 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 let User = require("../models/user");
+const { Mongoose } = require("mongoose");
 
 exports.auth_get = function (req, res, next) {
   res.render("login", { title: "Login", route: "/login" });
@@ -73,4 +74,3 @@ exports.auth_logout = function (req, res, next) {
     res.redirect("/login");
   }
 };
-
