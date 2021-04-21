@@ -20,7 +20,7 @@ exports.device_list = function (req, res, next) {
   });
 };
 
-// Display detail page for a specific book.
+// Display detail page for a specific device.
 exports.device_detail = function (req, res, next) {
   async.parallel(
     {
@@ -79,7 +79,7 @@ exports.device_create_post = [
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("devices", {
         title: "Add Device",
-        device: device,
+        device: req.body,
         errors: errors.array(),
       });
       return;
