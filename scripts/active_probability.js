@@ -1,6 +1,6 @@
 exports.activeProbability = function activeProbability(onVector) {
-  try {
-    let propVector = [];
+    console.log("onVector:"+typeof(onVector));
+    let probVector = [];
     let activeIndex = [];
 
     /* Find the indexes with an on state in the onVector */
@@ -16,18 +16,14 @@ exports.activeProbability = function activeProbability(onVector) {
 
     /* Find the index distance to the next active  */
     for (let i = 0; i < 24 * 12; i++) {
-      propVector[i] = Math.min(activeIndex.map(n => {
+      probVector[i] = Math.min(...activeIndex.map(n => {
         return (Math.abs(n - i)) / 6
       }))
     }
     /* gaussian function */
-    propVector = propVector.map(x => {
-      return Math.exp(-(x ** 2)).toFixed(4);
+    probVector = probVector.map(x => {
+      return ((Math.exp(-(x ** 2)).toFixed(4)));
     })
-    
-    return propVector;
-  }
-  catch {
-    console.log("Error");
-  }
+    console.log("probVector:"+typeof(probVector));
+    return probVector;
 }
