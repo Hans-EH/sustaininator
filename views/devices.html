@@ -115,7 +115,6 @@
               class="btn-check"
               id="btn-check-01"
               autocomplete="off"
-              checked
             />
             <label class="btn btn-secondary mx-1" for="btn-check-01"
               >01:00</label
@@ -209,6 +208,7 @@
               class="btn-check"
               id="btn-check-11"
               autocomplete="off"
+              
             />
             <label class="btn btn-secondary mx-1" for="btn-check-11"
               >11:00</label
@@ -266,6 +266,7 @@
               class="btn-check"
               id="btn-check-17"
               autocomplete="off"
+              
             />
             <label class="btn btn-secondary mx-1" for="btn-check-17"
               >17:00</label
@@ -329,7 +330,8 @@
             >
           </div>
         </div>
-
+        <!-- Hidden input to store array of active time slots-->
+        <input type="hidden" id="timeslots" name="activeArr" value=""/>
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary w-25">Add</button>
       </form>
@@ -346,11 +348,31 @@
 <!--Alerts the user if the really want to delete the device-->
 <script>
 
-  /* Select all activetimes checkboxes with a checked mark
-  let checkboxes = document.querySelectorAll('input[type="checkbox"]:checked');
-  alert(checkboxes.length)
-  */
+  //Add event listeners to all checkboxes
+  document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+    return checkbox.addEventListener("click", () => {
+      //Create an array that will contain the index of checked checkboxes
+      let activeArr = new Array(24).fill(0);
 
+      //Find all checkbox elements
+      let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+
+      //Push the index of a checked checkbox
+      for (let i = 0; i < checkboxes.length; i++) {
+
+        if (checkboxes[i]['checked'] === true){
+          activeArr[i] = 1;
+        }
+      };
+      
+      //Set the hidden input value to the array
+      document.getElementById('timeslots').value = activeArr;
+
+    });
+  });
+
+
+  //Confirmation on delete device
   function deleteCheck(id) {
     if (confirm("Are you sure you want to delete this device?")) {
       window.location.replace("/devices/delete/" + id);

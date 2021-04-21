@@ -51,9 +51,12 @@ exports.register_post = [
             // Create UserProfile from Model
             let user_profile = new UserProfile({
               user: new_user,
+              firstname: "",
+              lastname: "",
               money_saved: 0,
               carbon_saved: 0,
               carbon_footprint: 0,
+              sustainable_goals: 0,
             });
 
             // Save new user
