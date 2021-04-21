@@ -1,6 +1,7 @@
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 let User = require("../models/user");
+const { Mongoose } = require("mongoose");
 
 exports.auth_get = function (req, res, next) {
   res.render("login", { title: "Login", route: "/login" });
@@ -57,7 +58,7 @@ exports.auth_post = [
         // If user is not found in our database
         else {
           let user_not_found = [
-            "The request user haven't been found, want to register?",
+            "The requested user hasn't been found, want to register?",
           ];
           res.render("login", { title: "Login", messages: user_not_found });
         }
