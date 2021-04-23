@@ -2,6 +2,17 @@
 <h1 class="display-6 mb-3">{{ title }}</h1>
 
 <div class="row">
+  {% if messages | length > 0 %}
+  {% for message in messages %}
+  <div class="col-12">
+    {% if message.status %}
+    <div class="alert alert-success" role="alert">{{ message.msg }}</div>
+    {% else %}
+     <div class="alert alert-danger" role="alert">{{ message.msg }}</div>
+    {% endif %}
+  </div>
+  {% endfor %}
+  {% endif %}
   <div class="col-12">
     <div class="card mb-3">
       <div class="card-header">
