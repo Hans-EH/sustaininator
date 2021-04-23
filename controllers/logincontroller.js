@@ -91,7 +91,7 @@ exports.welcome_get = function (req, res, next) {
       res.render("welcome", {
         title: "Welcome to Sustanify",
         name: [profile_data.firstname + " " + profile_data.lastname],
-        route: "/welcome",
+        route: req.originalUrl,
         profile_data: profile_data,
       });
     });
