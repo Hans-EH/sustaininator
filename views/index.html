@@ -76,7 +76,7 @@
             energidataservice.dk
           </a>
         </small>
-      </div>
+      </div>  
     </div>
   </div>
 </div>
@@ -223,6 +223,8 @@
                 dataValues.length - dataDay,
                 dataValues.length
               ),
+              fill: false,
+              //steppedLine: "true",
             },
             {
               label:
@@ -231,6 +233,7 @@
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 255, 0)",
               data: dataValuesDays.slice(0, dataDay),
+              fill: false,
               hidden: true,
             },
             {
@@ -240,6 +243,7 @@
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 153, 0)",
               data: dataValuesWeek.slice(0, dataDay),
+              fill: false,
               hidden: true,
             },
             {
@@ -249,6 +253,8 @@
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 0, 0)",
               data: dataValuesMonth.slice(0, dataDay),
+              fill: false,
+              //steppedLine: "true",
             },
             {
               label:
@@ -260,6 +266,7 @@
                 percentileSaved,
                 dataValuesMonth
               ).slice(0, dataDay),
+              fill: false,
               steppedLine: true,
             },
 
