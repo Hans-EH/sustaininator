@@ -1,6 +1,6 @@
 {% extends 'auth_base.html' %} {% block content %}
 
-<h1 class="display-6 mb-3">Homepage</h1>
+<h1 class="display-6 mb-3">Homepage - Hi {{profile_data.firstname}}</h1>
 <div class="row mb-3">
   <div class="col-3">
     <div class="mini-card card h-100 text-center">
@@ -65,46 +65,18 @@
       <div class="card-body p-3">
         <canvas id="chartCO2"></canvas>
       </div>
-      <div class="slidecontainer">
-        <p>
-          How much CO<sub>2</sub> do you wish to save?* Only use electricity
-          when the green line is under the black line to reach your target:
-        </p>
-
-        <h3>
-          <strong>
-            <p id="demo">50%</p>
-          </strong>
-        </h3>
-        <input
-          type="range"
-          min="1"
-          max="100"
-          value="50"
-          class="slider"
-          id="myRange"
-        />
-        <div class="card-footer">
-          <small
-            >Data from
-            <a
-              href="https://www.energidataservice.dk/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              energidataservice.dk
-            </a>
-            <br /><br />
-            *The amount there can be saved is based on how much the CO<sub
-              >2</sub
-            >
-            fluctuates through a 30 day period. Saving 90% is the same as saving
-            90% of what is currently possible to save when using electricity
-            based upon the last 30 days. All electricity usage gives out some
-            degree of CO<sub>2</sub>.
-          </small>
-        </div>
-      </div>
+      <div class="card-footer">
+        <small
+          >Data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
+      </div>  
     </div>
   </div>
 </div>
@@ -146,17 +118,7 @@
 </div>
 
 <script>
-  let percentileSaved = 50;
-  //to update the slider:
-  var slider = document.getElementById("myRange");
-  var output = document.getElementById("demo");
-  output.innerHTML = [slider.value + "%"]; // Display the default slider value
-
-  // Update the current slider value (each time you drag the slider handle)
-  slider.oninput = function () {
-    output.innerHTML = [this.value + "%"];
-    percentileSaved = 100 - this.value;
-  };
+  let percentileSaved = 100 - "{{profile_data.sustainable_goals}}";
   async function energiDataEMI() {
     try {
       const DAYSAMOUNT = 30; //change in URI if this is changed.
@@ -238,10 +200,12 @@
         }
         return newDataLine;
       }
+
       //comparenumbers function, to be used with sort.
       function compareNumbers(a, b) {
         return a - b;
       }
+
       var ctx = document.getElementById("chartCO2").getContext("2d");
       var chart = new Chart(ctx, {
         // The type of chart we want to create
@@ -259,6 +223,7 @@
                 dataValues.length - dataDay,
                 dataValues.length
               ),
+              fill: false,
               //steppedLine: "true",
             },
             {
@@ -268,8 +233,8 @@
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 255, 0)",
               data: dataValuesDays.slice(0, dataDay),
+              fill: false,
               hidden: true,
-              //steppedLine: "true",
             },
             {
               label:
@@ -278,8 +243,8 @@
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 153, 0)",
               data: dataValuesWeek.slice(0, dataDay),
+              fill: false,
               hidden: true,
-              //steppedLine: "true",
             },
             {
               label:
@@ -288,6 +253,7 @@
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 0, 0)",
               data: dataValuesMonth.slice(0, dataDay),
+              fill: false,
               //steppedLine: "true",
             },
             {
@@ -300,6 +266,7 @@
                 percentileSaved,
                 dataValuesMonth
               ).slice(0, dataDay),
+              fill: false,
               steppedLine: true,
             },
 
@@ -396,8 +363,6 @@
     }
   }
 
-  // Test funktion indtil videre
-  // til at displaye sidste update
   const setLastUpdate = (lastUpdate) => {
     let date = new Date();
     let dateString = `${date.getDate()}/${date.getMonth()}-${date.getFullYear()}`;
@@ -411,7 +376,7 @@
     document.getElementById(lastUpdate).innerText = timeString;
   };
 
-  // Fetch data after page contnet has loaded
+  // Fetch data after page content has loaded
   window.addEventListener("load", function () {
     energiDataEMI();
     setLastUpdate("lastUpdateCO2");

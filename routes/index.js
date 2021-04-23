@@ -28,6 +28,26 @@ router.get("/", function (req, res, next) {
     });
 });
 
+//GET navbar
+router.get("/navbar", function (req, res, next) {
+  // checking if user is logged in
+  if (auth.isAuthenticated(req, res))
+    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (
+      err,
+      profile_data
+    ) {
+      if (err) {
+        return next(err);
+      }
+      // render data to navbar
+      res.render("navbar", {
+        title: "navbar",
+        route: "/navbar",
+        profile_data: profile_data,
+      });
+    });
+});
+
 /* ======= DEVICE ======= */
 
 // GET request for device page
@@ -54,7 +74,10 @@ router.get("/devices/delete/:id", device_controller.device_delete_get);
 router.get("/settings", settings_controller.settings_get);
 
 // POST request to make changes in user settings
-router.post("/settings", settings_controller.settings_post);
+router.post("/user_settings", settings_controller.user_settings_post);
+
+// POST request to make changes in sustianable settings
+router.post("/sustain_settings", settings_controller.sustain_settings_post);
 
 /* ======= USER REGISTER ======= */
 
@@ -74,5 +97,7 @@ router.post("/login", login_controller.auth_post);
 
 // GET request for loguout
 router.get("/logout", login_controller.auth_logout);
+
+router.get("/welcome", login_controller.welcome_get);
 
 module.exports = router;
