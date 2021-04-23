@@ -5,6 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var nunjucks = require("nunjucks");
 var mongoose = require('mongoose');
+let { update } = require('./scripts/main.js');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
@@ -50,5 +51,9 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+// Initiate the loop
+const interval = 5 * 60 * 1000 // 5min
+setInterval(update, 5000);
 
 module.exports = app;

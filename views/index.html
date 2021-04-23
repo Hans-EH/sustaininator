@@ -331,7 +331,7 @@
       const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
       let data = await fetch(URI).then((response) => response.json());
-
+      
       // Arrays for labels and values
       let dataLabels = [];
       let dataValuesOffWind = [];

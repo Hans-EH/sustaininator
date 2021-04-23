@@ -5,6 +5,7 @@ const Schema = mongoose.Schema;
 // User Profile Model
 let userProfileSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  devices: [{type: Schema.Types.ObjectId, ref: "Device"}],
   firstname: { type: String },
   lastname: { type: String },
   pref_currency: { type: String },
@@ -12,6 +13,7 @@ let userProfileSchema = new Schema({
   carbon_saved: { type: Number },
   carbon_footprint: { type: Number },
   sustainable_goals: { type: Number },
+  total_energy_consumption_last_day: { type: Array, default: new Array(288).fill(0) }
 });
 
 module.exports = mongoose.model("UserProfile", userProfileSchema);
