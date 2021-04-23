@@ -44,7 +44,7 @@ exports.auth_post = [
                   maxAge: 900000,
                   httpOnly: true,
                 });
-                res.redirect("/");
+                res.redirect("/welcome");
               } else {
                 let user_bad_match = [
                   "email and passsword didn't match.. Try again!",

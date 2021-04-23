@@ -2,7 +2,7 @@
 <div class="row">
   <p style="text-align:center;font-size:5em;">{{ title }}</p>
   <strong><p style="text-align:center;font-size:5em;">{{ name }}</p></strong>
-  <meta http-equiv="refresh" content="2;url=/" />
+  <meta http-equiv="refresh" content="1;url=/" />
 <div id="myProgress">
   <div id="myBar"></div>
 </div>
@@ -17,7 +17,7 @@ window.onload = function move() {
     i = 1;
     var elem = document.getElementById("myBar");
     var width = 1;
-    var id = setInterval(frame, 20);
+    var id = setInterval(frame, 10);
     function frame() {
       if (width >= 100) {
         clearInterval(id);
