@@ -71,4 +71,19 @@ input[type=checkbox] + label {
 input[type=checkbox]:hover + label {
   background-color: gray;
 }
+.greendot {
+  height: 10px;
+  width: 10px;
+  background-color: green;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.reddot {
+  height: 10px;
+  width: 10px;
+  background-color: red;
+  border-radius: 50%;
+  display: inline-block;
+}
 
