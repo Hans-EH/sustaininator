@@ -3,20 +3,23 @@ const { body, validationResult } = require("express-validator");
 let async = require("async");
 let { activeProbability } = require("../scripts/active_probability");
 let User = require("../models/user");
+let UserProfile = require("../models/user_profile");
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) {
   //Find all devices that links to the user
-  Device.find({ user: req.cookies["auth"] }).exec(function (err, list_device) {
-    if (err) {
-      return next(err);
-    }
-    //Success
-    res.render("devices", {
-      title: "Device List",
-      route: req.originalUrl,
-      device_list: list_device,
+  UserProfile.find({user: req.cookies["auth"]}).exec(function (err, found_profile) {
+    if (err) {return next(err);}
+    Device.find({user_profile: found_profile}).exec((err, device_list) => {
+      if (err) {return next(err); }
+        //Success
+        res.render("devices", {
+        title: "Device List",
+        route: req.originalUrl,
+        device_list: device_list,
     });
+    })
+
   });
 };
 
@@ -52,15 +55,6 @@ exports.device_detail = function (req, res, next) {
   );
 };
 
-/*//Finding the minimum integer in array - function
-function arrayMin(array) {
-let minVal = array.reduce((a, b) => {
-return a < b? a : b});
-return minVal;
-}
-*/
-//let onVector = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0];
-
 /* Create Device from form */
 exports.device_create_post = [
   // Validate and santise the name field.
@@ -89,51 +83,54 @@ exports.device_create_post = [
       });
       return;
     } else {
+      
       //Find the current user that is logged in
-      User.findById(req.cookies["auth"]).exec(function (err, found_user) {
+      UserProfile.findOne({user: req.cookies["auth"]}).exec(function (err, found_profile) {
         if (err) {
           return next(err);
         }
-        if (found_user) {
-          //User found - Create a device linking to this user
+        if (found_profile) {
+          //Userprofile found - Create a device linking to this userprofile
           //Format the activetimes from string "1,0,1,...1" to array [1,0,1,...,1]
           let activeArr = req.body.activeArr
             .split(",")
             .map((val) => Number(val));
 
           //Create new device instance with request inputs
-          console.log(found_user.email);
+
           let device = new Device({
-            user: found_user.id,
+            user_profile: found_profile._id,
             name: req.body.devicename,
             power: req.body.energyusage,
             activetime: activeArr,
           });
           // Data from form is valid.
           // Check if Device with same name already exists.
-          Device.findOne({ name: req.body.devicename }).exec(function (
-            err,
-            found_device
-          ) {
-            if (err) {
-              return next(err);
-            }
+          Device.findOne({ name: req.body.devicename }).exec(function (err,found_device) {
+            if (err) {return next(err);}
             if (found_device) {
               // Device exists, redirect to its detail page.
               res.redirect("/devices/device_detail/" + found_device._id);
             } else {
+              //Device does not exist - Add it to the db and push this device ID to the users profile
               device.save(function (err) {
-                if (err) {
-                  return next(err);
-                }
-                // Device saved. Redirect to device detail page.
-                res.redirect("/devices");
+                if (err) {return next(err);}
               });
+
+              found_profile.devices.push(device._id)
+
+              //Save
+              found_profile.save(function (err){
+                if (err) {return next(err); }
+              });
+
+              res.redirect("/devices");
+
             }
           });
         } else {
-          //The user could not be found -
-          res.render("devices", { errors: "User could not be found!" });
+          //The userprofile could not be found -
+          res.render("devices", { errors: "User profile could not be found!" });
         }
       });
     }

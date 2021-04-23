@@ -8,7 +8,8 @@ let deviceSchema = new Schema({
     power: {type: Number, required: true},
     activetime: {type: [], default: new Array(24).fill(0)},
     state: {type: String, enum: ['ON', 'OFF'], default: 'OFF'},
-    energy_consumption_last_day: {type: Array, default: new Array(288).fill(0)}
+    energy_consumption_last_day: {type: Array, default: new Array(288).fill(0)},
+    lifetime_energy_consumption: {type: Number, default: 0}
 });
 
 //Virtual probability distribution for device

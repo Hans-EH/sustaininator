@@ -1,6 +1,5 @@
 /* This is the server side update loop */
 let async = require('async');
-const device = require('../models/device');
 let Device = require('../models/device');
 let UserProfile = require('../models/user_profile')
 let User = require('../models/user');
@@ -12,30 +11,68 @@ exports.update = function() {
     // 3 - Update the status
     // 3.5 - Sum all the devices power consumption
     // 4 - Save the results to the database
-    updateState()
-    sumEnergyCons()
+
+    //updateState()
+    //updateDeviceEnergyConsumption()
+    //updateUserProfileEnergyConsumption()
 }
 
-//Sum all the energy usages for all users
-function sumEnergyCons(){
+/* loop over all devices with state: "ON"
+   update the last day's energy use array
+   update the device's total energy use */
+function updateDeviceEnergyConsumption(){
 
-    //Loop over every Device and update their energy consumption last day field
     Device.find({state: "ON"}).exec((err, device_list) => {
         if (err) {return next(err);}
 
         //Update the energyusage 
-        for (device of device_list) {
-            
+        for (let device of device_list) {
+            device.energy_consumption_last_day.shift();
+            device.energy_consumption_last_day.push(device.power / (12 * 1000));
+
+            device.lifetime_energy_consumption += device.power / (12 * 1000);
+
+            //Save
+            device.save(function(err, next) {
+                if (err) {return next(err)}
+            });
         }
     });
+}
 
+// loop over all/a user profiles update their last day's energy use array -
+// - by looping over all of their devices -> user profile needs a device list
+// update each user profile's total energy use
+function updateUserProfileEnergyConsumption(){
 
-    //Convert to kWh
-    sum = sum / 12 * 1000
+    UserProfile.find().exec((err, user_profiles) => {
+        if (err) {return next(err);}
+        if (user_profiles) {
+            for (let user_profile of user_profiles) {
+                let profile_sum = 0;
+                for (let device_id of user_profile.devices) {
+                    Device.find({id: device_id, state: "ON"}).exec((err, found_device) => {
+                        if (err) {return next(err);}
+                        if (found_device) {
+                            profile_sum += device.power / (12 * 1000)
+                        }
+                    });
+                    
+                }
+                //The sum of all the devices energy usage is now summed - add it to the profile
+                user_profile.total_energy_consumption_last_day.shift()
+                user_profile.total_energy_consumption_last_day.push(profile_sum);
 
-    //Queue stack
-
-
+                //Save to db
+                user_profile.save(function (err, next) {
+                    if (err) {return next(err)}
+                });
+            }
+        }
+        else {
+            console.log("No profiles is added")
+        }
+    })
 }
 
 //Updates all the states in the database
@@ -53,7 +90,6 @@ function updateState() {
     Device.find().exec((err, device_list) => {
         if (err) {return next(err)};
         for (let device of device_list) {
-            let state;
             if (shouldActivate(device.probVector[index])) {
                 device.state = "ON";
                 console.log(`${device.name} should be activated!, with prob ${device.probVector[index]}`)
