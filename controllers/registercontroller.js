@@ -8,7 +8,7 @@ let saltRounds = 10;
 exports.register_get = function (req, res, next) {
   res.render("register", {
     title: "Register",
-    route: "/register",
+    route: req.originalUrl,
   });
 };
 

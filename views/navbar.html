@@ -42,25 +42,19 @@
             aria-expanded="false"
           >
             <img
-              src="https://github.com/mdo.png"
-              alt="mdo"
+              id="user_identicon"
+              alt="Identicon"
               width="32"
               height="32"
               class="rounded-circle"
             />
           </a>
-          <ul
-            class="dropdown-menu text-small"
-            aria-labelledby="dropdownUser1"
-            style=""
-          >
+          <ul class="dropdown-menu text-small" aria-labelledby="dropdownUser1">
             <li>
-              <p class="dropdown-item mb-0">
-                Hello {{ profile_data.firstname }}
-              </p>
+              <a class="dropdown-item" href="/devices#pills-add-devices"
+                >Add Device</a
+              >
             </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="/devices">Add Device</a></li>
             <li><a class="dropdown-item" href="/settings">Settings</a></li>
             <li><hr class="dropdown-divider" /></li>
             <li><a class="dropdown-item" href="/logout">Sign out</a></li>

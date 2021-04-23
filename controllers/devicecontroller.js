@@ -1,20 +1,20 @@
-let Device = require('../models/device');
-const { body, validationResult } = require('express-validator');
-let async = require('async');
-let { activeProbability } = require('../scripts/active_probability');
-let User = require('../models/user');
+let Device = require("../models/device");
+const { body, validationResult } = require("express-validator");
+let async = require("async");
+let { activeProbability } = require("../scripts/active_probability");
+let User = require("../models/user");
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) {
   //Find all devices that links to the user
-  Device.find({user: req.cookies['auth']}).exec(function (err, list_device) {
+  Device.find({ user: req.cookies["auth"] }).exec(function (err, list_device) {
     if (err) {
       return next(err);
     }
     //Success
     res.render("devices", {
       title: "Device List",
-      route: "/devices",
+      route: req.originalUrl,
       device_list: list_device,
     });
   });
@@ -38,13 +38,18 @@ exports.device_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
-      console.log("activetime:"+typeof(results.device.activetime));
+      console.log("activetime:" + typeof results.device.activetime);
       let probVector = activeProbability(results.device.activetime);
       console.log(probVector);
-      
+
       // Successful, so render.
-      res.render('device_detail', { title: results.device.title, device: results.device, probVector: probVector} );
-  });
+      res.render("device_detail", {
+        title: results.device.title,
+        device: results.device,
+        probVector: probVector,
+      });
+    }
+  );
 };
 
 /*//Finding the minimum integer in array - function
@@ -86,24 +91,33 @@ exports.device_create_post = [
     } else {
       //Find the current user that is logged in
       User.findById(req.cookies["auth"]).exec(function (err, found_user) {
-        if (err) { return next(err); }
-        if (found_user){
+        if (err) {
+          return next(err);
+        }
+        if (found_user) {
           //User found - Create a device linking to this user
           //Format the activetimes from string "1,0,1,...1" to array [1,0,1,...,1]
-          let activeArr = req.body.activeArr.split(',').map(val => Number(val));
-                  
+          let activeArr = req.body.activeArr
+            .split(",")
+            .map((val) => Number(val));
+
           //Create new device instance with request inputs
           console.log(found_user.email);
           let device = new Device({
             user: found_user.id,
             name: req.body.devicename,
             power: req.body.energyusage,
-            activetime: activeArr
+            activetime: activeArr,
           });
           // Data from form is valid.
           // Check if Device with same name already exists.
-          Device.findOne({ name: req.body.devicename }).exec(function (err,found_device) {
-            if (err) {return next(err); }
+          Device.findOne({ name: req.body.devicename }).exec(function (
+            err,
+            found_device
+          ) {
+            if (err) {
+              return next(err);
+            }
             if (found_device) {
               // Device exists, redirect to its detail page.
               res.redirect("/devices/device_detail/" + found_device._id);
@@ -118,8 +132,8 @@ exports.device_create_post = [
             }
           });
         } else {
-          //The user could not be found - 
-          res.render('devices', {errors: "User could not be found!"})
+          //The user could not be found -
+          res.render("devices", { errors: "User could not be found!" });
         }
       });
     }

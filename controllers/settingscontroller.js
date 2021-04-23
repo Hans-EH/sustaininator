@@ -19,7 +19,7 @@ exports.settings_get = function (req, res, next) {
       // render data to settings page
       res.render("settings", {
         title: "Settings",
-        route: "/settings",
+        route: req.originalUrl,
         profile_data: profile_data,
       });
     });
