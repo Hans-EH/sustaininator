@@ -1,6 +1,6 @@
 {% extends 'auth_base.html' %} {% block content %}
 
-<h1 class="display-6 mb-3">Homepage - Hi {{profile_data.firstname}}</h1>
+<h1 class="display-6 mb-3">Hello {{profile_data.firstname}}</h1>
 <div class="row mb-3">
   <div class="col-3">
     <div class="mini-card card h-100 text-center">
@@ -40,7 +40,7 @@
         </h5>
       </div>
       <div class="card-body">
-        <p>12</p>
+        <p>{{counted_devices}}</p>
       </div>
     </div>
   </div>
@@ -76,7 +76,7 @@
             energidataservice.dk
           </a>
         </small>
-      </div>  
+      </div>
     </div>
   </div>
 </div>
@@ -219,11 +219,11 @@
             {
               label: "CO2 Emission last 24 hours (5min) (g/kWh)",
               borderColor: "rgb(0, 255, 0)",
+              fill: false,
               data: dataValues.slice(
                 dataValues.length - dataDay,
                 dataValues.length
               ),
-              fill: false,
               //steppedLine: "true",
             },
             {
@@ -232,8 +232,8 @@
                 daysDays +
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 255, 0)",
-              data: dataValuesDays.slice(0, dataDay),
               fill: false,
+              data: dataValuesDays.slice(0, dataDay),
               hidden: true,
             },
             {
@@ -242,8 +242,8 @@
                 daysWeek +
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 153, 0)",
-              data: dataValuesWeek.slice(0, dataDay),
               fill: false,
+              data: dataValuesWeek.slice(0, dataDay),
               hidden: true,
             },
             {
@@ -252,8 +252,8 @@
                 daysMonth +
                 " days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 0, 0)",
-              data: dataValuesMonth.slice(0, dataDay),
               fill: false,
+              data: dataValuesMonth.slice(0, dataDay),
               //steppedLine: "true",
             },
             {
@@ -262,11 +262,11 @@
                 (100 - percentileSaved) +
                 "% of CO2 when the green line is under the black line (based upon red line minima and maxima).",
               borderColor: "rgb(0, 0, 0)",
+              fill: false,
               data: createPercentileLine(
                 percentileSaved,
                 dataValuesMonth
               ).slice(0, dataDay),
-              fill: false,
               steppedLine: true,
             },
 
@@ -279,7 +279,15 @@
           ],
         },
         // Configuration options go here
-        options: {},
+            options: {
+                elements: {
+                    point:{
+                        radius: 0,
+                        hitRadius: 10, 
+                        hoverRadius: 10
+                    }
+                }
+            }
       });
 
       // return labels and values as object
@@ -350,7 +358,15 @@
         },
 
         // Configuration options go here
-        options: {},
+            options: {
+                elements: {
+                    point:{
+                        radius: 0,
+                        hitRadius: 10, 
+                        hoverRadius: 10
+                    }
+                }
+            }
       });
 
       // return labels and values as object

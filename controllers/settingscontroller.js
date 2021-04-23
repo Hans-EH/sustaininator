@@ -39,20 +39,33 @@ exports.user_settings_post = [
       console.log(errors.array());
       res.render("settings", { title: "Settings", messages: errors.array() });
     } else {
-      console.log(req.body);
+      // Format user input
+      formatFirst = req.body.FirstNameValue;
+      formatFirst.replace(/^\w/, (c) => c.toUpperCase());
+
+      formatLast = req.body.LastNameValue;
+      formatLast.replace(/^\w/, (c) => c.toUpperCase());
+
+      // Update Database information
       UserProfile.findOneAndUpdate(
         { user: req.cookies["auth"] },
         {
-          firstname: req.body.FirstNameValue,
-          lastname: req.body.LastNameValue,
+          firstname: formatFirst,
+          lastname: formatLast,
           pref_currency: req.body.prefered_currency,
         }
       ).exec(function (err, record) {
         if (err) {
           return next(err);
         } else {
-          console.log("Record updated" + record);
-          res.redirect("/settings");
+          const messages = [
+            {
+              msg: "Settings successfully updated.",
+              status: true,
+            },
+          ];
+
+          res.render("settings", { title: "Settings", messages: messages });
         }
       });
     }
@@ -82,7 +95,15 @@ exports.sustain_settings_post = [
           return next(err);
         } else {
           console.log("Record updated" + record);
-          res.redirect("/settings");
+
+          const messages = [
+            {
+              msg: "Settings successfully updated.",
+              status: true,
+            },
+          ];
+
+          res.render("settings", { title: "Settings", messages: messages });
         }
       });
     }
