@@ -334,7 +334,7 @@
             >
           </div>
         </div>
-        <!-- Hidden input to store array of active time slots-->
+        <!-- Hidden input to store array of active time slots to be passed with POST-->
         <input type="hidden" id="timeslots" name="activeArr" value=""/>
         <!-- Submit Button -->
         <button type="submit" class="btn btn-primary w-25">Add</button>
@@ -349,7 +349,7 @@
         {% endfor %}
     </ul>
 {% endif %}
-<!--Alerts the user if the really want to delete the device-->
+
 <script>
 
   //Add event listeners to all checkboxes

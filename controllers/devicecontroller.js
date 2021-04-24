@@ -4,6 +4,7 @@ let async = require("async");
 let { activeProbability } = require("../scripts/active_probability");
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
+const { listenerCount } = require("../models/device");
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) {
@@ -32,12 +33,10 @@ exports.device_detail = function (req, res, next) {
       },
     },
     function (err, results) {
-      if (err) {
-        return next(err);
-      }
+      if (err) {return next(err);}
       if (results.device == null) {
         // No results.
-        var err = new Error("device not found");
+        let err = new Error("device not found");
         err.status = 404;
         return next(err);
       }
@@ -47,7 +46,7 @@ exports.device_detail = function (req, res, next) {
 
       // Successful, so render.
       res.render("device_detail", {
-        title: results.device.title,
+        title: results.device.name,
         device: results.device,
         probVector: probVector,
       });
@@ -91,18 +90,13 @@ exports.device_create_post = [
         }
         if (found_profile) {
           //Userprofile found - Create a device linking to this userprofile
-          //Format the activetimes from string "1,0,1,...1" to array [1,0,1,...,1]
-          let activeArr = req.body.activeArr
-            .split(",")
-            .map((val) => Number(val));
 
           //Create new device instance with request inputs
-
           let device = new Device({
             user_profile: found_profile._id,
             name: req.body.devicename,
             power: req.body.energyusage,
-            activetime: activeArr,
+            activetime: req.body.activeArr.split(',').map((val) => Number(val)),
           });
           // Data from form is valid.
           // Check if Device with same name already exists.
@@ -184,6 +178,9 @@ exports.device_edit_post = [
     //Get the errors from validation
     const errors = validationResult(req);
 
+    //Format the activetimes of the request
+    req.body.activeArr = req.body.activeArr.split(',').map((val) => Number(val));
+
     //Check if any errors
     if (!errors.isEmpty()) {
       res.render("device_edit", {
@@ -192,85 +189,70 @@ exports.device_edit_post = [
         errors: errors.array(),
       });
     } else {
-      // Check if the name tried to be editted already exist
-      Device.findOne({ name: req.body.devicename }).exec(function (
-        err,
-        found_device
-      ) {
-        if (err) {
-          return next(err);
-        }
-        if (found_device) {
-          /* Device name already exists! 
-                       - Check if the power consumption and activetime on the found device matches the found device
-                    */
-          if (found_device.power == req.body.energyusage) {
-            /* Nothings was updated in the form
-                           - Send back the form and display a name taken msg 
-                        */
-
-            //Find the current device in the db to send back with an error message
-            async.parallel(
-              {
-                device: function (callback) {
-                  Device.findById(req.params.id).exec(callback);
-                },
-              },
-              function (err, results) {
-                if (err) {
-                  return next(err);
-                }
-                if (results.device == null) {
-                  let err = new Error("Device not found!");
-                  err.status = 404;
-                  return next(err);
-                }
-
-                //Render the edit page with an additional name_taken keyword
+      // Find the current device being editted
+      Device.findById(req.params.id).exec(function (err,cur_device) {
+        if (err) {return next(err);}
+        if (cur_device) {
+          
+          //Find the device with the name of the request
+          Device.findOne({name: req.body.devicename}).exec(function (err, found_device) {
+            if (err) {return next(err); }
+            if (found_device === null) {
+              //Name did change and is not taken - Create new device with old id and new information
+              let device = new Device({
+                name: req.body.devicename,
+                power: req.body.energyusage,
+                activetime: req.body.activeArr,
+                _id: req.params.id,
+              });
+              //Find and update the device
+              Device.findByIdAndUpdate(req.params.id, device, {}, function (err) {
+                if (err) {return next(err);}
+                //Success - redirect back to device list page
+                res.redirect("/devices");
+              });
+            }
+            else if (found_device.name !== cur_device.name) {
+              //Check if the name is already taken
+              if (found_device.name === req.body.devicename) {
+                //The name was already taken - send back a name already taken msg
                 res.render("device_edit", {
                   title: "Edit device",
-                  device: results.device,
-                  name_taken: true,
+                  device: cur_device,
+                  name_taken: true
                 });
               }
-            );
-          } else {
-            /* The name was taken but the power consumption or activetimes has changed 
-                           - Create new device with old id and new power consumption and activetimes 
-                        */
-            let device = new Device({
-              power: req.body.energyusage,
-              //NOT IMPLEMENTED activetime update
-              _id: req.params.id,
-            });
-            //Find and update the device
-            Device.findByIdAndUpdate(req.params.id, device, {}, function (err) {
-              if (err) {
-                return next(err);
-              }
-              //Success - redirect back to device list page
-              res.redirect("/devices");
-            });
-          }
-        } else {
-          /* The name was not taken 
-                       - Create new device with old id and new information
-                    */
-          let device = new Device({
-            name: req.body.devicename,
-            power: req.body.energyusage,
-            //NOT IMPLEMENTED activetime update
-            _id: req.params.id,
-          });
-          //Find and update the device
-          Device.findByIdAndUpdate(req.params.id, device, {}, function (err) {
-            if (err) {
-              return next(err);
             }
-            //Success - redirect back to device list page
-            res.redirect("/devices");
-          });
-        }
+            //Name did not change - Check if there was any change to the input
+            else if (found_device.power == req.body.energyusage && JSON.stringify(found_device.activetime) == JSON.stringify(req.body.activeArr)) {
+              /* Nothings was updated in the form
+              - Send back the form and display a no modification msg 
+              */
+              console.log("Nothing changed!")
+              
+              //Render the edit page with an additional no_modification keyword
+              res.render("device_edit", {
+                title: "Edit device",
+                device: cur_device,
+                no_modification: true,
+              });
+            }
+            else {
+              //Name did not change, but new information was given - Update this device with new information
+              let device = new Device({
+                power: req.body.energyusage,
+                activetime: req.body.activeArr,
+                _id: req.params.id,
+              });
+              //Find and update the device
+              Device.findByIdAndUpdate(req.params.id, device, {}, function (err) {
+                if (err) {return next(err);}
+                //Success - redirect back to device list page
+                res.redirect("/devices");
+              });
+            }
+          } 
+        )}
       });
     }
   },
