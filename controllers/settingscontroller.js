@@ -41,10 +41,11 @@ exports.user_settings_post = [
     } else {
       // Format user input
       formatFirst = req.body.FirstNameValue;
-      formatFirst.replace(/^\w/, (c) => c.toUpperCase());
+      formatFirst = formatFirst.replace(/^\w/, (c) => c.toUpperCase());
 
       formatLast = req.body.LastNameValue;
-      formatLast.replace(/^\w/, (c) => c.toUpperCase());
+      formatLast = formatLast.replace(/^\w/, (c) => c.toUpperCase());
+      console.log(`first: ${formatFirst} \nlast: ${formatLast}`);
 
       // Update Database information
       UserProfile.findOneAndUpdate(

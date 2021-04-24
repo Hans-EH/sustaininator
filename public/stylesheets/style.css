@@ -1,3 +1,7 @@
+a {
+  text-decoration: none;
+}
+
 #logincontainer {
   max-width: 500px;
 }
@@ -13,13 +17,16 @@
 .colorsuccess {
   color: rgb(9, 255, 0);
 }
+
 .iconsize {
   font-size: 1.65em;
   padding-left: 0.15em;
 }
+
 .colorfailure {
   color: red;
 }
+
 .icon1 {
   display: inline-block;
   content: "";
@@ -64,11 +71,11 @@
   cursor: pointer;
 }
 
-input[type=checkbox] + label {
-  background-color:lightgray
+input[type="checkbox"] + label {
+  background-color: lightgray;
 }
 
-input[type=checkbox]:hover + label {
+input[type="checkbox"]:hover + label {
   background-color: gray;
 }
 .greendot {

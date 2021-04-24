@@ -2,17 +2,15 @@
 <h1 class="display-6 mb-3">{{ title }}</h1>
 
 <div class="row">
-  {% if messages | length > 0 %}
-  {% for message in messages %}
+  {% if messages | length > 0 %} {% for message in messages %}
   <div class="col-12">
     {% if message.status %}
     <div class="alert alert-success" role="alert">{{ message.msg }}</div>
     {% else %}
-     <div class="alert alert-danger" role="alert">{{ message.msg }}</div>
+    <div class="alert alert-danger" role="alert">{{ message.msg }}</div>
     {% endif %}
   </div>
-  {% endfor %}
-  {% endif %}
+  {% endfor %} {% endif %}
   <div class="col-12">
     <div class="card mb-3">
       <div class="card-header">
@@ -53,12 +51,29 @@
               class="form-select mb-3"
               id="floatingSelect"
               name="prefered_currency"
-              aria-label="Floating label select example"
+              aria-label="Prefered Currency"
             >
+              {% if profile_data.pref_currency == "DKK" %}
+              <option>Open this select menu</option>
+              <option selected value="DKK">DKK</option>
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              {% elif profile_data.pref_currency == "USD" %}
+              <option>Open this select menu</option>
+              <option value="DKK">DKK</option>
+              <option selected value="USD">USD</option>
+              <option value="EUR">EUR</option>
+              {% elif profile_data.pref_currency == "EUR" %}
+              <option>Open this select menu</option>
+              <option value="DKK">DKK</option>
+              <option value="USD">USD</option>
+              <option selected value="EUR">EUR</option>
+              {% else %}
               <option selected>Open this select menu</option>
               <option value="DKK">DKK</option>
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
+              {% endif %}
             </select>
             <label for="floatingSelect">Currency</label>
           </div>
