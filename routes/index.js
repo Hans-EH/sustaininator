@@ -7,7 +7,7 @@ let settings_controller = require("../controllers/SettingsController");
 let register_controller = require("../controllers/registercontroller");
 let login_controller = require("../controllers/logincontroller");
 let auth = require("../controllers/AuthController");
-let prediction_controller = require("../controllers/predictioncontroller");
+//let prediction_controller = require("../controllers/predictioncontroller");
 const device = require("../models/device");
 
 // GET home page.
@@ -113,6 +113,8 @@ router.get("/logout", login_controller.auth_logout);
 router.get("/welcome", login_controller.welcome_get);
 
 //GET, for testing arima model
-router.get("/ARIMA",prediction_controller.arima);
+//router.get("/ARIMA",prediction_controller.arima);
 
+
+router.get("/ARIMA",function (req, res, next) {res.render("ARIMA", {title: "ARIMA MODEL",});});
 module.exports = router;
