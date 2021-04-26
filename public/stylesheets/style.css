@@ -3,7 +3,7 @@ a {
 }
 
 #logincontainer {
-  max-width: 500px;
+  /*max-width: 500px;*/
 }
 
 #navbarNav {
@@ -93,4 +93,3 @@ input[type="checkbox"]:hover + label {
   border-radius: 50%;
   display: inline-block;
 }
-
