@@ -1,0 +1,46 @@
+ {% block content %}
+<div class="row">
+    <h1>{{title}} + 2</h1>
+</div>
+<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link active"
+      id="pills-profile-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-devices"
+      type="button"
+      role="tab"
+      aria-controls="pills-devices"
+      aria-selected="false"
+    >
+      My Devices
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link secondary"
+      id="pills-contact-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-add-devices"
+      type="button"
+      role="tab"
+      aria-controls="pills-add-devices"
+      aria-selected="false"
+    >
+      Add Devices
+    </button>
+  </li>
+</ul>
+
+    <script>
+      async function energiDataEMI() {
+        try {
+            const DAYSAMOUNT = 30; //change in URI if this is changed.
+            const URI = 'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
+      let data = await fetch(URI).then((response) => response.json());
+
+    console.log(":)");
+    
+    </script>
+{% endblock %}
