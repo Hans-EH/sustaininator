@@ -279,15 +279,15 @@
           ],
         },
         // Configuration options go here
-            options: {
-                elements: {
-                    point:{
-                        radius: 0,
-                        hitRadius: 10, 
-                        hoverRadius: 10
-                    }
-                }
-            }
+        options: {
+          elements: {
+            point: {
+              radius: 0,
+              hitRadius: 10,
+              hoverRadius: 10,
+            },
+          },
+        },
       });
 
       // return labels and values as object
@@ -306,7 +306,7 @@
       const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
       let data = await fetch(URI).then((response) => response.json());
-      
+
       // Arrays for labels and values
       let dataLabels = [];
       let dataValuesOffWind = [];
@@ -358,15 +358,15 @@
         },
 
         // Configuration options go here
-            options: {
-                elements: {
-                    point:{
-                        radius: 0,
-                        hitRadius: 10, 
-                        hoverRadius: 10
-                    }
-                }
-            }
+        options: {
+          elements: {
+            point: {
+              radius: 0,
+              hitRadius: 10,
+              hoverRadius: 10,
+            },
+          },
+        },
       });
 
       // return labels and values as object
@@ -402,11 +402,6 @@
 
   // onClick eventlistner for refresh button
   document.getElementById("refreshCO2").addEventListener("click", () => {
-    energiDataEMI();
-    setLastUpdate("lastUpdateCO2");
-  });
-  //onClick eventlistner for co2 bar.
-  document.getElementById("myRange").addEventListener("click", () => {
     energiDataEMI();
     setLastUpdate("lastUpdateCO2");
   });
