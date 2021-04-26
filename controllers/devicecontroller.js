@@ -4,28 +4,32 @@ let async = require("async");
 let { activeProbability } = require("../scripts/active_probability");
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
-const { listenerCount } = require("../models/device");
+let auth = require("../controllers/AuthController");
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) {
-  //Find all devices that links to the user
-  UserProfile.find({user: req.cookies["auth"]}).exec(function (err, found_profile) {
-    if (err) {return next(err);}
-    Device.find({user_profile: found_profile}).exec((err, device_list) => {
-      if (err) {return next(err); }
-        //Success
+  // Check if user is authenticated before rendering device list
+  if (auth.isAuthenticated(req, res))
+    // Find all devices that links to the user
+    UserProfile.find({ user: req.cookies["auth"] }).exec(function (err, found_profile) {
+      if (err) { return next(err); }
+      Device.find({ user_profile: found_profile }).exec((err, device_list) => {
+        if (err) { return next(err); }
+        // Success
         res.render("devices", {
-        title: "Device List",
-        route: req.originalUrl,
-        device_list: device_list,
+          title: "Device List",
+          route: req.originalUrl,
+          device_list: device_list,
+        });
+      })
     });
-    })
-
-  });
 };
 
 // Display detail page for a specific device.
 exports.device_detail = function (req, res, next) {
+  // Check if user is authenticated before rendering device list
+  if (auth.isAuthenticated(req, res))
+
   async.parallel(
     {
       device: function (callback) {
@@ -40,9 +44,9 @@ exports.device_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
-      console.log("activetime:" + typeof results.device.activetime);
+      //console.log("activetime:" + typeof results.device.activetime);
       let probVector = activeProbability(results.device.activetime);
-      console.log(probVector);
+      //console.log(probVector);
 
       // Successful, so render.
       res.render("device_detail", {
@@ -133,6 +137,9 @@ exports.device_create_post = [
 
 /* Display edit update page */
 exports.device_edit_get = function (req, res, next) {
+  // Check if user is authenticated before rendering device list
+  if (auth.isAuthenticated(req, res))
+  
   async.parallel(
     {
       device: function (callback) {
