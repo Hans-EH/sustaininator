@@ -21,20 +21,19 @@ router.get("/", function (req, res, next) {
         return next(err);
       }
       // render data to settings page
-      device.find({user: req.cookies["auth"]}).countDocuments(function (
-        err,
-        counted_devices
-      ) {
-        if (err) {
-          return next(err);
-        }
-        res.render("index", {
-          title: "Homepage",
-          route: "/",
-          profile_data: profile_data,
-          counted_devices: counted_devices,
+      device
+        .find({ user: req.cookies["auth"] })
+        .countDocuments(function (err, counted_devices) {
+          if (err) {
+            return next(err);
+          }
+          res.render("index", {
+            title: "Homepage",
+            route: "/",
+            profile_data: profile_data,
+            counted_devices: counted_devices,
+          });
         });
-      });
     });
 });
 
@@ -108,6 +107,7 @@ router.post("/login", login_controller.auth_post);
 // GET request for loguout
 router.get("/logout", login_controller.auth_logout);
 
+//GET for welcome message
 router.get("/welcome", login_controller.welcome_get);
 
 module.exports = router;

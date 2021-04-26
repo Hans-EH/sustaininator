@@ -1,155 +1,127 @@
 {% extends 'authnon_base.html'%} {% block content %}
-<div class="container">
-  <div id="main" class="justify-content-center">
-    <h1>Register</h1>
+<div id="main" class="justify-content-center mt-3">
+  <h1>Register</h1>
 
-    {% for message in messages %}
-    <div class="alert alert-danger" role="alert">{{ message.msg }}</div>
-    {% endfor %}
+  {% for message in messages %}
+  <div class="alert alert-danger" role="alert">{{ message.msg }}</div>
+  {% endfor %}
 
-    <form action="/register" method="POST">
-
-              <div class="mb-3">
-        <label for="email" class="form-label">First Name</label>
-        <div class="input-group mb-2 mr-sm-2">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <i class="bi bi-person-circle"></i>
-            </div>
-          </div>
+  <form action="/register" method="POST">
+    <div class="row g-3 mt-3">
+      <div class="col-md-6">
+        <div class="form-floating">
           <input
-            type="firstname"
-            class="form-control"
+            type="text"
+            class="form-control mb-3"
             id="firstname"
             placeholder="First Name"
             name="firstname"
           />
-          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+          <label for="FirstNameValue">Firstname</label>
         </div>
       </div>
 
-          <div class="mb-3">
-        <label for="email" class="form-label">Last Name</label>
-        <div class="input-group mb-2 mr-sm-2">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <i class="bi bi-person-circle"></i>
-            </div>
-          </div>
+      <div class="col-md-6">
+        <div class="form-floating">
           <input
-            type="lastname"
-            class="form-control"
+            type="text"
+            class="form-control mb-3"
             id="lastname"
             placeholder="Last Name"
             name="lastname"
           />
-          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+          <label for="FirstNameValue">Lastname</label>
         </div>
       </div>
-
-      <div class="mb-3">
-        <label for="email" class="form-label">Email address</label>
-        <div class="input-group mb-2 mr-sm-2">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <i class="bi bi-person-circle"></i>
-            </div>
-          </div>
+    </div>
+    <!-- Email field-->
+    <div class="row g-3">
+      <div class="col-md">
+        <div class="form-floating">
           <input
-            type="email"
-            class="form-control"
+            type="text"
+            class="form-control mb-3"
             id="email1"
             placeholder="E-mail"
             name="email"
           />
-          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+          <label for="FirstNameValue">Email</label>
         </div>
       </div>
+    </div>
 
-      <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <div class="input-group mb-2 mr-sm-2">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <i class="bi bi-key-fill"></i>
-            </div>
-          </div>
+    <div class="row g-3">
+      <div class="col-md">
+        <div class="form-floating">
           <input
             type="password"
-            class="form-control"
+            class="form-control mb-3"
             id="password1"
             placeholder="Password"
             name="password"
           />
-          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+          <label for="FirstNameValue">Password</label>
         </div>
       </div>
+    </div>
 
-      <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label"
-          >Confirm Password</label
-        >
-        <div class="input-group mb-2 mr-sm-2">
-          <div class="input-group-prepend">
-            <div class="input-group-text">
-              <i class="bi bi-key-fill"></i>
-            </div>
-          </div>
+    <div class="row g-3">
+      <div class="col-md">
+        <div class="form-floating">
           <input
             type="password"
-            class="form-control"
+            class="form-control mb-3"
             id="password2"
             placeholder="Re-enter password"
             name="password_confirm"
           />
-          <!-- <i class="bi bi-check-circle-fill colorsuccess iconsize"></i> -->
+          <label for="FirstNameValue">Confirm Password</label>
         </div>
       </div>
-
-      <div class="mb-3 form-check">
-        <input type="checkbox" class="form-check-input" id="exampleCheck1" />
-        <label class="form-check-label" for="exampleCheck1">Check me out</label>
-      </div>
-
-      <div class="text-center form-group mb-3">
-        <button type="submit" class="btn btn-primary w-100">Submit</button>
-      </div>
-    </form>
-    <div class="text-center">
-      <p>Already have an account? <a href="/login">Login</a></p>
     </div>
+
+    <!-- Submit button -->
+    <div class="row g-3">
+      <div class="text-center form-group mb-3">
+        <button type="submit" class="btn btn-lg btn-primary w-100">
+          Login
+        </button>
+      </div>
+    </div>
+  </form>
+  <div class="text-center">
+    <p>Already have an account? <a href="/login">Login</a></p>
   </div>
 </div>
-<div class="container">
-  <script>
-    function validateRegInfo(form) {
-      email = form.email1.value;
-      password1 = form.password1.value;
-      password2 = form.password2.value;
-      lastname = form.lastname.value;
-      firstname = form.firstname.value;
 
-      if (email == "") {
-        //document.getElementById("email-icon").innerHTML = <i class="bi bi-exclamation-diamond-fill colorfailure iconsize"></i>;
-        alert("Please enter a valid email on the form name@mail.com");
-      }
-      // If password not entered
-      else if (password1 == "") alert("Please enter Password");
-      // If confirm password not entered
-      else if (password2 == "") alert("Please confirm password");
-      // If Not same return False.
-      else if (password1 != password2) {
-        alert("\nPassword did not match: Please try again...");
-        return false;
-      }
+<script>
+  function validateRegInfo(form) {
+    email = form.email1.value;
+    password1 = form.password1.value;
+    password2 = form.password2.value;
+    lastname = form.lastname.value;
+    firstname = form.firstname.value;
 
-      // If same return True.
-      else {
-        alert("User Registration Complete: Welcome to Sustanify!!");
-        document.location.href = "https://www.youtube.com";
-        return true;
-      }
+    if (email == "") {
+      //document.getElementById("email-icon").innerHTML = <i class="bi bi-exclamation-diamond-fill colorfailure iconsize"></i>;
+      alert("Please enter a valid email on the form name@mail.com");
     }
-  </script>
-</div>
+    // If password not entered
+    else if (password1 == "") alert("Please enter Password");
+    // If confirm password not entered
+    else if (password2 == "") alert("Please confirm password");
+    // If Not same return False.
+    else if (password1 != password2) {
+      alert("\nPassword did not match: Please try again...");
+      return false;
+    }
+
+    // If same return True.
+    else {
+      alert("User Registration Complete: Welcome to Sustanify!!");
+      document.location.href = "https://www.youtube.com";
+      return true;
+    }
+  }
+</script>
 {% endblock content %}
