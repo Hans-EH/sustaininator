@@ -1,0 +1,211 @@
+<h1 class="display-6 mb-3">Hello {{profile_data.firstname}}</h1>
+<div class="row mb-3">
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>Money saved</h5>
+      </div>
+      <div class="card-body">
+        <p>{{ profile_data.money_saved }} DKK</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>CO<sub>2</sub> saved</h5>
+      </div>
+      <div class="card-body">
+        <p>{{profile_data.carbon_saved}} g CO<sub>2</sub>e</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>Carbon footprint</h5>
+      </div>
+      <div class="card-body">
+        <p>{{profile_data.carbon_footprint}} kg CO<sub>2</sub>e</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="mini-card card h-100 text-center">
+      <div class="card-header">
+        <h5>
+          <a href="/devices">Devices</a>
+        </h5>
+      </div>
+      <div class="card-body">
+        <p>{{counted_devices}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Danish CO<sub>2</sub> Emissions</button>
+  </li>
+    <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-prediction-tab" data-bs-toggle="pill" data-bs-target="#pills-prediction" type="button" role="tab" aria-controls="pills-prediction" aria-selected="false">Danish CO<sub>2</sub> Emissions Forecast</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-energy-tab" data-bs-toggle="pill" data-bs-target="#pills-energy" type="button" role="tab" aria-controls="pills-energy" aria-selected="false">Danish Energy Production</button>
+  </li>
+</ul>
+<div class="tab-content" id="pills-tabContent">
+  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+  <!-- Main chart -->
+<div class="row mb-3" id="CO2Chart">
+  <div class="col-12">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <p class="m-0">CO<sub>2</sub> Emission</p>
+          <!-- Time stamp -->
+          <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
+        </div>
+        <!-- Refresh Button -->
+        <button class="btn btn-secondary" id="refreshCO2">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </div>
+
+      <div class="card-body p-3">
+        <canvas id="chartCO2"></canvas>
+      </div>
+      <div class="card-footer">
+        <small
+          >Data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+  <div class="tab-pane fade" id="pills-energy" role="tabpanel" aria-labelledby="pills-energy-tab"><!-- Energy production chart -->
+<div class="row mb-3" id="energyChart">
+  <div class="col-12">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <p class="my-0">Green Energy Production</p>
+          <!-- Time stamp -->
+          <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
+        </div>
+        <!-- Refresh Button -->
+        <button class="btn btn-secondary" id="refreshGreenEnergy">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </div>
+
+      <div class="card-body">
+        <canvas id="chartGreenEnergy"></canvas>
+      </div>
+
+      <div class="card-footer">
+        <small
+          >Data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+  <div class="tab-pane fade" id="pills-prediction" role="tabpanel" aria-labelledby="pills-prediction-tab">
+    <!-- Prediction chart -->
+<div class="row mb-3" id="PredictionChart">
+  <div class="col-12">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <p class="m-0">CO<sub>2</sub> Forecast</p>
+          <!-- Time stamp -->
+          <small class="ms-2 me-0 my-0" id="lastUpdateForecast"></small>
+        </div>
+        <!-- Refresh Button -->
+        <button class="btn btn-secondary" id="refreshForecast">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </div>
+
+      <div class="card-body p-3">
+        <canvas id="chartForecast"></canvas>
+      </div>
+      <div class="card-footer">
+        <small
+          >Data predicted using data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
+  </div>
+</div>
+
+
+<script>
+  const setLastUpdate = (lastUpdate) => {
+    let date = new Date();
+    let dateString = `${date.getDate()}/${date.getMonth()}-${date.getFullYear()}`;
+    let hours = date.getHours < 10 ? "0" + date.getHours() : date.getHours();
+    let mins =
+      date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+    let secs =
+      date.getSeconds() < 10 ? "0" + date.getSeconds() : date.getSeconds();
+
+    let timeString = `${dateString} ${hours}:${mins}:${secs}`;
+    document.getElementById(lastUpdate).innerText = timeString;
+  };
+
+  // Fetch data after page content has loaded
+  window.addEventListener("load", function () {
+    energiDataEMI();
+    setLastUpdate("lastUpdateCO2");
+    greenEnergyDataEMI();
+    setLastUpdate("lastUpdateGreenEnergy");
+    setLastUpdate("lastUpdateForecast");
+  });
+
+  // onClick eventlistner for refresh button
+  document.getElementById("refreshCO2").addEventListener("click", () => {
+    energiDataEMI();
+    setLastUpdate("lastUpdateCO2");
+  });
+
+  // onClick eventlistner for Energy refresh button
+  document
+    .getElementById("refreshGreenEnergy")
+    .addEventListener("click", () => {
+      greenEnergyDataEMI();
+      setLastUpdate("lastUpdateGreenEnergy");
+    });
+  // onClick eventlistner for forecast refresh button
+  document.getElementById("refreshForecast").addEventListener("click", () => {
+    energiDataEMI();
+    setLastUpdate("lastUpdateForecast");
+  });
+</script>

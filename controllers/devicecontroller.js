@@ -7,7 +7,7 @@ let UserProfile = require("../models/user_profile");
 const { listenerCount } = require("../models/device");
 
 /* Display a list of all devices */
-exports.device_list = function (req, res, next) {
+exports.device_list = function (req, res, next) { 
   //Find all devices that links to the user
   UserProfile.find({user: req.cookies["auth"]}).exec(function (err, found_profile) {
     if (err) {return next(err);}

@@ -4,7 +4,7 @@
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
     <button
-      class="nav-link active"
+      class="nav-link active my-devices"
       id="pills-profile-tab"
       data-bs-toggle="pill"
       data-bs-target="#pills-devices"
@@ -16,7 +16,7 @@
       My Devices
     </button>
   </li>
-  <li class="nav-item" role="presentation">
+  <li class="nav-item add-device" role="presentation">
     <button
       class="nav-link secondary"
       id="pills-contact-tab"
@@ -52,7 +52,7 @@
         </tr>
         {% for device in device_list %}
         <tr>
-          <td><a href="devices/device_detail/{{device._id}}">{{device.name}}</a></td>
+          <td><a class="device-inspec" href="devices/device_detail/{{device._id}}">{{device.name}}</a></td>
           <td>{{device.power}} W</td>
           <td></td>
           {% if device.state == "ON" %}
@@ -83,7 +83,7 @@
           <input
             type="text"
             name="devicename"
-            class="form-control"
+            class="form-control name-input"
             id="floatingInput"
             placeholder="Device Name"
           />
@@ -95,7 +95,7 @@
           <input
             type="number"
             name="energyusage"
-            class="form-control"
+            class="form-control energy-consumption"
             id="floatingInput"
             placeholder="name@example.com"
           />
@@ -111,7 +111,7 @@
               id="btn-check-00"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-00"
+            <label class="btn btn-secondary mx-1 time-00" for="btn-check-00"
               >00:00</label
             >
             <input
@@ -120,7 +120,7 @@
               id="btn-check-01"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-01"
+            <label class="btn btn-secondary mx-1 time-01" for="btn-check-01"
               >01:00</label
             >
             <input
@@ -129,7 +129,7 @@
               id="btn-check-02"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-02"
+            <label class="btn btn-secondary mx-1 time-02" for="btn-check-02"
               >02:00</label
             >
             <input
@@ -138,7 +138,7 @@
               id="btn-check-03"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-03"
+            <label class="btn btn-secondary mx-1 time-03" for="btn-check-03"
               >03:00</label
             >
             <input
@@ -147,7 +147,7 @@
               id="btn-check-04"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-04"
+            <label class="btn btn-secondary mx-1 time-04" for="btn-check-04"
               >04:00</label
             >
             <input
@@ -156,19 +156,19 @@
               id="btn-check-05"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-05"
+            <label class="btn btn-secondary mx-1 time-05" for="btn-check-05"
               >05:00</label
             ><br />
           </div>
 
-          <div class="d-flex justify-content-center mb-1">
+          <div class="d-flex justify-content-center mb-1 time-06">
             <input
               type="checkbox"
               class="btn-check"
               id="btn-check-06"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-06"
+            <label class="btn btn-secondary mx-1 time-06" for="btn-check-06"
               >06:00</label
             >
             <input
@@ -177,7 +177,7 @@
               id="btn-check-07"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-07"
+            <label class="btn btn-secondary mx-1 time-07" for="btn-check-07"
               >07:00</label
             >
             <input
@@ -186,7 +186,7 @@
               id="btn-check-08"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-08"
+            <label class="btn btn-secondary mx-1 time-08" for="btn-check-08"
               >08:00</label
             >
             <input
@@ -195,7 +195,7 @@
               id="btn-check-09"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-09"
+            <label class="btn btn-secondary mx-1 time-9" for="btn-check-09"
               >09:00</label
             >
             <input
@@ -204,7 +204,7 @@
               id="btn-check-10"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-10"
+            <label class="btn btn-secondary mx-1 time-10" for="btn-check-10"
               >10:00</label
             >
             <input
@@ -214,19 +214,19 @@
               autocomplete="off"
               
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-11"
+            <label class="btn btn-secondary mx-1 time-11" for="btn-check-11"
               >11:00</label
             >
           </div>
 
-          <div class="d-flex justify-content-center mb-1">
+          <div class="d-flex justify-content-center mb-1 time-12">
             <input
               type="checkbox"
               class="btn-check"
               id="btn-check-12"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-12"
+            <label class="btn btn-secondary mx-1 time-12" for="btn-check-12"
               >12:00</label
             >
             <input
@@ -235,7 +235,7 @@
               id="btn-check-13"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-13"
+            <label class="btn btn-secondary mx-1 time-13" for="btn-check-13"
               >13:00</label
             >
             <input
@@ -244,7 +244,7 @@
               id="btn-check-14"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-14"
+            <label class="btn btn-secondary mx-1 time-14" for="btn-check-14"
               >14:00</label
             >
             <input
@@ -253,7 +253,7 @@
               id="btn-check-15"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-15"
+            <label class="btn btn-secondary mx-1 time-15" for="btn-check-15"
               >15:00</label
             >
             <input
@@ -262,7 +262,7 @@
               id="btn-check-16"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-16"
+            <label class="btn btn-secondary mx-1 time-16" for="btn-check-16"
               >16:00</label
             >
             <input
@@ -272,7 +272,7 @@
               autocomplete="off"
               
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-17"
+            <label class="btn btn-secondary mx-1 time-17" for="btn-check-17"
               >17:00</label
             >
           </div>
@@ -284,7 +284,7 @@
               id="btn-check-18"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-18"
+            <label class="btn btn-secondary mx-1 time-18" for="btn-check-18"
               >18:00</label
             >
             <input
@@ -293,7 +293,7 @@
               id="btn-check-19"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-19"
+            <label class="btn btn-secondary mx-1 time-19" for="btn-check-19"
               >19:00</label
             >
             <input
@@ -302,7 +302,7 @@
               id="btn-check-20"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-20"
+            <label class="btn btn-secondary mx-1 time-20" for="btn-check-20"
               >20:00</label
             >
             <input
@@ -311,7 +311,7 @@
               id="btn-check-21"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-21"
+            <label class="btn btn-secondary mx-1 time-21" for="btn-check-21"
               >21:00</label
             >
             <input
@@ -320,7 +320,7 @@
               id="btn-check-22"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-22"
+            <label class="btn btn-secondary mx-1 time-22" for="btn-check-22"
               >22:00</label
             >
             <input
@@ -329,7 +329,7 @@
               id="btn-check-23"
               autocomplete="off"
             />
-            <label class="btn btn-secondary mx-1" for="btn-check-23"
+            <label class="btn btn-secondary mx-1 time-23" for="btn-check-23"
               >23:00</label
             >
           </div>
@@ -337,7 +337,7 @@
         <!-- Hidden input to store array of active time slots to be passed with POST-->
         <input type="hidden" id="timeslots" name="activeArr" value=""/>
         <!-- Submit Button -->
-        <button type="submit" class="btn btn-primary w-25">Add</button>
+        <button type="submit" class="btn btn-primary w-25 submit-device">Add</button>
       </form>
     </div>
   </div>

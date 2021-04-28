@@ -1,33 +1,20 @@
  {% block content %}
 <div class="row">
-    <h1>{{title}} + 2</h1>
+    <h1>+ 2</h1>
 </div>
 
-<button onclick="myFunction()">Try it</button>
+ <h1>Into to Node and MongoDB</h1>
+ <form method="post" action="/addname">
+ <label>Enter Your Name</label><br>
+ <input type="text" name="firstName" placeholder="Enter first name..." required>
+ <input type="text" name="lastName" placeholder="Enter last name..." required>
+ <input type="submit" value="Add Name">
+ </form>
+
+
 
 <div id="myDIV">
 This is my DIV element.
 </div>
 
-<script>
-function myFunction() {
-  var x = document.getElementById("myDIV");
-  if (x.style.display === "none") {
-    x.style.display = "block";
-  } else {
-    x.style.display = "none";
-  }
-}
-</script>
-
-    <script>
-      async function energiDataEMI() {
-        try {
-            const DAYSAMOUNT = 30; //change in URI if this is changed.
-            const URI = 'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
-      let data = await fetch(URI).then((response) => response.json());
-
-    console.log(":)");
-    
-    </script>
 {% endblock %}

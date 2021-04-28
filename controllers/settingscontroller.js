@@ -1,6 +1,6 @@
 // Packages
 const { body, validationResult } = require("express-validator");
-const auth = require("./AuthController");
+const auth = require("./authController");
 
 // Models
 let UserProfile = require("../models/user_profile");

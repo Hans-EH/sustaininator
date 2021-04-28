@@ -2,7 +2,7 @@ const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
-let auth = require("../controllers/AuthController");
+let auth = require("./authController");
 const { Mongoose } = require("mongoose");
 
 exports.auth_get = function (req, res, next) {
