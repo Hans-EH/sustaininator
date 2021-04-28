@@ -15,7 +15,7 @@
     "express-validator": "^6.10.0",
     "http-errors": "~1.6.3",
     "identicon": "^3.0.1",
-    "jade": "~1.11.0",
+    "jade": "^0.31.2",
     "mongoose": "^5.12.4",
     "morgan": "~1.9.1",
     "nunjucks": "^3.2.3",
