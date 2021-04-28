@@ -23,3 +23,6 @@
 ## Ubuntu commands
 
 - https://gist.github.com/jctosta/af918e1618682638aa82
+
+## Cypress commands
+- start cypress project root: npx cypress open
