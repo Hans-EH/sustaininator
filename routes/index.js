@@ -2,11 +2,11 @@ var express = require("express");
 var router = express.Router();
 
 let UserProfile = require("../models/user_profile");
-let device_controller = require("../controllers/devicecontroller");
-let settings_controller = require("../controllers/SettingsController");
-let register_controller = require("../controllers/registercontroller");
-let login_controller = require("../controllers/logincontroller");
-let auth = require("../controllers/AuthController");
+let device_controller = require("../controllers/deviceController");
+let settings_controller = require("../controllers/settingsController");
+let register_controller = require("../controllers/registerController");
+let login_controller = require("../controllers/loginController");
+let auth = require("../controllers/authController");
 const device = require("../models/device");
 
 // GET home page.
@@ -21,8 +21,7 @@ router.get("/", function (req, res, next) {
         return next(err);
       }
       // render data to settings page
-      device
-        .find({ user: req.cookies["auth"] })
+      device.find({user_profile: profile_data})
         .countDocuments(function (err, counted_devices) {
           if (err) {
             return next(err);
