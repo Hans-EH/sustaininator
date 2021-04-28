@@ -13,8 +13,17 @@ describe('My login Test', () => {
         cy.get('.action-password')
         .type('Ming#1359')
         .should('have.value', 'Ming#1359');
-
         cy.get('.action-submit').click();
-    })
-})
+        
+        // When you login a test will be conducted to check if the user got a cookie.
+        cy.getCookie('auth').should('have.property','value','608911a0070ea135f09e3705')
+    });
+});
+
+describe('My front page Test', () => {
+    it('Visits the front page', () => {
+        cy.get('.graph');
+    });
+});
+
 

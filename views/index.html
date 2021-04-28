@@ -111,7 +111,7 @@
       </div>
 
       <div class="card-body">
-        <canvas id="chartGreenEnergy"></canvas>
+        <canvas class="graph" id="chartGreenEnergy"></canvas>
       </div>
 
       <div class="card-footer">
@@ -316,7 +316,7 @@
     }
   }
 
-  // Fetching and displaying of wind and solar energy production in Denmark
+  // Kode til hentning of visning af energiproduktion
   async function greenEnergyDataEMI() {
     try {
       const URI =
@@ -329,17 +329,17 @@
       let dataValuesOnWind = [];
       let dataValuesSolar = [];
 
-      // Iterate over reponse results, add values from East and West together
-      for (let i = 0; i < data.result.records.length; i = i + 2) {
+      // Iterate over reponse results
+      for (let i = 0; i < data.result.records.length; i++) {
         // Push labels and values
-        //if (data.result.records[i].PriceArea == "DK1") {
+        if (data.result.records[i].PriceArea == "DK1") {
           dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3)); // we extract HH:MM
-          dataValuesOffWind.push(data.result.records[i].OffshoreWindPower + data.result.records[i + 1].OffshoreWindPower);
-          dataValuesOnWind.push(data.result.records[i].OnshoreWindPower + data.result.records[i + 1].OnshoreWindPower);
-          dataValuesSolar.push(data.result.records[i].SolarPower + data.result.records[i + 1].SolarPower);
-        //}
+          dataValuesOffWind.push(data.result.records[i].OffshoreWindPower);
+          dataValuesOnWind.push(data.result.records[i].OnshoreWindPower);
+          dataValuesSolar.push(data.result.records[i].SolarPower);
+        }
       }
-      // Reverse Arrays since results come as newest to oldest values and we draw the graph as oldest to newest
+      // Reverse Arrays
       dataLabels = dataLabels.reverse();
       dataValuesOffWind = dataValuesOffWind.reverse();
       dataValuesOnWind = dataValuesOnWind.reverse();
