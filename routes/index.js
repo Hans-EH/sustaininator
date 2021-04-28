@@ -32,6 +32,7 @@ router.get("/", function (req, res, next) {
             route: "/",
             profile_data: profile_data,
             counted_devices: counted_devices,
+            test_route: process.env.WEB_HOST + "data/tester",
           });
         });
     });

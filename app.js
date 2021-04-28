@@ -1,21 +1,22 @@
 var createError = require("http-errors");
 var compression = require("compression");
 var express = require("express");
+require("dotenv").config();
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var nunjucks = require("nunjucks");
-var mongoose = require('mongoose');
-let { update } = require('./scripts/main.js');
+var mongoose = require("mongoose");
+let { update } = require("./scripts/main.js");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var dataRouter = require("./routes/data");
 
 var app = express();
 
 //Set up mongoose connection
-let mongoDB =
-  "mongodb+srv://jsaad:augaug1@cluster0.g6o9l.mongodb.net/project_skarp?retryWrites=true&w=majority";
+let mongoDB = process.env.MONGO_DB;
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
@@ -36,6 +37,7 @@ app.use(express.static(path.join(__dirname, "/public")));
 
 app.use("/", indexRouter); // auth routes
 app.use("/users", usersRouter); // unauth routes
+app.use("/data", dataRouter); // data "api" routes
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
@@ -55,7 +57,7 @@ app.use(function (err, req, res, next) {
 });
 
 // Initiate the loop
-const interval = 5 * 60 * 1000 // 5min
+const interval = 5 * 60 * 1000; // 5min
 setInterval(update, 5000);
 
 module.exports = app;

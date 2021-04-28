@@ -48,89 +48,140 @@
 
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
-    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Danish CO<sub>2</sub> Emissions</button>
+    <button
+      class="nav-link active"
+      id="pills-home-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-home"
+      type="button"
+      role="tab"
+      aria-controls="pills-home"
+      aria-selected="true"
+    >
+      Danish CO<sub>2</sub> Emissions
+    </button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Danish Energy Production</button>
+    <button
+      class="nav-link"
+      id="pills-profile-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-profile"
+      type="button"
+      role="tab"
+      aria-controls="pills-profile"
+      aria-selected="false"
+    >
+      Danish Energy Production
+    </button>
   </li>
   <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">ARiMA</button>
+    <button
+      class="nav-link"
+      id="pills-contact-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-contact"
+      type="button"
+      role="tab"
+      aria-controls="pills-contact"
+      aria-selected="false"
+    >
+      ARiMA
+    </button>
   </li>
 </ul>
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-  <!-- Main chart -->
-<div class="row mb-3" id="CO2Chart">
-  <div class="col-12">
-    <div class="card mb-3">
-      <div class="card-header d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-          <p class="m-0">CO<sub>2</sub> Emission</p>
-          <!-- Time stamp -->
-          <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
-        </div>
-        <!-- Refresh Button -->
-        <button class="btn btn-secondary" id="refreshCO2">
-          <i class="bi bi-arrow-repeat"></i>
-        </button>
-      </div>
+  <div
+    class="tab-pane fade show active"
+    id="pills-home"
+    role="tabpanel"
+    aria-labelledby="pills-home-tab"
+  >
+    <!-- Main chart -->
+    <div class="row mb-3" id="CO2Chart">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+              <p class="m-0">CO<sub>2</sub> Emission</p>
+              <!-- Time stamp -->
+              <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
+            </div>
+            <!-- Refresh Button -->
+            <button class="btn btn-secondary" id="refreshCO2">
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+          </div>
 
-      <div class="card-body p-3">
-        <canvas id="chartCO2"></canvas>
-      </div>
-      <div class="card-footer">
-        <small
-          >Data from
-          <a
-            href="https://www.energidataservice.dk/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            energidataservice.dk
-          </a>
-        </small>
+          <div class="card-body p-3">
+            <canvas id="chartCO2"></canvas>
+          </div>
+          <div class="card-footer">
+            <small
+              >Data from
+              <a
+                href="https://www.energidataservice.dk/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                energidataservice.dk
+              </a>
+            </small>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</div>
-  </div>
-  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab"><!-- Energy production chart -->
-<div class="row mb-3" id="energyChart">
-  <div class="col-12">
-    <div class="card mb-3">
-      <div class="card-header d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-          <p class="my-0">Green Energy Production</p>
-          <!-- Time stamp -->
-          <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
+  <div
+    class="tab-pane fade"
+    id="pills-profile"
+    role="tabpanel"
+    aria-labelledby="pills-profile-tab"
+  >
+    <!-- Energy production chart -->
+    <div class="row mb-3" id="energyChart">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+              <p class="my-0">Green Energy Production</p>
+              <!-- Time stamp -->
+              <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
+            </div>
+            <!-- Refresh Button -->
+            <button class="btn btn-secondary" id="refreshGreenEnergy">
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+          </div>
+
+          <div class="card-body">
+            <canvas id="chartGreenEnergy"></canvas>
+          </div>
+
+          <div class="card-footer">
+            <small
+              >Data from
+              <a
+                href="https://www.energidataservice.dk/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                energidataservice.dk
+              </a>
+            </small>
+          </div>
         </div>
-        <!-- Refresh Button -->
-        <button class="btn btn-secondary" id="refreshGreenEnergy">
-          <i class="bi bi-arrow-repeat"></i>
-        </button>
-      </div>
-
-      <div class="card-body">
-        <canvas id="chartGreenEnergy"></canvas>
-      </div>
-
-      <div class="card-footer">
-        <small
-          >Data from
-          <a
-            href="https://www.energidataservice.dk/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            energidataservice.dk
-          </a>
-        </small>
       </div>
     </div>
   </div>
-</div>
-</div>
-  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">ARiMA prediction graph</div>
+  <div
+    class="tab-pane fade"
+    id="pills-contact"
+    role="tabpanel"
+    aria-labelledby="pills-contact-tab"
+  >
+    ARiMA prediction graph
+  </div>
 </div>
 
 <script>
@@ -318,6 +369,15 @@
 
   // Kode til hentning of visning af energiproduktion
   async function greenEnergyDataEMI() {
+    try {
+      const URI = "{{ test_route }}";
+      let data = await fetch(URI).then((response) => response.json());
+
+      console.log(data.result.records.length);
+    } catch (error) {
+      console.log(error);
+    }
+
     try {
       const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';

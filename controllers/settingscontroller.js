@@ -66,7 +66,11 @@ exports.user_settings_post = [
             },
           ];
 
-          res.render("settings", { title: "Settings", messages: messages });
+          res.render("settings", {
+            title: "Settings",
+            test: "tester",
+            messages: messages,
+          });
         }
       });
     }
