@@ -22,5 +22,17 @@ router.get("/carbon3", dataController.carbon_3);
 // GET co2 emission data 1 days moving average.
 router.get("/carbon1", dataController.carbon_1);
 
+// GET offshore wind production data
+router.get("/offshorewind", dataController.greenenergi_off_wind);
+
+// GET onshore wind production data
+router.get("/onshorewind", dataController.greenenergi_on_wind);
+
+// GET solar production data
+router.get("/solar", dataController.greenenergi_solar);
+
+// GET labels for energi production data
+router.get("/energilabels", dataController.greenenergi_labels);
+
 // Exports router to app
 module.exports = router;
