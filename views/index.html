@@ -48,201 +48,134 @@
 
 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
   <li class="nav-item" role="presentation">
-    <button
-      class="nav-link active"
-      id="pills-home-tab"
-      data-bs-toggle="pill"
-      data-bs-target="#pills-home"
-      type="button"
-      role="tab"
-      aria-controls="pills-home"
-      aria-selected="true"
-    >
-      Danish CO<sub>2</sub> Emissions
-    </button>
+    <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Danish CO<sub>2</sub> Emissions</button>
+  </li>
+    <li class="nav-item" role="presentation">
+    <button class="nav-link" id="pills-prediction-tab" data-bs-toggle="pill" data-bs-target="#pills-prediction" type="button" role="tab" aria-controls="pills-prediction" aria-selected="false">Danish CO<sub>2</sub> Emissions Forecast</button>
   </li>
   <li class="nav-item" role="presentation">
-    <button
-      class="nav-link"
-      id="pills-profile-tab"
-      data-bs-toggle="pill"
-      data-bs-target="#pills-profile"
-      type="button"
-      role="tab"
-      aria-controls="pills-profile"
-      aria-selected="false"
-    >
-      Danish Energy Production
-    </button>
-  </li>
-  <li class="nav-item" role="presentation">
-    <button
-      class="nav-link"
-      id="pills-contact-tab"
-      data-bs-toggle="pill"
-      data-bs-target="#pills-contact"
-      type="button"
-      role="tab"
-      aria-controls="pills-contact"
-      aria-selected="false"
-    >
-      ARiMA
-    </button>
+    <button class="nav-link" id="pills-energy-tab" data-bs-toggle="pill" data-bs-target="#pills-energy" type="button" role="tab" aria-controls="pills-energy" aria-selected="false">Danish Energy Production</button>
   </li>
 </ul>
 <div class="tab-content" id="pills-tabContent">
-  <div
-    class="tab-pane fade show active"
-    id="pills-home"
-    role="tabpanel"
-    aria-labelledby="pills-home-tab"
-  >
-    <!-- Main chart -->
-    <div class="row mb-3" id="CO2Chart">
-      <div class="col-12">
-        <div class="card mb-3">
-          <div class="card-header d-flex justify-content-between">
-            <div class="d-flex align-items-center">
-              <p class="m-0">CO<sub>2</sub> Emission</p>
-              <!-- Time stamp -->
-              <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
-            </div>
-            <!-- Refresh Button -->
-            <button class="btn btn-secondary" id="refreshCO2">
-              <i class="bi bi-arrow-repeat"></i>
-            </button>
-          </div>
-
-          <div class="card-body p-3">
-            <canvas id="chartCO2"></canvas>
-          </div>
-          <div class="card-footer">
-            <small
-              >Data from
-              <a
-                href="https://www.energidataservice.dk/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                energidataservice.dk
-              </a>
-            </small>
-          </div>
+  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+  <!-- Main chart -->
+<div class="row mb-3" id="CO2Chart">
+  <div class="col-12">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <p class="m-0">CO<sub>2</sub> Emission</p>
+          <!-- Time stamp -->
+          <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
         </div>
+        <!-- Refresh Button -->
+        <button class="btn btn-secondary" id="refreshCO2">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </div>
+
+      <div class="card-body p-3">
+        <canvas id="chartCO2"></canvas>
+      </div>
+      <div class="card-footer">
+        <small
+          >Data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
       </div>
     </div>
   </div>
-  <div
-    class="tab-pane fade"
-    id="pills-profile"
-    role="tabpanel"
-    aria-labelledby="pills-profile-tab"
-  >
-    <!-- Energy production chart -->
-    <div class="row mb-3" id="energyChart">
-      <div class="col-12">
-        <div class="card mb-3">
-          <div class="card-header d-flex justify-content-between">
-            <div class="d-flex align-items-center">
-              <p class="my-0">Green Energy Production</p>
-              <!-- Time stamp -->
-              <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
-            </div>
-            <!-- Refresh Button -->
-            <button class="btn btn-secondary" id="refreshGreenEnergy">
-              <i class="bi bi-arrow-repeat"></i>
-            </button>
-          </div>
-
-          <div class="card-body">
-            <canvas class="graph" id="chartGreenEnergy"></canvas>
-          </div>
-
-          <div class="card-footer">
-            <small
-              >Data from
-              <a
-                href="https://www.energidataservice.dk/"
-                target="_blank"
-                rel="noreferrer"
-              >
-                energidataservice.dk
-              </a>
-            </small>
-          </div>
+</div>
+  </div>
+  <div class="tab-pane fade" id="pills-energy" role="tabpanel" aria-labelledby="pills-energy-tab"><!-- Energy production chart -->
+<div class="row mb-3" id="energyChart">
+  <div class="col-12">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <p class="my-0">Green Energy Production</p>
+          <!-- Time stamp -->
+          <small class="ms-2 me-0 my-0" id="lastUpdateGreenEnergy"></small>
         </div>
+        <!-- Refresh Button -->
+        <button class="btn btn-secondary" id="refreshGreenEnergy">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </div>
+
+      <div class="card-body">
+        <canvas id="chartGreenEnergy"></canvas>
+      </div>
+
+      <div class="card-footer">
+        <small
+          >Data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
       </div>
     </div>
   </div>
-  <div
-    class="tab-pane fade"
-    id="pills-contact"
-    role="tabpanel"
-    aria-labelledby="pills-contact-tab"
-  >
-    ARiMA prediction graph
+</div>
+</div>
+  <div class="tab-pane fade" id="pills-prediction" role="tabpanel" aria-labelledby="pills-prediction-tab">
+    <!-- Prediction chart -->
+<div class="row mb-3" id="PredictionChart">
+  <div class="col-12">
+    <div class="card mb-3">
+      <div class="card-header d-flex justify-content-between">
+        <div class="d-flex align-items-center">
+          <p class="m-0">CO<sub>2</sub> Forecast</p>
+          <!-- Time stamp -->
+          <small class="ms-2 me-0 my-0" id="lastUpdateForecast"></small>
+        </div>
+        <!-- Refresh Button -->
+        <button class="btn btn-secondary" id="refreshForecast">
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+      </div>
+
+      <div class="card-body p-3">
+        <canvas id="chartForecast"></canvas>
+      </div>
+      <div class="card-footer">
+        <small
+          >Data predicted using data from
+          <a
+            href="https://www.energidataservice.dk/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            energidataservice.dk
+          </a>
+        </small>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
 </div>
 
 <script>
-  let percentileSaved = 100 - "{{profile_data.sustainable_goals}}";
   async function energiDataEMI() {
     try {
-      const DAYSAMOUNT = 30; //change in URI if this is changed.
-      const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
-      let data = await fetch(URI).then((response) => response.json());
-
-      // Arrays for labels and values
-      let dataLabels = [];
-      let dataValues = [];
-      let dataValuesMonth = [];
-      let daysMonth = 30;
-      let dataValuesWeek = [];
-      let daysWeek = 7;
-      let dataValuesDays = [];
-      let daysDays = 3;
-      let dataTestAccuracy = [];
       //datapoints on 1 day
-      let dataDay = (60 * 24) / 5;
-      // Iterate over reponse results
-      console.log("Total CO2 Rows:" + data.result.records.length);
+      const DATADAY = (60 * 24) / 5;
 
-      for (let i = 0; i < data.result.records.length; i++) {
-        // Push labels and values
-        if (data.result.records[i].PriceArea == "DK1") {
-          dataValues.push(data.result.records[i].CO2Emission);
-          dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3));
-        }
-      }
-      // Reverse Arrays
-      dataLabels = dataLabels.reverse();
-      dataValues = dataValues.reverse();
 
-      //Function that creates a moving average dataset depended on amount of days.
-      function createData(days, newDataValues) {
-        //total data points
-        let dataTotal = days * dataDay;
-        for (let j = 0; j < dataDay; j++) {
-          newDataValues[j] = 0;
-          for (let i = j; i < dataTotal; i += dataDay) {
-            //compounds the values
-            newDataValues[j] +=
-              dataValues[i + (dataDay * DAYSAMOUNT - dataTotal)];
-          }
-          //finds average for that time
-          newDataValues[j] = newDataValues[j] / days;
-        }
-      }
-
-      createData(daysMonth, dataValuesMonth);
-      createData(daysWeek, dataValuesWeek);
-      createData(daysDays, dataValuesDays);
-      createData(1, dataTestAccuracy);
-      console.log("DataValues length" + dataValues.length + "\n");
-      console.log("DataValuesMonth length" + dataValuesMonth.length + "\n");
-      console.log("DataLabels length" + dataLabels.length + "\n");
-
+      let percentileSaved = 100 - "{{profile_data.sustainable_goals}}";
       //a function that creates the percentile line using preexisting moving average and a percentile.
       function createPercentileLine(p, inputData) {
         //percentile to calculate to.
@@ -262,7 +195,7 @@
         );
         //duplicate the result to every datapoint through the day
         //in order for it to be plottet nicely
-        for (let i = 0; i < dataDay; i++) {
+        for (let i = 0; i < DATADAY; i++) {
           newDataLine[i] = inputData[percentileNr];
         }
         return newDataLine;
@@ -273,54 +206,51 @@
         return a - b;
       }
 
+      let carbon_30 = await fetch("{{ carbon_30 }}").then((response) => response.json());
+      let carbon_7 = await fetch("{{ carbon_7 }}").then((response) => response.json());
+      let carbon_3 = await fetch("{{ carbon_3 }}").then((response) => response.json());
+      let carbon_1 = await fetch("{{ carbon_1 }}").then((response) => response.json());
+      let carbon_labels = await fetch("{{ carbon_labels }}").then((response) => response.json());
+
       var ctx = document.getElementById("chartCO2").getContext("2d");
       var chart = new Chart(ctx, {
         // The type of chart we want to create
         type: "line",
         data: {
-          labels: dataLabels.slice(
-            dataLabels.length - dataDay,
-            dataLabels.length
+          labels: carbon_labels.slice(
+            carbon_labels.length - DATADAY,
+            carbon_labels.length
           ),
           datasets: [
             {
               label: "CO2 Emission last 24 hours (5min) (g/kWh)",
               borderColor: "rgb(0, 255, 0)",
               fill: false,
-              data: dataValues.slice(
-                dataValues.length - dataDay,
-                dataValues.length
-              ),
+              data: carbon_1.slice(0, DATADAY),
               //steppedLine: "true",
             },
             {
               label:
-                "CO2 Emission " +
-                daysDays +
-                " days running average (5min) (g/kWh)",
+                "CO2 Emission 3 days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 255, 0)",
               fill: false,
-              data: dataValuesDays.slice(0, dataDay),
+              data: carbon_3.slice(0, DATADAY),
               hidden: true,
             },
             {
               label:
-                "CO2 Emission " +
-                daysWeek +
-                " days running average (5min) (g/kWh)",
+                "CO2 Emission 7 days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 153, 0)",
               fill: false,
-              data: dataValuesWeek.slice(0, dataDay),
+              data: carbon_7.slice(0, DATADAY),
               hidden: true,
             },
             {
               label:
-                "CO2 Emission " +
-                daysMonth +
-                " days running average (5min) (g/kWh)",
+                "CO2 Emission 30 days running average (5min) (g/kWh)",
               borderColor: "rgb(255, 0, 0)",
               fill: false,
-              data: dataValuesMonth.slice(0, dataDay),
+              data: carbon_30.slice(0, DATADAY),
               //steppedLine: "true",
             },
             {
@@ -332,17 +262,10 @@
               fill: false,
               data: createPercentileLine(
                 percentileSaved,
-                dataValuesMonth
-              ).slice(0, dataDay),
+                carbon_30
+              ).slice(0, DATADAY),
               steppedLine: true,
             },
-
-            // {
-            //     label: "CO2 Emission " + "test" + " days running average (5min) (g/kWh)",
-            //     borderColor: "rgb(0, 255, 150)",
-            //     data: dataTestAccuracy.slice(0, 288),
-            //     //steppedLine: "true",
-            // },
           ],
         },
         // Configuration options go here
@@ -356,35 +279,20 @@
           },
         },
       });
-
-      // return labels and values as object
-      //   return {
-      //     dataValues,
-      //     dataLabels,
-      //   };
     } catch {
-      console.log("Forhelvede....");
+      console.log("CO2 emission graph not working");
     }
   }
 
   // Kode til hentning of visning af energiproduktion
   async function greenEnergyDataEMI() {
     try {
-      const URI = "{{ test_route }}";
-      let data = await fetch(URI).then((response) => response.json());
-
-      console.log(data.result.records.length);
-    } catch (error) {
-      console.log(error);
-    }
-
-    try {
       const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
       let data = await fetch(URI).then((response) => response.json());
 
       // Arrays for labels and values
-      let dataLabels = [];
+      let carbon_labels = [];
       let dataValuesOffWind = [];
       let dataValuesOnWind = [];
       let dataValuesSolar = [];
@@ -393,14 +301,14 @@
       for (let i = 0; i < data.result.records.length; i++) {
         // Push labels and values
         if (data.result.records[i].PriceArea == "DK1") {
-          dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3)); // we extract HH:MM
+          carbon_labels.push(data.result.records[i].Minutes5DK.slice(-8, -3)); // we extract HH:MM
           dataValuesOffWind.push(data.result.records[i].OffshoreWindPower);
           dataValuesOnWind.push(data.result.records[i].OnshoreWindPower);
           dataValuesSolar.push(data.result.records[i].SolarPower);
         }
       }
       // Reverse Arrays
-      dataLabels = dataLabels.reverse();
+      carbon_labels = carbon_labels.reverse();
       dataValuesOffWind = dataValuesOffWind.reverse();
       dataValuesOnWind = dataValuesOnWind.reverse();
       dataValuesSolar = dataValuesSolar.reverse();
@@ -410,7 +318,7 @@
         // The type of chart we want to create
         type: "line",
         data: {
-          labels: dataLabels,
+          labels: carbon_labels,
           datasets: [
             {
               label: "Offshore Energy Production (Vest) (5min) (MWh)",
@@ -444,14 +352,8 @@
           },
         },
       });
-
-      // return labels and values as object
-      //   return {
-      //     dataValues,
-      //     dataLabels,
-      //   };
     } catch {
-      console.log("Forhelvede....");
+      console.log("Energi graph failed");
     }
   }
 
