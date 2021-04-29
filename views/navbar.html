@@ -20,7 +20,7 @@
         </li>
         {% else %}
         <li class="nav-item me-auto">
-          <a class="nav-link" aria-current="page" href="/">Home</a>
+          <a class="nav-link home-button" aria-current="page" href="/">Home</a>
         </li>
         {% endif %} {% if route == "/devices" %}
         <li class="nav-item">
@@ -28,12 +28,12 @@
         </li>
         {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="/devices">Devices</a>
+          <a class="nav-link device-button" href="/devices">Devices</a>
         </li>
         {% endif %}
       </ul>
       <ul class="navbar-nav ms-auto">
-        <div class="dropdown text-end">
+        <div class="dropdown text-end action-menu">
           <a
             href="#"
             class="d-block link-dark text-decoration-none dropdown-toggle"
@@ -56,9 +56,9 @@
                 >Add Device</a
               >
             </li>
-            <li><a class="dropdown-item" href="/settings">Settings</a></li>
+            <li><a class="dropdown-item settings-button" href="/settings">Settings</a></li>
             <li><hr class="dropdown-divider" /></li>
-            <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+            <li><a class="dropdown-item logout-button" href="/logout">Sign out</a></li>
           </ul>
         </div>
       </ul>
