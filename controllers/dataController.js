@@ -166,3 +166,129 @@ exports.carbon_1 = function (req, res, next) {
   }
   carbon_1_post();
 };
+
+
+
+// Controller for fetching onshore wind production
+exports.greenenergi_on_wind = function (req, res, next) {
+  async function fetch_on_wind_data() {
+    try {
+      const URI =
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+      let data = await fetch(URI).then((response) => response.json());
+      // Arrays for labels and values
+      let dataValuesOnWind = [];
+
+      // Iterate over reponse results
+      for (let i = 0; i < data.result.records.length; i++) {
+        // Push labels and values
+        if (data.result.records[i].PriceArea == "DK1") {
+          dataValuesOnWind.push(data.result.records[i].OnshoreWindPower);
+        }
+      }
+
+      // Reverse Arrays
+      dataValuesOnWind = dataValuesOnWind.reverse();
+
+      res.json(dataValuesOnWind);
+    } catch (error) {
+      console.error(error);
+      res.send(false);
+    }
+  }
+
+  fetch_on_wind_data();
+};
+
+// Controller for fetching offshore wind production
+exports.greenenergi_off_wind = function (req, res, next) {
+  async function fetch_off_wind_data() {
+    try {
+      const URI =
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+      let data = await fetch(URI).then((response) => response.json());
+      // Arrays for labels and values
+      let dataValuesOffWind = [];
+
+      // Iterate over reponse results
+      for (let i = 0; i < data.result.records.length; i++) {
+        // Push labels and values
+        if (data.result.records[i].PriceArea == "DK1") {
+          dataValuesOffWind.push(data.result.records[i].OffshoreWindPower);
+        }
+      }
+
+      // Reverse Arrays
+      dataValuesOffWind = dataValuesOffWind.reverse();
+
+      res.json(dataValuesOffWind);
+    } catch (error) {
+      console.error(error);
+      res.send(false);
+    }
+  }
+
+  fetch_off_wind_data();
+};
+
+// Controller for fetching solar production
+exports.greenenergi_solar = function (req, res, next) {
+  async function fetch_solar_data() {
+    try {
+      const URI =
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+      let data = await fetch(URI).then((response) => response.json());
+      // Arrays for labels and values
+      let dataValuesSolar = [];
+
+      // Iterate over reponse results
+      for (let i = 0; i < data.result.records.length; i++) {
+        // Push labels and values
+        if (data.result.records[i].PriceArea == "DK1") {
+          dataValuesSolar.push(data.result.records[i].SolarPower);
+        }
+      }
+
+      // Reverse Array
+      dataValuesSolar = dataValuesSolar.reverse();
+
+      res.json(dataValuesSolar);
+    } catch (error) {
+      console.error(error);
+      res.send(false);
+    }
+  }
+  fetch_solar_data();
+};
+
+
+// Controller for calculating CO2 emission data
+exports.greenenergi_labels = function (req, res, next) {
+  async function fetch_energi_labels() {
+    try {
+      const URI =
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+      let data = await fetch(URI).then((response) => response.json());
+      // Arrays for labels and values
+      let data_labels = [];
+
+      // Iterate over reponse results
+      for (let i = 0; i < data.result.records.length; i++) {
+        // Push labels
+        if (data.result.records[i].PriceArea == "DK1") {
+          data_labels.push(data.result.records[i].Minutes5DK.slice(-8, -3)); 
+        }
+      }
+
+      // Reverse Arrays
+      data_labels = data_labels.reverse();
+
+      res.json(data_labels);
+    } catch (error) {
+      console.error(error);
+      res.send(false);
+    }
+  }
+
+  fetch_energi_labels();
+};

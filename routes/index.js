@@ -37,6 +37,10 @@ router.get("/", function (req, res, next) {
             carbon_7: process.env.WEB_HOST + "data/carbon7",
             carbon_3: process.env.WEB_HOST + "data/carbon3",
             carbon_1: process.env.WEB_HOST + "data/carbon1",
+            off_wind: process.env.WEB_HOST + "data/offshorewind",
+            on_wind: process.env.WEB_HOST + "data/onshorewind",
+            solar: process.env.WEB_HOST + "data/solar",
+            energi_labels: process.env.WEB_HOST + "data/energilabels",
           });
         });
     });
