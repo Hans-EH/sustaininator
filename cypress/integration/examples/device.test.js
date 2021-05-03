@@ -1,6 +1,12 @@
+/*
+Cypress is an end-to-end test where developers can set up, write, running and debugging tests,
+Cypress involves therefore testing an application’s workflow from beginning to end 
+*/
 describe('My device and add page Test', () => {
     let n = 0;
-    while(n != 10) {
+
+    // Testing device test until n is 5
+    while(n != 5) {
         it('Visits the overview device page', () => {
             cy.visit('localhost:3000/login');
             cy.get('.action-register').click();

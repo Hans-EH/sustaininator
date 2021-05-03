@@ -1,3 +1,7 @@
+/*
+Cypress is an end-to-end test where developers can set up, write, running and debugging tests,
+Cypress involves therefore testing an application’s workflow from beginning to end.
+*/
 describe('My settings page Test', () => {
     it('Visits the login page for any user', () => {
         cy.visit('localhost:3000/login');
@@ -18,6 +22,7 @@ describe('My settings page Test', () => {
         // When you login a test will be conducted to check if the user got a cookie.
         cy.getCookie('auth').should('have.property','value','608911a0070ea135f09e3705')
 
+        // Enters the settings page and then enters new values
         cy.get('.action-menu').click();
         cy.get('.settings-button').click();
 

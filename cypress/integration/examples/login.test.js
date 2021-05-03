@@ -1,3 +1,7 @@
+/*
+Cypress is an end-to-end test where developers can set up, write, running and debugging tests,
+Cypress involves therefore testing an application’s workflow from beginning to end.
+*/
 describe('My login Test', () => {
     it('Visits the login page for any user', () => {
         cy.visit('localhost:3000/login');
