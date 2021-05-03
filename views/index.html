@@ -89,6 +89,20 @@
       ARiMA
     </button>
   </li>
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link"
+      id="pills-myhome-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-myhome"
+      type="button"
+      role="tab"
+      aria-controls="pills-myhome"
+      aria-selected="false"
+    >
+      My Energy usage
+    </button>
+  </li>
 </ul>
 <div class="tab-content" id="pills-tabContent">
   <div
@@ -97,7 +111,7 @@
     role="tabpanel"
     aria-labelledby="pills-home-tab"
   >
-    <!-- Main chart -->
+    <!-- CO2 chart -->
     <div class="row mb-3" id="CO2Chart">
       <div class="col-12">
         <div class="card mb-3">
@@ -181,6 +195,29 @@
     aria-labelledby="pills-contact-tab"
   >
     ARiMA prediction graph
+  </div>
+  <div
+    class="tab-pane fade"
+    id="pills-myhome"
+    role="tabpanel"
+    aria-labelledby="pills-myhome-tab"
+  >
+    <!-- My energy consumption graph -->
+    <div class="row mb-3" id="MyhomeChart">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+              <p class="m-0">My home energy consumption</p>
+            </div>
+          </div>
+
+          <div class="card-body p-3">
+            <canvas id="chartMyhome"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -455,6 +492,58 @@
     }
   }
 
+  //Shows the graph for home energy usage
+  function homeEnergyData() {
+
+    //Import data on users energy consumption the passed day
+    let data = "{{profile_data.total_energy_consumption_last_day}}".split(',')
+    console.log(`profile data: ${data}`)
+    //Push every five-minute interval beginning from current interval to this array
+    let time_labels = [];
+
+    //Get current date
+    let date = new Date();
+
+    for (let i=0; i<288; i++){
+      //Format minutes and hours to have leading zero and rounded to five like 00:05
+      let f_min = ("0" + (Math.floor(date.getMinutes() / 5) * 5)).slice(-2)
+      let f_hour = ("0" + date.getHours()).slice(-2)
+
+      time_labels.push(`${f_hour}:${f_min}`)
+
+      //Increment the date by five minutes
+      date.setMinutes(date.getMinutes() + 5)
+    }
+    console.log(time_labels)
+    let ctx = document.getElementById("chartMyhome").getContext("2d");
+    let chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: "line",
+        data: {
+          labels: time_labels,
+          datasets: [
+            {
+              label: "Home Energy Consumption (KWh)",
+              borderColor: "rgb(255, 255, 55)",
+              fill: false,
+              data: data,
+            },
+          ],
+        },
+
+        // Configuration options go here
+        options: {
+          elements: {
+            point: {
+              radius: 0,
+              hitRadius: 10,
+              hoverRadius: 10,
+            },
+          },
+        },
+      })
+  }
+
   const setLastUpdate = (lastUpdate) => {
     let date = new Date();
     let dateString = `${date.getDate()}/${date.getMonth()}-${date.getFullYear()}`;
@@ -474,6 +563,7 @@
     setLastUpdate("lastUpdateCO2");
     greenEnergyDataEMI();
     setLastUpdate("lastUpdateGreenEnergy");
+    homeEnergyData();
   });
 
   // onClick eventlistner for refresh button
