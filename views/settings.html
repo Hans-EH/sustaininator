@@ -23,7 +23,7 @@
               <div class="form-floating">
                 <input
                   type="text"
-                  class="form-control mb-3"
+                  class="form-control mb-3 first-name-text"
                   id="FirstNameValue"
                   name="FirstNameValue"
                   value="{{profile_data.firstname}}"
@@ -36,7 +36,7 @@
               <div class="form-floating">
                 <input
                   type="text"
-                  class="form-control mb-3"
+                  class="form-control mb-3 last-name-text"
                   id="LastNameValue"
                   name="LastNameValue"
                   value="{{profile_data.lastname}}"
@@ -47,7 +47,7 @@
           </div>
 
           <div class="form-floating">
-            <select
+              <select
               class="form-select mb-3"
               id="floatingSelect"
               name="prefered_currency"
@@ -79,7 +79,7 @@
           </div>
 
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="btn btn-primary me-md-2" type="submit">
+            <button class="btn btn-primary me-md-2 update-user-settings" type="submit">
               Update
             </button>
           </div>
@@ -102,7 +102,7 @@
               type="number"
               min="0"
               max="100"
-              class="form-control"
+              class="form-control sustainability-choice"
               id="floatingInputValue"
               name="sustainable_goals"
               placeholder="name@example.com"
@@ -121,7 +121,7 @@
           </div>
 
           <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="btn btn-primary me-md-2" type="submit">
+            <button class="btn btn-primary me-md-2 update-sustainability-choice" type="submit">
               Update
             </button>
           </div>
