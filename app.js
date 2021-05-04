@@ -57,7 +57,9 @@ app.use(function (err, req, res, next) {
 });
 
 // Initiate the loop
-const interval = 5 * 60 * 1000; // 5min
-setInterval(update, 5000);
+const five_minute_interval = 5 * 60 * 1000;
+
+setInterval(update, five_minute_interval);
+//setInterval(update, 10000);
 
 module.exports = app;
