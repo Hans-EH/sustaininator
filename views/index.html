@@ -98,7 +98,7 @@
         <canvas id="chartCO2"></canvas>
         <!--Refresh symbol -->
         <div class="my-3 text-center">
-          <div id="loading" class="spinner-border" role="status">
+          <div id="loading-CO2" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -120,7 +120,7 @@
 </div>
   </div>
   <div class="tab-pane fade" id="pills-energy" role="tabpanel" aria-labelledby="pills-energy-tab"><!-- Energy production chart -->
-<div class="row mb-3" id="energyChart">
+<div class="row mb-3" id="greenEnergyChart">
   <div class="col-12">
     <div class="card mb-3">
       <div class="card-header d-flex justify-content-between">
@@ -139,7 +139,7 @@
         <canvas id="chartGreenEnergy"></canvas>
                       <!--Refresh symbol -->
         <div class="my-3 text-center">
-          <div id="loadingenergi" class="spinner-border" role="status">
+          <div id="loading-green-energi" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -223,7 +223,7 @@
 </div>
 
 <script>
-  async function energiDataEMI() {
+  async function CO2Data() {
     try {
       //datapoints on 1 day
       const DATADAY = (60 * 24) / 5;
@@ -260,7 +260,7 @@
         return a - b;
       }
 
-      let loading = document.getElementById("loading");
+      let loading = document.getElementById("loading-CO2");
       loading.style.display = "inline-block";
       let carbon_30 = await fetch("{{ carbon_30 }}").then((response) => response.json());
       let carbon_7 = await fetch("{{ carbon_7 }}").then((response) => response.json());
@@ -342,46 +342,53 @@
   }
 
   // Kode til hentning of visning af energiproduktion
-  async function greenEnergyDataEMI() {
+  async function greenEnergyData() {
     try {
-      let loading = document.getElementById("loadingenergi");
+      let loading = document.getElementById("loading-green-energi");
       loading.style.display = "inline-block";
 
-      let solar = await fetch("{{ solar }}").then((response) => response.json());
-      let onshore_wind = await fetch("{{ on_wind }}").then((response) => response.json()); 
-      let offshore_wind = await fetch("{{ off_wind }}").then((response) => response.json()); 
-      let labels = await fetch("{{ energi_labels }}").then((response) => response.json()); 
+      //let solar = await fetch("{{ solar }}").then((response) => response.json());
+      //let onshore_wind = await fetch("{{ on_wind }}").then((response) => response.json());
+      //let offshore_wind = await fetch("{{ off_wind }}").then((response) => response.json());
+      //let labels = await fetch("{{ energi_labels }}").then((response) => response.json());
+      let green_energy_data = await fetch("{{ green_energy }}").then((response) => response.json());
+      //console.log("this is green_energy_data:", green_energy_data);
 
       var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
       var chart = new Chart(ctx, {
         // The type of chart we want to create
         type: "line",
         data: {
-          labels: labels,
+          labels: green_energy_data.dataTimestamp,
           datasets: [
             {
               label: "Offshore Energy Production (Vest) (5min) (MWh)",
               borderColor: "rgb(99, 132, 255)",
               fill: false,
-              data: offshore_wind, //data: dataValuesOffWind.slice(0, 20),
+              data: green_energy_data.dataOffshoreWind, //data: dataValuesOffWind.slice(0, 20),
             },
             {
               label: "Onshore Energy Production (Vest) (5min) (MWh)",
               borderColor: "rgb(132, 255, 99)",
               fill: false,
-              data: onshore_wind,
+              data: green_energy_data.dataOnshoreWind,
             },
             {
               label: "Solar Energy Production (Vest) (5min) (MWh)",
               borderColor: "rgb(255, 255, 55)",
               fill: false,
-              data: solar,
+              data: green_energy_data.dataSolar,
             },
           ],
         },
 
         // Configuration options go here
         options: {
+          scales: { // not
+            y: {    // bloody
+              stacked: true,  // working
+            } // god
+          },  // dammit
           elements: {
             point: {
               radius: 0,
@@ -393,16 +400,17 @@
       });
       loading.style.display = "none";
     } catch {
-      console.log("Energi graph failed");
+      console.log("Green energy graph failed");
     }
   }
 
   //Shows the graph for home energy usage
   function homeEnergyData() {
+    try {
 
     //Import data on users energy consumption the passed day
-    let data = "{{profile_data.total_energy_consumption_last_day}}".split(',')
-    console.log(`profile data: ${data}`)
+    let data = "{{profile_data.total_energy_consumption_last_day}}".split(',');
+    console.log(`this is profile data in homeEnergyData(): ${data}`);
     //Push every five-minute interval beginning from current interval to this array
     let time_labels = [];
 
@@ -411,15 +419,17 @@
 
     for (let i=0; i<288; i++){
       //Format minutes and hours to have leading zero and rounded to five like 00:05
-      let f_min = ("0" + (Math.floor(date.getMinutes() / 5) * 5)).slice(-2)
-      let f_hour = ("0" + date.getHours()).slice(-2)
+      let f_min = ("0" + (Math.floor(date.getMinutes() / 5) * 5)).slice(-2);
+      let f_hour = ("0" + date.getHours()).slice(-2);
 
-      time_labels.push(`${f_hour}:${f_min}`)
+      time_labels.push(`${f_hour}:${f_min}`);
 
       //Increment the date by five minutes
-      date.setMinutes(date.getMinutes() + 5)
+      date.setMinutes(date.getMinutes() + 5);
     }
-    console.log(time_labels)
+
+    console.log("these are time_labels in homeEnergyData():", time_labels);
+
     let ctx = document.getElementById("chartMyhome").getContext("2d");
     let chart = new Chart(ctx, {
         // The type of chart we want to create
@@ -446,7 +456,10 @@
             },
           },
         },
-      })
+      });
+    } catch (error) {
+      console.error();
+    }
   }
 
   const setLastUpdate = (lastUpdate) => {
@@ -464,16 +477,16 @@
 
   // Fetch data after page content has loaded
   window.addEventListener("load", function () {
-    energiDataEMI();
+    CO2Data();
     setLastUpdate("lastUpdateCO2");
-    greenEnergyDataEMI();
+    greenEnergyData();
     setLastUpdate("lastUpdateGreenEnergy");
     homeEnergyData();
   });
 
   // onClick eventlistner for refresh button
   document.getElementById("refreshCO2").addEventListener("click", () => {
-    energiDataEMI();
+    CO2Data();
     setLastUpdate("lastUpdateCO2");
   });
 
@@ -481,7 +494,7 @@
   document
     .getElementById("refreshGreenEnergy")
     .addEventListener("click", () => {
-      greenEnergyDataEMI();
+      greenEnergyData();
       setLastUpdate("lastUpdateGreenEnergy");
     });
 </script>

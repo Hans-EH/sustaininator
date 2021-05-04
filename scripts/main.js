@@ -60,7 +60,9 @@ function updateState(device, state) {
 // Update a single device lifetime and last-day energy consumption
 function updateDeviceEnergyConsumption(device, state){
 
-    //Shift the array five-minutes to the left
+    //Shift the array five-minutes to the left and if ON push device's energy use in the next 5 minutes in kWh
+    // Energy = Power * Time, Example 1: E = 2 W * 1 h = 2 Wh, Example 2: E = 1000 W * 1 h = 1000 Wh = 1 kWh
+    // Example 3 (5 minutes): E = 7 W * (1/12) h = (7/12) Wh = (7/12)/1000 kWh = 7/(12 * 1000) kWh
     device.energy_consumption_last_day.shift();
 
     if (state === 'ON') {
@@ -81,7 +83,7 @@ function updateDeviceEnergyConsumption(device, state){
 function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices){
 
     // Shift the array five-minutes to the left
-    user_profile.total_energy_consumption_last_day.shift()
+    user_profile.total_energy_consumption_last_day.shift();
 
     // Round and add the energy consumption of all the profiles active devices
     user_profile.total_energy_consumption_last_day.push(Math.round(total_energy_of_active_devices * 100) / 100);
@@ -103,7 +105,7 @@ function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active
 function shouldActivate(device, time_index){
 
     //Get the probability of the device
-    prob_of_activating = device.probVector[time_index]
+    prob_of_activating = device.probVector[time_index];
 
     return  Math.random() < prob_of_activating;
 }

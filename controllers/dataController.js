@@ -167,7 +167,7 @@ exports.carbon_1 = function (req, res, next) {
   carbon_1_post();
 };
 
-
+/* 
 
 // Controller for fetching onshore wind production
 exports.greenenergi_on_wind = function (req, res, next) {
@@ -291,4 +291,41 @@ exports.greenenergi_labels = function (req, res, next) {
   }
 
   fetch_energi_labels();
+}; */
+
+// Controller for green energy data
+exports.greenEnergy = async function (req, res, next) {
+    try {
+      // Fetch all the good shit
+      const URI =
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+      let data = await fetch(URI).then((response) => response.json());
+
+      // Arrays for labels and values to be shown on green energy chart
+      let dataTimestamp = [];
+      let dataOffshoreWind = [];
+      let dataOnshoreWind = [];
+      let dataSolar = [];
+
+      // Experimental: Iterate over every other point in results adding east and west value-pair together for each time interval
+      // Push values into respective data arrays
+      for (let i = 0; i < data.result.records.length; i = i + 2) {
+        dataTimestamp.push(data.result.records[i].Minutes5DK.slice(-8, -3));         
+        dataOffshoreWind.push(data.result.records[i].OffshoreWindPower + data.result.records[i + 1].OffshoreWindPower);
+        dataOnshoreWind.push(data.result.records[i].OnshoreWindPower + data.result.records[i + 1].OnshoreWindPower);
+        dataSolar.push(data.result.records[i].SolarPower + data.result.records[i + 1].SolarPower);
+      }
+      
+      // Reverse Arrays
+      dataTimestamp = dataTimestamp.reverse();
+      dataOffshoreWind = dataOffshoreWind.reverse();
+      dataOnshoreWind = dataOnshoreWind.reverse();
+      dataSolar = dataSolar.reverse();
+
+      // Not sure what happens with this result
+      res.json({dataTimestamp, dataOffshoreWind, dataOnshoreWind, dataSolar});
+    } catch (error) {
+      console.error(error);
+      res.send(false);
+    }
 };
