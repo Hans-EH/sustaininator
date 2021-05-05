@@ -29,6 +29,7 @@ exports.device_list = function (req, res, next) {
 
 // Display detail page for a specific device.
 exports.device_detail = function (req, res, next) {
+  if (auth.isAuthenticated(req, res))
   async.parallel(
     {
       device: function (callback) {

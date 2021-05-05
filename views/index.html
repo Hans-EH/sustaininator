@@ -8,7 +8,7 @@
         <h5>Money saved</h5>
       </div>
       <div class="card-body">
-        <p>{{ profile_data.money_saved }} DKK</p>
+        <p>{{profile_data.money_saved}} DKK</p>
       </div>
     </div>
   </div>
@@ -362,13 +362,8 @@
       let loading = document.getElementById("loading-green-energi");
       loading.style.display = "inline-block";
 
-      //let solar = await fetch("{{ solar }}").then((response) => response.json());
-      //let onshore_wind = await fetch("{{ on_wind }}").then((response) => response.json());
-      //let offshore_wind = await fetch("{{ off_wind }}").then((response) => response.json());
-      //let labels = await fetch("{{ energi_labels }}").then((response) => response.json());
-      let green_energy_data = await fetch("{{ green_energy }}").then((response) => response.json());
-      //console.log("this is green_energy_data:", green_energy_data);
-
+      let green_energy_data = await fetch("{{green_energy}}").then((response) => response.json());
+      // Do the splits
       let home_energy_data = "{{profile_data.total_energy_consumption_last_day}}".split(',');
 
       var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
@@ -382,7 +377,7 @@
               label: "Offshore Energy Production",
               borderColor: "rgb(99, 132, 255)",
               fill: false,
-              data: green_energy_data.dataOffshoreWind, //data: dataValuesOffWind.slice(0, 20),
+              data: green_energy_data.dataOffshoreWind,
               yAxisID: 'y_l',
             },
             {
@@ -488,7 +483,7 @@
           labels: time_labels,
           datasets: [
             {
-              label: "Home Energy Consumption (KWh)",
+              label: "Home Energy Consumption (kWh)",
               borderColor: "rgb(255, 255, 55)",
               fill: false,
               data: data,
