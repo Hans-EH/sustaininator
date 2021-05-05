@@ -56,10 +56,18 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-// Initiate the loop
+// Server side - Update loop
 const five_minute_interval = 5 * 60 * 1000;
 
-setInterval(update, five_minute_interval);
-//setInterval(update, 10000);
+// Wait until next five-minute mark until initialising the update loop
+// min_until_start = next five minute mark - current minute
+let min_until_start = Math.ceil(new Date().getMinutes() / 5) * 5 - new Date().getMinutes();
+
+console.log(`Minutes until update: ${min_until_start} mins`)
+setTimeout(() => {
+  setInterval(update, five_minute_interval)
+  },
+  min_until_start * 60 * 1000 //To get milliseconds
+)
 
 module.exports = app;
