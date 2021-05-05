@@ -45,7 +45,6 @@
         <tr>
           <th>Device name</th>
           <th>Power consumption</th>
-          <th>Last modified</th>
           <th>Status</th>
           <th>Edit</th>
           <th>Delete</th>
@@ -54,7 +53,6 @@
         <tr>
           <td><a class="device-inspec" href="devices/device_detail/{{device._id}}">{{device.name}}</a></td>
           <td>{{device.power}} W</td>
-          <td></td>
           {% if device.state == "ON" %}
             <td><span class="greendot"></span></td>
           {% else %}
