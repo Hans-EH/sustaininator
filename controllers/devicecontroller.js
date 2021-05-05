@@ -40,9 +40,9 @@ exports.device_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
-      console.log("activetime:" + typeof results.device.activetime);
+      //console.log("activetime:" + typeof results.device.activetime);
       let probVector = activeProbability(results.device.activetime);
-      console.log(probVector);
+      //console.log(probVector);
 
       // Successful, so render.
       res.render("device_detail", {

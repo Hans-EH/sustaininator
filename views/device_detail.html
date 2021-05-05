@@ -11,13 +11,7 @@
         <div class="card-header d-flex justify-content-between">
           <div class="d-flex align-items-center">
             <p class="my-0">Power Consumption</p>
-            <!-- Time stamp -->
-            <small class="ms-2 me-0 my-0" id="lastUpdateEnergyConsumption"></small>
           </div>
-          <!-- Refresh Button -->
-          <button class="btn btn-secondary" id="refreshEnergyConsumption">
-            <i class="bi bi-arrow-repeat"></i>
-          </button>
         </div>
         <div class="card-body">
           <canvas id="deviceEnergy"></canvas>
@@ -25,7 +19,8 @@
         <div>
           <table>
             <td> Lifetime energy consumption</td>
-            <tr> {{device.lifetime_energy_consumption}}</tr>
+            <tr> {{ device.lifetime_energy_consumption }}</tr>
+            <td> {{ device.energy_consumption_last_day }} </td>
           </table>
         </div>
 </body>
@@ -37,8 +32,8 @@
   let probVector = "{{ probVector }}";
   //Convert to an array
   probVector = probVector.split(",");
-  console.log(probVector);
-  console.log(typeof(probVector));
+  //console.log(probVector);
+  //console.log(typeof(probVector));
 
   let x = 5; //minutes interval
   let times = []; // time array
@@ -52,7 +47,7 @@
     times[i] = ("0" + (hh % 12)).slice(-2) + ':' + ("0" + mm).slice(-2) + ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
     tt = tt + x;
   }
-  console.log(times);
+  //console.log(times);
   let ctx = document.getElementById("deviceEnergy").getContext("2d");
   let chart = new Chart(ctx, {
     // The type of chart we want to create
@@ -69,9 +64,16 @@
       ],
     },
     // Configuration options go here
-    options: {},
+    options: {
+      elements: {
+        point: {
+          radius: 0,
+          hitRadius: 10,
+          hoverRadius: 10
+        }
+      }
+    }
   });
 </script>
-
 
 {% endblock %}
