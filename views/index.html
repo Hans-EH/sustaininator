@@ -8,7 +8,7 @@
         <h5>Money saved</h5>
       </div>
       <div class="card-body">
-        <p>{{ profile_data.money_saved }} DKK</p>
+        <p>{{profile_data.money_saved}} DKK</p>
       </div>
     </div>
   </div>
@@ -279,35 +279,38 @@
           ),
           datasets: [
             {
-              label: "CO2 Emission last 24 hours (5min) (g/kWh)",
+              label: "CO2 Emission last 24 hours",
               borderColor: "rgb(0, 255, 0)",
               fill: false,
               data: carbon_1.slice(0, DATADAY),
-              //steppedLine: "true",
+              yAxisID: 'y',
             },
             {
               label:
-                "CO2 Emission 3 days running average (5min) (g/kWh)",
+                "CO2 Emission 3 days running average",
               borderColor: "rgb(255, 255, 0)",
               fill: false,
               data: carbon_3.slice(0, DATADAY),
               hidden: true,
+              yAxisID: 'y',
             },
             {
               label:
-                "CO2 Emission 7 days running average (5min) (g/kWh)",
+                "CO2 Emission 7 days running average",
               borderColor: "rgb(255, 153, 0)",
               fill: false,
               data: carbon_7.slice(0, DATADAY),
               hidden: true,
+              yAxisID: 'y',
             },
             {
               label:
-                "CO2 Emission 30 days running average (5min) (g/kWh)",
+                "CO2 Emission 30 days running average",
               borderColor: "rgb(255, 0, 0)",
               fill: false,
               data: carbon_30.slice(0, DATADAY),
-              //steppedLine: "true",
+              yAxisID: 'y',
+
             },
             {
               label:
@@ -321,11 +324,23 @@
                 carbon_30
               ).slice(0, DATADAY),
               steppedLine: true,
+              yAxisID: 'y',
             },
           ],
         },
         // Configuration options go here
         options: {
+          scales: {
+            yAxes: [{
+              id: 'y',
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'g / kWh',
+              },
+            }]
+            
+          },
           elements: {
             point: {
               radius: 0,
@@ -347,12 +362,9 @@
       let loading = document.getElementById("loading-green-energi");
       loading.style.display = "inline-block";
 
-      //let solar = await fetch("{{ solar }}").then((response) => response.json());
-      //let onshore_wind = await fetch("{{ on_wind }}").then((response) => response.json());
-      //let offshore_wind = await fetch("{{ off_wind }}").then((response) => response.json());
-      //let labels = await fetch("{{ energi_labels }}").then((response) => response.json());
-      let green_energy_data = await fetch("{{ green_energy }}").then((response) => response.json());
-      //console.log("this is green_energy_data:", green_energy_data);
+      let green_energy_data = await fetch("{{green_energy}}").then((response) => response.json());
+      // Do the splits
+      let home_energy_data = "{{profile_data.total_energy_consumption_last_day}}".split(',');
 
       var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
       var chart = new Chart(ctx, {
@@ -362,33 +374,65 @@
           labels: green_energy_data.dataTimestamp,
           datasets: [
             {
-              label: "Offshore Energy Production (Vest) (5min) (MWh)",
+              label: "Offshore Energy Production",
               borderColor: "rgb(99, 132, 255)",
               fill: false,
-              data: green_energy_data.dataOffshoreWind, //data: dataValuesOffWind.slice(0, 20),
+              data: green_energy_data.dataOffshoreWind,
+              yAxisID: 'y_l',
             },
             {
-              label: "Onshore Energy Production (Vest) (5min) (MWh)",
+              label: "Onshore Energy Production",
               borderColor: "rgb(132, 255, 99)",
               fill: false,
               data: green_energy_data.dataOnshoreWind,
+              yAxisID: 'y_l',
             },
             {
-              label: "Solar Energy Production (Vest) (5min) (MWh)",
+              label: "Solar Energy Production",
               borderColor: "rgb(255, 255, 55)",
               fill: false,
               data: green_energy_data.dataSolar,
+              yAxisID: 'y_l',
+            },
+            {
+              label: "Home Energy Consumption",
+              borderColor: "rgb(255, 0, 0)",
+              fill: false,
+              data: home_energy_data,
+              yAxisID: 'y_r'
             },
           ],
         },
 
         // Configuration options go here
         options: {
-          scales: { // not
-            y: {    // bloody
-              stacked: true,  // working
-            } // god
-          },  // dammit
+          stacked: false,
+          scales: {
+            yAxes: [{
+              id: 'y_l',
+              scaleLabel: {
+                display: true,
+                labelString: 'MWh',
+              },
+              position: 'left',
+              display: true,
+            }, {
+              id: 'y_r',
+              scaleLabel: {
+                display: true,
+                labelString: 'Home Energy Consumption (kWh)',
+              },
+              position: 'right',
+              display: true,
+              ticks: {
+                min: 0,
+                suggestedMax: 0.5,
+              },
+              grid: {
+                drawOnChartArea: false, // only want the grid lines for one axis to show up
+              },
+            }]
+          },
           elements: {
             point: {
               radius: 0,
@@ -417,7 +461,7 @@
     //Get current date
     let date = new Date();
 
-    for (let i=0; i<288; i++){
+    for (let i=0; i<=288; i++){
       //Format minutes and hours to have leading zero and rounded to five like 00:05
       let f_min = ("0" + (Math.floor(date.getMinutes() / 5) * 5)).slice(-2);
       let f_hour = ("0" + date.getHours()).slice(-2);
@@ -427,6 +471,7 @@
       //Increment the date by five minutes
       date.setMinutes(date.getMinutes() + 5);
     }
+    time_labels.shift()
 
     console.log("these are time_labels in homeEnergyData():", time_labels);
 
@@ -438,7 +483,7 @@
           labels: time_labels,
           datasets: [
             {
-              label: "Home Energy Consumption (KWh)",
+              label: "Home Energy Consumption (kWh)",
               borderColor: "rgb(255, 255, 55)",
               fill: false,
               data: data,
