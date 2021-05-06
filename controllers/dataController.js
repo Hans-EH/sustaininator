@@ -1,5 +1,5 @@
 // auth controller for validating that user is logged in
-let auth = require("./authcontroller");
+let auth = require("../controllers/authcontroller");
 let graph_data = require("../models/cache_graph_data");
 // Node fetch package
 const fetch = require("node-fetch");

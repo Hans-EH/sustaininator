@@ -4,7 +4,7 @@ let async = require("async");
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
 const { listenerCount } = require("../models/device");
-let auth = require('./authcontroller')
+let auth = require('../controllers/authcontroller')
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) { 
