@@ -20,8 +20,8 @@ describe('My logout Test', () => {
         cy.get('.action-submit').click();
         
         // When you login a test will be conducted to check if the user got a cookie.
-        cy.getCookie('auth').should('have.property','value','608911a0070ea135f09e3705')
-        cy.wait(6000);
+        cy.getCookie('auth').should('have.property','value','608911a0070ea135f09e3705');
+        cy.wait(10000);
 
         cy.get('.action-menu').click();
         cy.get('.logout-button').click();
