@@ -1,11 +1,10 @@
 let Device = require("../models/device");
 const { body, validationResult } = require("express-validator");
 let async = require("async");
-let { activeProbability } = require("../scripts/active_probability");
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
 const { listenerCount } = require("../models/device");
-let auth = require('../controllers/AuthController')
+let auth = require('./authcontroller')
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) { 

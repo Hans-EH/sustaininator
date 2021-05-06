@@ -8,7 +8,7 @@ let register_controller = require("../controllers/registercontroller");
 let login_controller = require("../controllers/logincontroller");
 let auth = require("../controllers/authcontroller");
 let graph_data = require("../models/cache_graph_data");
-const device = require("../models/device");
+let Device = require("../models/device");
 
 /* ======= HOMEPAGE ======= */
 // GET request for homepage
@@ -19,7 +19,7 @@ router.get("/", function (req, res, next) {
     if (err) {return next(err);}
 
     //Count the number of devices
-    device.find({ user_profile: profile_data })
+    Device.find({ user_profile: profile_data })
       .countDocuments(function (err, counted_devices) {
         if (err) {return next(err); }
         // render data to settings page
