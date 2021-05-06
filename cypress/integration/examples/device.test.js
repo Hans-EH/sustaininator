@@ -80,6 +80,4 @@ describe('My device and add page Test', () => {
         
         n++;
     }
-    
 });
-

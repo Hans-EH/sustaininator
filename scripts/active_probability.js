@@ -1,5 +1,5 @@
 exports.activeProbability = function activeProbability(onVector) {
-    console.log("onVector:"+typeof(onVector));
+    //console.log("onVector:"+typeof(onVector));
     let probVector = [];
     let activeIndex = [];
 
@@ -24,6 +24,6 @@ exports.activeProbability = function activeProbability(onVector) {
     probVector = probVector.map(x => {
       return ((Math.exp(-(x ** 2)).toFixed(4)));
     })
-    console.log("probVector:"+typeof(probVector));
+    //console.log("probVector:"+typeof(probVector));
     return probVector;
 }

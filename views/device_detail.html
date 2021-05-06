@@ -52,17 +52,57 @@
       </div>
     </div>
   </div>
+  <div class="row mb-3">
+    <div class="col-3">
+      <div class="mini-card card h-100 text-center">
+        <div class="card-header">
+          <h6>Device Power</h6>
+        </div>
+        <div class="card-body">
+          <p>{{device.power}} Watts</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="mini-card card h-100 text-center">
+        <div class="card-header">
+          <h6>Device Energy Consumption Today</h6>
+        </div>
+        <div class="card-body">
+          <div id="dailyEnergyUse"> kWh</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="mini-card card h-100 text-center">
+        <div class="card-header">
+          <h6>Device Lifetime Energy Consumption</h6>
+        </div>
+        <div class="card-body">
+          <div id="lifetimeEnergyUse">{{device.lifetime_energy_consumption}} kWh</div>
+        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
-<!-- Displays the energy consumption over 1 day graph-->
+<!-- Displays the daily energy use graph-->
 <script>
 
-  //Get the energy consumption from device
-  let energy_consumption_last_day = "{{device.energy_consumption_last_day}}".split(',');
-  console.log(energy_consumption_last_day)
+  //Get the probability vector passed down from the controller
+  let probVector = "{{probVector}}";
+  //Convert to an array
+  probVector = probVector.split(",");
+  // Get device's energy use for the past 24 h
+  let pastDay = "{{device.energy_consumption_last_day}}";
+  // Convert from string to arrry, change entries from strings to numbers, then sum every all entries
+  let sumDailyEnergyUse = pastDay.split(",").map(e => Number(e)).reduce((a, b) => {return a + b});
+  // Apply value to correct page element
+  document.getElementById("dailyEnergyUse").innerHTML = sumDailyEnergyUse + " kWh";
 
-  //Push every five-minute interval beginning from current interval to this array
-  let time_labels = [];
+  
+  console.log(pastDay);
+  console.log(typeof(pastDay));
 
   //Get current date
   let date = new Date();
@@ -87,22 +127,29 @@
       labels: time_labels,
       datasets: [
         {
-          label: "Device Energy Consumption",
+          label: "Device Energy Consumption (kWh)",
           borderColor: "rgb(255, 201, 25)",
           fill: false,
-          data: energy_consumption_last_day,
+          data: pastDay,
           yAxisID: 'y',
         },
       ],
     },
     // Configuration options go here
     options: {
+      stacked: true,
       scales: {
         yAxes: [{
           id: 'y',
           scaleLabel: {
             display: true,
-            labelString: 'kWh',
+            labelString: 'kWh'
+          },
+          position: 'left',
+          display: true,
+          ticks: {
+            min: 0,
+            suggestedMax: 0.5,
           },
         }]
       },
@@ -110,12 +157,11 @@
         point: {
           radius: 0,
           hitRadius: 10,
-          hoverRadius: 10,
-        },
-      },
-    },
+          hoverRadius: 10
+        }
+      }
+    }
   });
 </script>
-
 
 {% endblock %}
