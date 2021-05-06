@@ -212,7 +212,6 @@
               <p class="m-0">My home energy consumption</p>
             </div>
           </div>
-
           <div class="card-body p-3">
             <canvas id="chartMyhome"></canvas>
           </div>
@@ -227,7 +226,6 @@
     try {
       //datapoints on 1 day
       const DATADAY = (60 * 24) / 5;
-
 
       let percentileSaved = 100 - "{{profile_data.sustainable_goals}}";
       //a function that creates the percentile line using preexisting moving average and a percentile.
@@ -401,7 +399,7 @@
             },
             {
               label: "Home Energy Consumption",
-              borderColor: "rgb(255, 0, 0)",
+              borderColor: "rgb(255, 201, 25)",
               fill: false,
               data: home_energy_data,
               yAxisID: 'y_r'
@@ -459,7 +457,7 @@
 
     //Import data on users energy consumption the passed day
     let data = "{{profile_data.total_energy_consumption_last_day}}".split(',');
-    console.log(`this is profile data in homeEnergyData(): ${data}`);
+    
     //Push every five-minute interval beginning from current interval to this array
     let time_labels = [];
 
@@ -478,8 +476,6 @@
     }
     time_labels.shift()
 
-    console.log("these are time_labels in homeEnergyData():", time_labels);
-
     let ctx = document.getElementById("chartMyhome").getContext("2d");
     let chart = new Chart(ctx, {
         // The type of chart we want to create
@@ -489,7 +485,7 @@
           datasets: [
             {
               label: "Home Energy Consumption (KWh)",
-              borderColor: "rgb(255, 255, 55)",
+              borderColor: "rgb(255, 201, 25)",
               fill: false,
               data: data,
             },

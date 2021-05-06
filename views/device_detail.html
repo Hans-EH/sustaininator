@@ -2,74 +2,118 @@
 
 <!-- Chart.js dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-<h1>{{ device.name }}</h1>
 
 <body>
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card-header">
+        <h4>Device information:</h4>
+      </div>
+      <div class="card-body">
+        <table class="table table-hover">
+          <tr>
+            <th>Device name</th>
+            <th>Power consumption</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>{{device.name}}</td>
+            <td>{{device.power}} W</td>
+            {% if device.state == "ON" %}
+              <td><span class="greendot"></span></td>
+            {% else %}
+              <td><span class="reddot"></span></td>
+            {% endif %}
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card-header">
+        <h4>Lifetime Energy Consumption:</h4> 
+      </div>
+      <div class="card-body">
+        <h5>{{device.lifetime_energy_consumption.toFixed(3)}} kW</h5>
+      </div>
+    </div>
+  </div>
   <div class="row mb-3">
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="d-flex align-items-center">
-            <p class="my-0">Power Consumption</p>
-            <!-- Time stamp -->
-            <small class="ms-2 me-0 my-0" id="lastUpdateEnergyConsumption"></small>
+            <p class="my-0">Device Energy Consumption Past Day</p>
           </div>
-          <!-- Refresh Button -->
-          <button class="btn btn-secondary" id="refreshEnergyConsumption">
-            <i class="bi bi-arrow-repeat"></i>
-          </button>
         </div>
         <div class="card-body">
           <canvas id="deviceEnergy"></canvas>
         </div>
-        <div>
-          <table>
-            <td> Lifetime energy consumption</td>
-            <tr> {{device.lifetime_energy_consumption}}</tr>
-          </table>
-        </div>
+      </div>
+    </div>
+  </div>
 </body>
 
-<!-- Displays the probability graph-->
+<!-- Displays the energy consumption over 1 day graph-->
 <script>
 
-  //Get the probability vector passed down from the controller
-  let probVector = "{{ probVector }}";
-  //Convert to an array
-  probVector = probVector.split(",");
-  console.log(probVector);
-  console.log(typeof(probVector));
+  //Get the energy consumption from device
+  let energy_consumption_last_day = "{{device.energy_consumption_last_day}}".split(',');
+  console.log(energy_consumption_last_day)
 
-  let x = 5; //minutes interval
-  let times = []; // time array
-  let tt = 0; // start time
-  let ap = ['AM', 'PM']; // AM-PM
+  //Push every five-minute interval beginning from current interval to this array
+  let time_labels = [];
 
-  //loop to increment the time and push results in array
-  for (let i = 0; tt < 24 * 60; i++) {
-    let hh = Math.floor(tt / 60); // getting hours of day in 0-24 format
-    let mm = (tt % 60); // getting minutes of the hour in 0-55 format
-    times[i] = ("0" + (hh % 12)).slice(-2) + ':' + ("0" + mm).slice(-2) + ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
-    tt = tt + x;
+  //Get current date
+  let date = new Date();
+
+  for (let i=0; i<=288; i++){
+    //Format minutes and hours to have leading zero and rounded to five like 00:05
+    let f_min = ("0" + (Math.floor(date.getMinutes() / 5) * 5)).slice(-2);
+    let f_hour = ("0" + date.getHours()).slice(-2);
+
+    time_labels.push(`${f_hour}:${f_min}`);
+
+    //Increment the date by five minutes
+    date.setMinutes(date.getMinutes() + 5);
   }
-  console.log(times);
+  time_labels.shift()
+
   let ctx = document.getElementById("deviceEnergy").getContext("2d");
   let chart = new Chart(ctx, {
     // The type of chart we want to create
     type: "line",
     data: {
-      labels: times,
+      labels: time_labels,
       datasets: [
         {
-          label: "Device Energy Consumption (5min) (1/12Wh)",
-          borderColor: "rgb(99, 132, 255)",
+          label: "Device Energy Consumption",
+          borderColor: "rgb(255, 201, 25)",
           fill: false,
-          data: probVector,
+          data: energy_consumption_last_day,
+          yAxisID: 'y',
         },
       ],
     },
     // Configuration options go here
-    options: {},
+    options: {
+      scales: {
+        yAxes: [{
+          id: 'y',
+          scaleLabel: {
+            display: true,
+            labelString: 'kWh',
+          },
+        }]
+      },
+      elements: {
+        point: {
+          radius: 0,
+          hitRadius: 10,
+          hoverRadius: 10,
+        },
+      },
+    },
   });
 </script>
 

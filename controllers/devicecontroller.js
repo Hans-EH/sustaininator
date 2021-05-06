@@ -23,7 +23,6 @@ exports.device_list = function (req, res, next) {
         device_list: device_list,
     });
     })
-
   });
 };
 
@@ -43,15 +42,10 @@ exports.device_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
-      console.log("activetime:" + typeof results.device.activetime);
-      let probVector = activeProbability(results.device.activetime);
-      console.log(probVector);
-
       // Successful, so render.
       res.render("device_detail", {
         title: results.device.name,
         device: results.device,
-        probVector: probVector,
       });
     }
   );

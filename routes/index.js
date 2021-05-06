@@ -2,49 +2,41 @@ var express = require("express");
 var router = express.Router();
 
 let UserProfile = require("../models/user_profile");
-let device_controller = require("../controllers/deviceController");
-let settings_controller = require("../controllers/settingsController");
-let register_controller = require("../controllers/registerController");
-let login_controller = require("../controllers/loginController");
-let auth = require("../controllers/authController");
+let device_controller = require("../controllers/devicecontroller");
+let settings_controller = require("../controllers/settingscontroller");
+let register_controller = require("../controllers/registercontroller");
+let login_controller = require("../controllers/logincontroller");
+let auth = require("../controllers/authcontroller");
 let graph_data = require("../models/cache_graph_data");
 const device = require("../models/device");
 
-// GET home page.
+/* ======= HOMEPAGE ======= */
+// GET request for homepage
 router.get("/", function (req, res, next) {
   // checking if user is logged in
   if (auth.isAuthenticated(req, res))
-    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (
-      err,
-      profile_data
-    ) {
-      if (err) {
-        return next(err);
-      }
-      // render data to settings page
-      device.find({ user_profile: profile_data })
-        .countDocuments(function (err, counted_devices) {
-          if (err) {
-            return next(err);
-          }
-          res.render("index", {
-            title: "Homepage",
-            route: "/",
-            profile_data: profile_data,
-            counted_devices: counted_devices,
-            carbon_labels: process.env.WEB_HOST + "data/co2emissionlabels",
-            carbon_30: process.env.WEB_HOST + "data/carbon30",
-            carbon_7: process.env.WEB_HOST + "data/carbon7",
-            carbon_3: process.env.WEB_HOST + "data/carbon3",
-            carbon_1: process.env.WEB_HOST + "data/carbon1",
-            //off_wind: process.env.WEB_HOST + "data/offshorewind",
-            //on_wind: process.env.WEB_HOST + "data/onshorewind",
-            //solar: process.env.WEB_HOST + "data/solar",
-            //energi_labels: process.env.WEB_HOST + "data/energilabels",
-            green_energy: process.env.WEB_HOST + "data/greenenergy"
-          });
+  UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (err, profile_data) {
+    if (err) {return next(err);}
+
+    //Count the number of devices
+    device.find({ user_profile: profile_data })
+      .countDocuments(function (err, counted_devices) {
+        if (err) {return next(err); }
+        // render data to settings page
+        res.render("index", {
+          title: "Homepage",
+          route: "/",
+          profile_data: profile_data,
+          counted_devices: counted_devices,
+          carbon_labels: process.env.WEB_HOST + "data/co2emissionlabels",
+          carbon_30: process.env.WEB_HOST + "data/carbon30",
+          carbon_7: process.env.WEB_HOST + "data/carbon7",
+          carbon_3: process.env.WEB_HOST + "data/carbon3",
+          carbon_1: process.env.WEB_HOST + "data/carbon1",
+          green_energy: process.env.WEB_HOST + "data/greenenergy"
         });
-    });
+      });
+  });
 });
 
 //GET navbar
