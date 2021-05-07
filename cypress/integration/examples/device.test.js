@@ -50,6 +50,7 @@ describe('My device and add page Test', () => {
             cy.get('.time-21').click();
     
             cy.get('.submit-device').click();
+            cy.wait(3000);
     
             // Returns to device page
             cy.visit('http://localhost:3000/devices');
@@ -75,7 +76,7 @@ describe('My device and add page Test', () => {
     
             // Delete device phase
             cy.visit('http://localhost:3000/devices');
-            cy.get('.delete-device').eq(1).click();  // Har brug for hjælp i morgen med denne her. IKKE FÆRDIG!
+            cy.get('.delete-device').eq(1).click();
         });
         
         n++;

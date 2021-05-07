@@ -9,6 +9,7 @@ describe('My settings page Test', () => {
         cy.get('.action-login').click();
 
         // Get an email input, type into it and verify that the value has been updated
+        //.should() describe the desired state of your elements, your objects, and your application
         cy.get('.action-email')
         .type('fake@email.com')
         .should('have.value', 'fake@email.com');
