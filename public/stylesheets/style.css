@@ -93,3 +93,7 @@ input[type="checkbox"]:hover + label {
   border-radius: 50%;
   display: inline-block;
 }
+
+#recommender-image {
+  max-height: 170px;
+}
