@@ -15,28 +15,28 @@ let Device = require("../models/device");
 router.get("/", function (req, res, next) {
   // checking if user is logged in
   if (auth.isAuthenticated(req, res))
-  UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (err, profile_data) {
-    if (err) {return next(err);}
+    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (err, profile_data) {
+      if (err) { return next(err); }
 
-    //Count the number of devices
-    Device.find({ user_profile: profile_data })
-      .countDocuments(function (err, counted_devices) {
-        if (err) {return next(err); }
-        // render data to settings page
-        res.render("index", {
-          title: "Homepage",
-          route: "/",
-          profile_data: profile_data,
-          counted_devices: counted_devices,
-          carbon_labels: process.env.WEB_HOST + "data/co2emissionlabels",
-          carbon_30: process.env.WEB_HOST + "data/carbon30",
-          carbon_7: process.env.WEB_HOST + "data/carbon7",
-          carbon_3: process.env.WEB_HOST + "data/carbon3",
-          carbon_1: process.env.WEB_HOST + "data/carbon1",
-          green_energy: process.env.WEB_HOST + "data/greenenergy"
+      //Count the number of devices
+      Device.find({ user_profile: profile_data })
+        .countDocuments(function (err, counted_devices) {
+          if (err) { return next(err); }
+          // render data to settings page
+          res.render("index", {
+            title: "Homepage",
+            route: "/",
+            profile_data: profile_data,
+            counted_devices: counted_devices,
+            carbon_labels: process.env.WEB_HOST + "data/co2emissionlabels",
+            carbon_30: process.env.WEB_HOST + "data/carbon30",
+            carbon_7: process.env.WEB_HOST + "data/carbon7",
+            carbon_3: process.env.WEB_HOST + "data/carbon3",
+            carbon_1: process.env.WEB_HOST + "data/carbon1",
+            green_energy: process.env.WEB_HOST + "data/greenenergy"
+          });
         });
-      });
-  });
+    });
 });
 
 //GET navbar
@@ -58,6 +58,68 @@ router.get("/navbar", function (req, res, next) {
       });
     });
 });
+
+/* ======= TESTING ======= */
+
+router.get("/cards", function (req, res, next) {
+
+  let messages = [
+    {
+      type: 5,
+      title: "You're a true climate hero!",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 2
+    },
+    {
+      type: 4,
+      title: "You're doing great!",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 4
+    },
+    {
+      type: 3,
+      title: "Hang in there!",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 6
+    },
+    {
+      type: 2,
+      title: "Keep calm and keep trying!",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 8
+    },
+    {
+      type: 1,
+      title: "Want some help?",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 10
+    },
+  ]
+
+  let gen_msg = [
+    {
+      type: 3,
+      title: "High CO2 emissions!",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 2
+    },
+    {
+      type: 2,
+      title: "It's windy today!",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 2
+    },
+    {
+      type: 1,
+      title: "The sun is out!",
+      msg: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      time_since: 4
+    },
+  ]
+
+
+  res.render("cards.html", { title: "Card design", messages: messages, gen_msg: gen_msg });
+})
 
 /* ======= DEVICE ======= */
 
