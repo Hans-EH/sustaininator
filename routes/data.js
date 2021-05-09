@@ -22,6 +22,9 @@ router.get("/carbon3", dataController.carbon_3);
 // GET co2 emission data 1 days moving average.
 router.get("/carbon1", dataController.carbon_1);
 
+// GET forcast data, including labels, last 30 days and the forecast
+router.get("/forecastdata", dataController.forecastdata);
+
 // GET offshore wind production data
 router.get("/offshorewind", dataController.greenenergi_off_wind);
 

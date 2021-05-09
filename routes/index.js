@@ -37,6 +37,7 @@ router.get("/", function (req, res, next) {
             carbon_7: process.env.WEB_HOST + "data/carbon7",
             carbon_3: process.env.WEB_HOST + "data/carbon3",
             carbon_1: process.env.WEB_HOST + "data/carbon1",
+            forecast_data: process.env.WEB_HOST + "data/forecastdata",
             off_wind: process.env.WEB_HOST + "data/offshorewind",
             on_wind: process.env.WEB_HOST + "data/onshorewind",
             solar: process.env.WEB_HOST + "data/solar",

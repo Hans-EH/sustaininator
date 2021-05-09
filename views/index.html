@@ -51,7 +51,7 @@
     <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Danish CO<sub>2</sub> Emissions</button>
   </li>
     <li class="nav-item" role="presentation">
-    <button class="nav-link" id="pills-prediction-tab" data-bs-toggle="pill" data-bs-target="#pills-prediction" type="button" role="tab" aria-controls="pills-prediction" aria-selected="false">Danish CO<sub>2</sub> Emissions Forecast</button>
+    <button class="nav-link" id="pills-Forecast-tab" data-bs-toggle="pill" data-bs-target="#pills-Forecast" type="button" role="tab" aria-controls="pills-Forecast" aria-selected="false">Danish CO<sub>2</sub> Emissions Forecast</button>
   </li>
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="pills-energy-tab" data-bs-toggle="pill" data-bs-target="#pills-energy" type="button" role="tab" aria-controls="pills-energy" aria-selected="false">Danish Energy Production</button>
@@ -100,7 +100,8 @@
   </div>
 </div>
   </div>
-  <div class="tab-pane fade" id="pills-energy" role="tabpanel" aria-labelledby="pills-energy-tab"><!-- Energy production chart -->
+  <div class="tab-pane fade" id="pills-energy" role="tabpanel" aria-labelledby="pills-energy-tab">
+  <!-- Energy production chart -->
 <div class="row mb-3" id="energyChart">
   <div class="col-12">
     <div class="card mb-3">
@@ -142,9 +143,9 @@
   </div>
 </div>
 </div>
-  <div class="tab-pane fade" id="pills-prediction" role="tabpanel" aria-labelledby="pills-prediction-tab">
-    <!-- Prediction chart -->
-<div class="row mb-3" id="PredictionChart">
+  <div class="tab-pane fade" id="pills-Forecast" role="tabpanel" aria-labelledby="pills-Forecast-tab">
+    <!-- Forecast chart -->
+<div class="row mb-3" id="ForecastChart">
   <div class="col-12">
     <div class="card mb-3">
       <div class="card-header d-flex justify-content-between">
@@ -161,6 +162,11 @@
 
       <div class="card-body p-3">
         <canvas id="chartForecast"></canvas>
+                <div class="my-3 text-center">
+          <div id="loadingForecast" class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
       </div>
       <div class="card-footer">
         <small
@@ -355,6 +361,54 @@
     }
   }
 
+//Forecast graph
+async function forecastGraph() {
+    try {
+      let loading = document.getElementById("loadingForecast");
+      loading.style.display = "inline-block";
+
+      //fetch forecast data
+      let data = await fetch("{{ forecast_data }}").then((response) => response.json());
+
+      var ctx = document.getElementById("chartForecast").getContext("2d");
+      var chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: "line",
+        data: {
+          labels: data.forecast_labels,
+          datasets: [
+            {
+              label: "Carbon emissions g/KWh last 7 days",
+              borderColor: "rgb(0, 0, 255)",
+              fill: false,
+              data: data.data,
+            },
+            {
+              label: "Emissions forecasted",
+              borderColor: "rgb(255, 0, 0)",
+              fill: false,
+              data: data.forecast_data,
+            },
+          ],
+        },
+
+        // Configuration options go here
+        options: {
+          elements: {
+            point: {
+              radius: 0,
+              hitRadius: 10,
+              hoverRadius: 10,
+            },
+          },
+        },
+      });
+      loading.style.display = "none";
+    } catch(e) {
+      console.log(e);
+    }
+  }
+
   const setLastUpdate = (lastUpdate) => {
     let date = new Date();
     let dateString = `${date.getDate()}/${date.getMonth()}-${date.getFullYear()}`;
@@ -374,6 +428,8 @@
     setLastUpdate("lastUpdateCO2");
     greenEnergyDataEMI();
     setLastUpdate("lastUpdateGreenEnergy");
+    forecastGraph();
+    setLastUpdate("lastUpdateForecast");
   });
 
   // onClick eventlistner for refresh button
