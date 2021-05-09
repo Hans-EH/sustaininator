@@ -136,7 +136,7 @@ exports.forecastdata = function (req, res, next) {
       let forecast_labels = [];
       let forecast_data = [];
       //adjust how many days back it should count
-      let days_past = 3;
+      let days_past = 5;
       //add extra labels and the new datapoints for forecasting the future:
       let days_forecasted = 3;
 
@@ -195,7 +195,7 @@ exports.forecastdata = function (req, res, next) {
         for (i = 0; i < order; i++) {
           let error = data[from + order - i] - eps[i];
           //calculates the correlation, to be used as a weight indicating significance.
-          let theta = correl(eps[i], pre_data, mu, data)
+          let theta = correl(eps[i], pre_data)
           eps.push(theta * error);
         }
         //sums the data,
@@ -233,8 +233,8 @@ exports.forecastdata = function (req, res, next) {
       }
 
       //correlation function, the closer the data is to the previous number, the higher the weight
-      function correl(eps, pre_data, mu, data) {
-        let x = (pre_data - eps)
+      function correl(eps, pre_data) {
+        let x = (eps-pre_data)
         //to not get an NaN error
         if (x < 1 && x > -1) { x = 1; }
         //takes sqrt, so that result isnt a tiny decimal
@@ -284,7 +284,7 @@ exports.forecastdata = function (req, res, next) {
           forecast_data = [];
           console.log(i + ": Model fitness: " + model_fits);
         }
-        console.log("best order: " + best_model_order);
+        console.log("best order: " + best_model_order+", with model fitness: "+best_model);
         MA(best_model_order, raw_emissions_data, days_past, days_forecasted);
       }
 
