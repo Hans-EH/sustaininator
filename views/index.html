@@ -265,27 +265,25 @@
 
       let loading = document.getElementById("loading-CO2");
       loading.style.display = "inline-block";
-      let carbon_30 = await fetch("{{ carbon_30 }}").then((response) => response.json());
-      let carbon_7 = await fetch("{{ carbon_7 }}").then((response) => response.json());
-      let carbon_3 = await fetch("{{ carbon_3 }}").then((response) => response.json()); 
-      let carbon_1 = await fetch("{{ carbon_1 }}").then((response) => response.json()); 
-      let carbon_labels = await fetch("{{ carbon_labels }}").then((response) => response.json()); 
+      
+      //fetch carbon data.
+      let carbon_data = await fetch("{{ carbon_data }}").then((response) => response.json());
 
       var ctx = document.getElementById("chartCO2").getContext("2d");
       var chart = new Chart(ctx, {
         // The type of chart we want to create
         type: "line",
         data: {
-          labels: carbon_labels.slice(
-            carbon_labels.length - DATADAY,
-            carbon_labels.length
+          labels: carbon_data.data_labels.slice(
+            carbon_data.data_labels.length - DATADAY,
+            carbon_data.data_labels.length
           ),
           datasets: [
             {
               label: "CO2 Emission last 24 hours",
               borderColor: "rgb(0, 255, 0)",
               fill: false,
-              data: carbon_1.slice(0, DATADAY),
+              data: carbon_data.carbon_1.slice(0, DATADAY),
               yAxisID: 'y',
             },
             {
@@ -293,7 +291,7 @@
                 "CO2 Emission 3 days running average",
               borderColor: "rgb(255, 255, 0)",
               fill: false,
-              data: carbon_3.slice(0, DATADAY),
+              data: carbon_data.carbon_3.slice(0, DATADAY),
               hidden: true,
               yAxisID: 'y',
             },
@@ -302,7 +300,7 @@
                 "CO2 Emission 7 days running average",
               borderColor: "rgb(255, 153, 0)",
               fill: false,
-              data: carbon_7.slice(0, DATADAY),
+              data: carbon_data.carbon_7.slice(0, DATADAY),
               hidden: true,
               yAxisID: 'y',
             },
@@ -311,7 +309,7 @@
                 "CO2 Emission 30 days running average",
               borderColor: "rgb(255, 0, 0)",
               fill: false,
-              data: carbon_30.slice(0, DATADAY),
+              data: carbon_data.carbon_30.slice(0, DATADAY),
               yAxisID: 'y',
 
             },
@@ -324,7 +322,7 @@
               fill: false,
               data: createPercentileLine(
                 percentileSaved,
-                carbon_30
+                carbon_data.carbon_30
               ).slice(0, DATADAY),
               steppedLine: true,
               yAxisID: 'y',
@@ -354,8 +352,8 @@
         },
       });
       loading.style.display = "none";
-    } catch {
-      console.log("CO2 emission graph not working");
+    } catch(e) {
+      console.log(e);
     }
   }
 
@@ -592,6 +590,13 @@ async function forecastGraph() {
     .addEventListener("click", () => {
       greenEnergyData();
       setLastUpdate("lastUpdateGreenEnergy");
+    });
+      // onClick eventlistner for forecast refresh button
+  document
+    .getElementById("refreshForecast")
+    .addEventListener("click", () => {
+      forecastGraph();
+      setLastUpdate("lastUpdateForecast");
     });
 </script>
 

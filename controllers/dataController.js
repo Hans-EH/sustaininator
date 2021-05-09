@@ -35,7 +35,7 @@ exports.co2emission = function (req, res, next) {
       //  carbon_7: dataValuesWeek,
       //  carbon_3: dataValuesDays,
       //  carbon_1: dataValues,
-      //  labels_1: dataLabels,
+      //  labels_1: data_labels,
       //})
       //new_graph_data.save(function (err, result) {
       //  if (err) {
@@ -56,36 +56,6 @@ exports.co2emission = function (req, res, next) {
   fetchCO2data();
 };
 
-// Controller for fetching and posting label data.
-exports.co2emissionlabels = function (req, res, next) {
-  async function fetchlabeldata() {
-    try {
-      // Virker
-      const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
-      let data = await fetch(URI).then((response) => response.json());
-
-      let dataLabels = [];
-
-      for (let i = 0; i < data.result.records.length; i++) {
-        // Push labels
-        if (data.result.records[i].PriceArea == "DK1") {
-          dataLabels.push(data.result.records[i].Minutes5DK.slice(-8, -3));
-        }
-      }
-      // Reverse Arrays
-      dataLabels = dataLabels.reverse();
-
-      res.json(dataLabels);
-    } catch (error) {
-      console.error(error);
-      res.send(false);
-    }
-  }
-
-  fetchlabeldata();
-};
-
 //Function that creates a moving average dataset depended on amount of days.
 function createData(days, dataValues, newDataValues) {
   //total data points
@@ -102,72 +72,44 @@ function createData(days, dataValues, newDataValues) {
   }
 }
 
-//exports moving average for co2 emissions throughout 30 days
-exports.carbon_30 = function (req, res, next) {
-  async function carbon_30_post() {
+//controller for creating the carbon graph
+exports.carbon_data = function (req, res, next) {
+  async function post_carbon_data() {
     try {
-      let carbon_30 = [];
-      const URI = process.env.WEB_HOST + "data/co2emission";
-      let data = await fetch(URI).then((response) => response.json());
-      console.log(data.length);
-      createData(30, data, carbon_30);
-      res.json(carbon_30);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  carbon_30_post();
-};
-
-//exports moving average for co2 emissions throughout 7 days
-exports.carbon_7 = function (req, res, next) {
-  async function carbon_7_post() {
-    try {
-      let carbon_7 = [];
-      const URI = process.env.WEB_HOST + "data/co2emission";
-      let data = await fetch(URI).then((response) => response.json());
-      createData(7, data, carbon_7);
-      res.json(carbon_7);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  carbon_7_post();
-};
-
-//exports moving average for co2 emissions throughout 3 days
-exports.carbon_3 = function (req, res, next) {
-  async function carbon_3_post() {
-    try {
-      let carbon_3 = [];
-      const URI = process.env.WEB_HOST + "data/co2emission";
-      let data = await fetch(URI).then((response) => response.json());
-      createData(3, data, carbon_3);
-      res.json(carbon_3);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-  carbon_3_post();
-};
-
-
-//exports moving average for co2 emissions throughout 1 day
-exports.carbon_1 = function (req, res, next) {
-  async function carbon_1_post() {
-    try {
+      //defining the arrays to be used
       let carbon_1 = [];
+      let carbon_3 = [];
+      let carbon_7 = [];
+      let carbon_30 = [];
+      let data_labels = [];
       const URI = process.env.WEB_HOST + "data/co2emission";
       let data = await fetch(URI).then((response) => response.json());
+      const URL2 =
+      'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
+      let labels = await fetch(URL2).then((response) => response.json());
+      //create the moving average datasets
       createData(1, data, carbon_1);
-      res.json(carbon_1);
+      createData(3, data, carbon_3)
+      createData(7, data, carbon_7);
+      createData(30, data, carbon_30);
+
+      for (let i = 0; i < labels.result.records.length; i++) {
+        // Push labels
+        if (labels.result.records[i].PriceArea == "DK1") {
+          data_labels.push(labels.result.records[i].Minutes5DK.slice(-8, -3));
+        }
+      }
+      // Reverse Arrays
+      data_labels = data_labels.reverse(); 
+
+      res.json({carbon_1,carbon_3,carbon_7,carbon_30,data_labels});
+
     } catch (error) {
       console.log(error);
     }
   }
-  carbon_1_post();
+  post_carbon_data();
 };
-
 
 // Controller for fetching and posting label data.
 exports.forecastdata = function (req, res, next) {
@@ -522,37 +464,37 @@ exports.greenenergi_labels = function (req, res, next) {
 
 // Controller for green energy data
 exports.greenEnergy = async function (req, res, next) {
-    try {
-      // Fetch all the good shit
-      const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
-      let data = await fetch(URI).then((response) => response.json());
+  try {
+    // Fetch all the good shit
+    const URI =
+      'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+    let data = await fetch(URI).then((response) => response.json());
 
-      // Arrays for labels and values to be shown on green energy chart
-      let dataTimestamp = [];
-      let dataOffshoreWind = [];
-      let dataOnshoreWind = [];
-      let dataSolar = [];
+    // Arrays for labels and values to be shown on green energy chart
+    let dataTimestamp = [];
+    let dataOffshoreWind = [];
+    let dataOnshoreWind = [];
+    let dataSolar = [];
 
-      // Experimental: Iterate over every other point in results adding east and west value-pair together for each time interval
-      // Push values into respective data arrays
-      for (let i = 0; i < data.result.records.length; i = i + 2) {
-        dataTimestamp.push(data.result.records[i].Minutes5DK.slice(-8, -3));         
-        dataOffshoreWind.push(data.result.records[i].OffshoreWindPower + data.result.records[i + 1].OffshoreWindPower);
-        dataOnshoreWind.push(data.result.records[i].OnshoreWindPower + data.result.records[i + 1].OnshoreWindPower);
-        dataSolar.push(data.result.records[i].SolarPower + data.result.records[i + 1].SolarPower);
-      }
-      
-      // Reverse Arrays
-      dataTimestamp = dataTimestamp.reverse();
-      dataOffshoreWind = dataOffshoreWind.reverse();
-      dataOnshoreWind = dataOnshoreWind.reverse();
-      dataSolar = dataSolar.reverse();
-
-      // Not sure what happens with this result
-      res.json({dataTimestamp, dataOffshoreWind, dataOnshoreWind, dataSolar});
-    } catch (error) {
-      console.error(error);
-      res.send(false);
+    // Experimental: Iterate over every other point in results adding east and west value-pair together for each time interval
+    // Push values into respective data arrays
+    for (let i = 0; i < data.result.records.length; i = i + 2) {
+      dataTimestamp.push(data.result.records[i].Minutes5DK.slice(-8, -3));
+      dataOffshoreWind.push(data.result.records[i].OffshoreWindPower + data.result.records[i + 1].OffshoreWindPower);
+      dataOnshoreWind.push(data.result.records[i].OnshoreWindPower + data.result.records[i + 1].OnshoreWindPower);
+      dataSolar.push(data.result.records[i].SolarPower + data.result.records[i + 1].SolarPower);
     }
+
+    // Reverse Arrays
+    dataTimestamp = dataTimestamp.reverse();
+    dataOffshoreWind = dataOffshoreWind.reverse();
+    dataOnshoreWind = dataOnshoreWind.reverse();
+    dataSolar = dataSolar.reverse();
+
+    // Not sure what happens with this result
+    res.json({ dataTimestamp, dataOffshoreWind, dataOnshoreWind, dataSolar });
+  } catch (error) {
+    console.error(error);
+    res.send(false);
+  }
 };

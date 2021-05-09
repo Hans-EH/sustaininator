@@ -28,11 +28,8 @@ router.get("/", function (req, res, next) {
             route: "/",
             profile_data: profile_data,
             counted_devices: counted_devices,
-            carbon_labels: process.env.WEB_HOST + "data/co2emissionlabels",
-            carbon_30: process.env.WEB_HOST + "data/carbon30",
-            carbon_7: process.env.WEB_HOST + "data/carbon7",
-            carbon_3: process.env.WEB_HOST + "data/carbon3",
-            carbon_1: process.env.WEB_HOST + "data/carbon1",
+            carbon_data: process.env.WEB_HOST + "data/carbondata",
+            carbon_labels: process.env.WEB_HOST + "data/carbonlabels",
             forecast_data: process.env.WEB_HOST + "data/forecastdata",
             green_energy: process.env.WEB_HOST + "data/greenenergy"
           });

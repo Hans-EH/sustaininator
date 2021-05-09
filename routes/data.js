@@ -7,20 +7,8 @@ let dataController = require("../controllers/datacontroller");
 // GET co2 emission data.
 router.get("/co2emission", dataController.co2emission);
 
-// GET co2 emission data.
-router.get("/co2emissionlabels", dataController.co2emissionlabels);
-
-// GET co2 emission data 30 days moving average.
-router.get("/carbon30", dataController.carbon_30);
-
-// GET co2 emission data 7 days moving average.
-router.get("/carbon7", dataController.carbon_7);
-
-// GET co2 emission data 3 days moving average.
-router.get("/carbon3", dataController.carbon_3);
-
-// GET co2 emission data 1 days moving average.
-router.get("/carbon1", dataController.carbon_1);
+// GET emission data as average over a certain period and labels
+router.get("/carbondata", dataController.carbon_data);
 
 // GET forcast data, including labels, last 30 days and the forecast
 router.get("/forecastdata", dataController.forecastdata);
