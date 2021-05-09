@@ -85,7 +85,7 @@ exports.carbon_data = function (req, res, next) {
       const URI = process.env.WEB_HOST + "data/co2emission";
       let data = await fetch(URI).then((response) => response.json());
       const URL2 =
-      'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
       let labels = await fetch(URL2).then((response) => response.json());
       //create the moving average datasets
       createData(1, data, carbon_1);
@@ -100,9 +100,9 @@ exports.carbon_data = function (req, res, next) {
         }
       }
       // Reverse Arrays
-      data_labels = data_labels.reverse(); 
+      data_labels = data_labels.reverse();
 
-      res.json({carbon_1,carbon_3,carbon_7,carbon_30,data_labels});
+      res.json({ carbon_1, carbon_3, carbon_7, carbon_30, data_labels });
 
     } catch (error) {
       console.log(error);
@@ -136,15 +136,15 @@ exports.forecastdata = function (req, res, next) {
       let forecast_labels = [];
       let forecast_data = [];
       //adjust how many days back it should count
-      let days_past = 5;
+      let days_past = 3;
+      //add extra labels and the new datapoints for forecasting the future:
+      let days_forecasted = 3;
+
       for (let i = labels.length - (days_past * 12 * 24); i < labels.length; i++) {
         data.push(raw_emissions_data[i - 1]);
         forecast_labels.push(labels[i]);
       }
 
-
-      //add extra labels and the new datapoints for forecasting the future:
-      let days_forecasted = 3;
       //we look at the last element, minus days_forecasted days
       for (let i = (labels.length - days_forecasted * 12 * 24); i < labels.length; i++) {
         forecast_labels.push((parseInt(labels[i].slice(0, 2)) + days_forecasted) + " " + labels[i].slice(2, 8));
@@ -152,7 +152,8 @@ exports.forecastdata = function (req, res, next) {
       }
 
 
-      MA(7, raw_emissions_data, days_past, days_forecasted);
+      //MA(1, raw_emissions_data, days_past, days_forecasted);
+      find_best_model(data, days_past);
       //moving average function with seasonality
       function MA(q, data, days_past, days_forecasted) {
         //amount of data points in a day
@@ -166,20 +167,20 @@ exports.forecastdata = function (req, res, next) {
             //convert the loops back, so that it goes from lowest to highest/last entry
             let n = data.length - (d * day) + ((day + 1) - t)
             //push forcast datapoints
-            forecast_data.push(MA_time(season_data[t], d, q, data[n]));
+            forecast_data.push(MA_add_data(season_data[t], d, q, data[n]));
           }
         }
         //forecasts the future:
         for (let d = days_forecasted; d > 0; d--) {
           //loops through all the times of day
           for (let t = day - 1; t >= 0; t--) {
-            forecast_data.push(MA_time(season_data[t], d, q, forecast_data[forecast_data.length - 1]));
+            forecast_data.push(MA_add_data(season_data[t], d, q, forecast_data[forecast_data.length - 1]));
           }
         }
       };
 
       //gives back the MA result for 1 time of the day using seasonal data
-      function MA_time(data, from, order, pre_data) {
+      function MA_add_data(data, from, order, pre_data) {
         //if the pre_data is a NaN, then copy previous entry again (error might happen between generating past data and future)
         if (isNaN(pre_data)) {
           pre_data = forecast_data[forecast_data.length - 1];
@@ -263,6 +264,40 @@ exports.forecastdata = function (req, res, next) {
       //  }
       //}
 
+      function find_best_model(data, days_past) {
+        //set to a random high number
+        let best_model = 10000;
+        let best_model_order = 1;
+        let model_fits = 0;
+        //loops through all ordes for the model, minus how many days that it backcasts.
+        for (let i = 1; i < 29 - days_past; i++) {
+          //generate the forecasted model:
+          MA(i, raw_emissions_data, days_past, days_forecasted);
+          model_fits = model_fit(data, days_past);
+          //checking if the average deviation is smaller at a new order
+          if (best_model > model_fits) {
+            //if it is, note the order and the deviation.
+            best_model = model_fits;
+            best_model_order = i;
+          }
+          //emptien the array.
+          forecast_data = [];
+          console.log(i + ": Model fitness: " + model_fits);
+        }
+        console.log("best order: " + best_model_order);
+        MA(best_model_order, raw_emissions_data, days_past, days_forecasted);
+      }
+
+      //calculates how well the model fits the data, by finding the deviation at each point
+      function model_fit(data, days_past) {
+        let data_diff = [];
+        for (let i = 0; i < DATADAY * days_past; i++) {
+          data_diff.push(Math.abs(data[i] - forecast_data[i]));
+        }
+        //returns the average deviation of the model from the backcasted data
+        return avg(data_diff, 0, data_diff.length);
+      }
+
       //seasonal creation of data, we push 30 days of data for the same time, in an array.
       function seasonal_view(data, day) {
         let seasonal_data = [];
@@ -327,7 +362,7 @@ exports.forecastdata = function (req, res, next) {
       }
       //MA_test();
 
-      res.json({ forecast_labels, data, forecast_data });
+      res.json({ forecast_labels, data, forecast_data, days_past, days_forecasted });
     } catch (error) {
       console.error(error);
       res.send(false);
