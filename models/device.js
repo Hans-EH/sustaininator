@@ -21,9 +21,9 @@ deviceSchema
 
         /* Find the indexes with an on state in the onVector */
         for (let i = 0; i < this.activetime.length; i++) {
-        if (this.activetime[i] === 1) {
-            activeIndex.push(i)
-        }
+            if (this.activetime[i] === 1) {
+                activeIndex.push(i)
+            }
         }
         //activeIndex => [1, 9, 18]
         activeIndex = activeIndex.map(n => n * 12);
@@ -32,13 +32,13 @@ deviceSchema
 
         /* Find the index distance to the next active  */
         for (let i = 0; i < 24 * 12; i++) {
-        probVector[i] = Math.min(...activeIndex.map(n => {
-            return (Math.abs(n - i)) / 6
-        }))
+            probVector[i] = Math.min(...activeIndex.map(n => {
+                return (Math.abs(n - i)) / 6
+            }))
         }
         /* gaussian function */
         probVector = probVector.map(x => {
-        return ((Math.exp(-(x ** 2)).toFixed(4)));
+            return ((Math.exp(-(x ** 2)).toFixed(4)));
         })
 
         return probVector;

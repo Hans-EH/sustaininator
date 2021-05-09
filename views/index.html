@@ -8,7 +8,7 @@
         <h5>Money saved</h5>
       </div>
       <div class="card-body">
-        <p>{{ profile_data.money_saved }} DKK</p>
+        <p>{{profile_data.money_saved}} DKK</p>
       </div>
     </div>
   </div>
@@ -56,30 +56,49 @@
   <li class="nav-item" role="presentation">
     <button class="nav-link" id="pills-energy-tab" data-bs-toggle="pill" data-bs-target="#pills-energy" type="button" role="tab" aria-controls="pills-energy" aria-selected="false">Danish Energy Production</button>
   </li>
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link"
+      id="pills-myhome-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-myhome"
+      type="button"
+      role="tab"
+      aria-controls="pills-myhome"
+      aria-selected="false"
+    >
+      Home Energy Consumption
+    </button>
+  </li>
 </ul>
 <div class="tab-content" id="pills-tabContent">
-  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
-  <!-- Main chart -->
-<div class="row mb-3" id="CO2Chart">
-  <div class="col-12">
-    <div class="card mb-3">
-      <div class="card-header d-flex justify-content-between">
-        <div class="d-flex align-items-center">
-          <p class="m-0">CO<sub>2</sub> Emission</p>
-          <!-- Time stamp -->
-          <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
-        </div>
-        <!-- Refresh Button -->
-        <button class="btn btn-secondary" id="refreshCO2">
-          <i class="bi bi-arrow-repeat"></i>
-        </button>
-      </div>
+  <div
+    class="tab-pane fade show active"
+    id="pills-home"
+    role="tabpanel"
+    aria-labelledby="pills-home-tab"
+  >
+    <!-- CO2 chart -->
+    <div class="row mb-3" id="CO2Chart">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+              <p class="m-0">CO<sub>2</sub> Emission</p>
+              <!-- Time stamp -->
+              <small class="ms-2 me-0 my-0" id="lastUpdateCO2"></small>
+            </div>
+            <!-- Refresh Button -->
+            <button class="btn btn-secondary" id="refreshCO2">
+              <i class="bi bi-arrow-repeat"></i>
+            </button>
+          </div>
 
       <div class="card-body p-3">
         <canvas id="chartCO2"></canvas>
         <!--Refresh symbol -->
         <div class="my-3 text-center">
-          <div id="loading" class="spinner-border" role="status">
+          <div id="loading-CO2" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -100,9 +119,8 @@
   </div>
 </div>
   </div>
-  <div class="tab-pane fade" id="pills-energy" role="tabpanel" aria-labelledby="pills-energy-tab">
-  <!-- Energy production chart -->
-<div class="row mb-3" id="energyChart">
+  <div class="tab-pane fade" id="pills-energy" role="tabpanel" aria-labelledby="pills-energy-tab"><!-- Energy production chart -->
+<div class="row mb-3" id="greenEnergyChart">
   <div class="col-12">
     <div class="card mb-3">
       <div class="card-header d-flex justify-content-between">
@@ -121,7 +139,7 @@
         <canvas id="chartGreenEnergy"></canvas>
                       <!--Refresh symbol -->
         <div class="my-3 text-center">
-          <div id="loadingenergi" class="spinner-border" role="status">
+          <div id="loading-green-energi" class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
           </div>
         </div>
@@ -184,14 +202,35 @@
   </div>
 </div>
   </div>
+  <div
+    class="tab-pane fade"
+    id="pills-myhome"
+    role="tabpanel"
+    aria-labelledby="pills-myhome-tab"
+  >
+    <!-- My energy consumption graph -->
+    <div class="row mb-3" id="MyhomeChart">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+              <p class="m-0">My home energy consumption</p>
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <canvas id="chartMyhome"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
-  async function energiDataEMI() {
+  async function CO2Data() {
     try {
       //datapoints on 1 day
       const DATADAY = (60 * 24) / 5;
-
 
       let percentileSaved = 100 - "{{profile_data.sustainable_goals}}";
       //a function that creates the percentile line using preexisting moving average and a percentile.
@@ -224,7 +263,7 @@
         return a - b;
       }
 
-      let loading = document.getElementById("loading");
+      let loading = document.getElementById("loading-CO2");
       loading.style.display = "inline-block";
       let carbon_30 = await fetch("{{ carbon_30 }}").then((response) => response.json());
       let carbon_7 = await fetch("{{ carbon_7 }}").then((response) => response.json());
@@ -243,35 +282,38 @@
           ),
           datasets: [
             {
-              label: "CO2 Emission last 24 hours (5min) (g/kWh)",
+              label: "CO2 Emission last 24 hours",
               borderColor: "rgb(0, 255, 0)",
               fill: false,
               data: carbon_1.slice(0, DATADAY),
-              //steppedLine: "true",
+              yAxisID: 'y',
             },
             {
               label:
-                "CO2 Emission 3 days running average (5min) (g/kWh)",
+                "CO2 Emission 3 days running average",
               borderColor: "rgb(255, 255, 0)",
               fill: false,
               data: carbon_3.slice(0, DATADAY),
               hidden: true,
+              yAxisID: 'y',
             },
             {
               label:
-                "CO2 Emission 7 days running average (5min) (g/kWh)",
+                "CO2 Emission 7 days running average",
               borderColor: "rgb(255, 153, 0)",
               fill: false,
               data: carbon_7.slice(0, DATADAY),
               hidden: true,
+              yAxisID: 'y',
             },
             {
               label:
-                "CO2 Emission 30 days running average (5min) (g/kWh)",
+                "CO2 Emission 30 days running average",
               borderColor: "rgb(255, 0, 0)",
               fill: false,
               data: carbon_30.slice(0, DATADAY),
-              //steppedLine: "true",
+              yAxisID: 'y',
+
             },
             {
               label:
@@ -285,11 +327,23 @@
                 carbon_30
               ).slice(0, DATADAY),
               steppedLine: true,
+              yAxisID: 'y',
             },
           ],
         },
         // Configuration options go here
         options: {
+          scales: {
+            yAxes: [{
+              id: 'y',
+              display: true,
+              scaleLabel: {
+                display: true,
+                labelString: 'g / kWh',
+              },
+            }]
+            
+          },
           elements: {
             point: {
               radius: 0,
@@ -306,40 +360,134 @@
   }
 
   // Kode til hentning of visning af energiproduktion
-  async function greenEnergyDataEMI() {
+  async function greenEnergyData() {
     try {
-      let loading = document.getElementById("loadingenergi");
+      let loading = document.getElementById("loading-green-energi");
       loading.style.display = "inline-block";
 
-      let solar = await fetch("{{ solar }}").then((response) => response.json());
-      let onshore_wind = await fetch("{{ on_wind }}").then((response) => response.json()); 
-      let offshore_wind = await fetch("{{ off_wind }}").then((response) => response.json()); 
-      let labels = await fetch("{{ energi_labels }}").then((response) => response.json()); 
+      let green_energy_data = await fetch("{{green_energy}}").then((response) => response.json());
+      // Do the splits
+      let home_energy_data = "{{profile_data.total_energy_consumption_last_day}}".split(',');
 
       var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
       var chart = new Chart(ctx, {
         // The type of chart we want to create
         type: "line",
         data: {
-          labels: labels,
+          labels: green_energy_data.dataTimestamp,
           datasets: [
             {
-              label: "Offshore Energy Production (Vest) (5min) (MWh)",
+              label: "Offshore Energy Production",
               borderColor: "rgb(99, 132, 255)",
               fill: false,
-              data: offshore_wind, //data: dataValuesOffWind.slice(0, 20),
+              data: green_energy_data.dataOffshoreWind,
+              yAxisID: 'y_l',
             },
             {
-              label: "Onshore Energy Production (Vest) (5min) (MWh)",
+              label: "Onshore Energy Production",
               borderColor: "rgb(132, 255, 99)",
               fill: false,
-              data: onshore_wind,
+              data: green_energy_data.dataOnshoreWind,
+              yAxisID: 'y_l',
             },
             {
-              label: "Solar Energy Production (Vest) (5min) (MWh)",
+              label: "Solar Energy Production",
               borderColor: "rgb(255, 255, 55)",
               fill: false,
-              data: solar,
+              data: green_energy_data.dataSolar,
+              yAxisID: 'y_l',
+            },
+            {
+              label: "Home Energy Consumption",
+              borderColor: "rgb(255, 201, 25)",
+              fill: false,
+              data: home_energy_data,
+              yAxisID: 'y_r'
+            },
+          ],
+        },
+
+        // Configuration options go here
+        options: {
+          stacked: false,
+          scales: {
+            yAxes: [{
+              id: 'y_l',
+              scaleLabel: {
+                display: true,
+                labelString: 'MWh',
+              },
+              position: 'left',
+              display: true,
+            }, {
+              id: 'y_r',
+              scaleLabel: {
+                display: true,
+                labelString: 'Home Energy Consumption (kWh)',
+              },
+              position: 'right',
+              display: true,
+              ticks: {
+                min: 0,
+                suggestedMax: 0.5,
+              },
+              grid: {
+                drawOnChartArea: false, // only want the grid lines for one axis to show up
+              },
+            }]
+          },
+          elements: {
+            point: {
+              radius: 0,
+              hitRadius: 10,
+              hoverRadius: 10,
+            },
+          },
+        },
+      });
+      loading.style.display = "none";
+    } catch {
+      console.log("Green energy graph failed");
+    }
+  }
+
+  //Shows the graph for home energy usage
+  function homeEnergyData() {
+    try {
+
+    //Import data on users energy consumption the passed day
+    let data = "{{profile_data.total_energy_consumption_last_day}}".split(',');
+    
+    //Push every five-minute interval beginning from current interval to this array
+    let time_labels = [];
+
+    //Get current date
+    let date = new Date();
+
+    for (let i=0; i<=288; i++){
+      //Format minutes and hours to have leading zero and rounded to five like 00:05
+      let f_min = ("0" + (Math.floor(date.getMinutes() / 5) * 5)).slice(-2);
+      let f_hour = ("0" + date.getHours()).slice(-2);
+
+      time_labels.push(`${f_hour}:${f_min}`);
+
+      //Increment the date by five minutes
+      date.setMinutes(date.getMinutes() + 5);
+    }
+    time_labels.shift()
+
+    let ctx = document.getElementById("chartMyhome").getContext("2d");
+    let chart = new Chart(ctx, {
+        // The type of chart we want to create
+        type: "line",
+        data: {
+          labels: time_labels,
+          datasets: [
+            {
+              label: "Home Energy Consumption (KWh)",
+              borderColor: "rgb(255, 201, 25)",
+              fill: false,
+              data: data,
             },
           ],
         },
@@ -355,9 +503,8 @@
           },
         },
       });
-      loading.style.display = "none";
-    } catch {
-      console.log("Energi graph failed");
+    } catch (error) {
+      console.error();
     }
   }
 
@@ -424,17 +571,18 @@ async function forecastGraph() {
 
   // Fetch data after page content has loaded
   window.addEventListener("load", function () {
-    energiDataEMI();
+    CO2Data();
     setLastUpdate("lastUpdateCO2");
-    greenEnergyDataEMI();
+    greenEnergyData();
     setLastUpdate("lastUpdateGreenEnergy");
     forecastGraph();
     setLastUpdate("lastUpdateForecast");
+    homeEnergyData();
   });
 
   // onClick eventlistner for refresh button
   document.getElementById("refreshCO2").addEventListener("click", () => {
-    energiDataEMI();
+    CO2Data();
     setLastUpdate("lastUpdateCO2");
   });
 
@@ -442,7 +590,7 @@ async function forecastGraph() {
   document
     .getElementById("refreshGreenEnergy")
     .addEventListener("click", () => {
-      greenEnergyDataEMI();
+      greenEnergyData();
       setLastUpdate("lastUpdateGreenEnergy");
     });
 </script>

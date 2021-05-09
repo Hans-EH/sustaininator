@@ -2,70 +2,141 @@
 
 <!-- Chart.js dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-<h1>{{ device.name }}</h1>
 
 <body>
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="card-header">
+        <h4>Device information:</h4>
+      </div>
+      <div class="card-body">
+        <table class="table table-hover">
+          <tr>
+            <th>Name</th>
+            <th>Power consumption</th>
+            <th>Status</th>
+          </tr>
+          <tr>
+            <td>{{device.name}}</td>
+            <td>{{device.power}} W</td>
+            {% if device.state == "ON" %}
+              <td><span class="greendot"></span></td>
+            {% else %}
+              <td><span class="reddot"></span></td>
+            {% endif %}
+        </table>
+      </div>
+    </div>
+  </div>
+  <!-- Device detail cards-->
+  <div class="row mb-3">
+    <div class="col-3">
+      <div class="mini-card card h-100 text-center">
+        <div class="card-header">
+          <h6>Energy Consumption Today</h6>
+        </div>
+        <div class="card-body">
+          <div id="dailyEnergyUse"> kWh</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="mini-card card h-100 text-center">
+        <div class="card-header">
+          <h6>Total Energy Consumption</h6>
+        </div>
+        <div class="card-body">
+          <div id="lifetimeEnergyUse">{{device.lifetime_energy_consumption.toFixed(3)}} kWh</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--Device Energy Consumption graph-->
   <div class="row mb-3">
     <div class="col-12">
       <div class="card">
         <div class="card-header d-flex justify-content-between">
           <div class="d-flex align-items-center">
-            <p class="my-0">Power Consumption</p>
-            <!-- Time stamp -->
-            <small class="ms-2 me-0 my-0" id="lastUpdateEnergyConsumption"></small>
+            <p class="my-0">Activity periods in the past 24 hours</p>
           </div>
-          <!-- Refresh Button -->
-          <button class="btn btn-secondary" id="refreshEnergyConsumption">
-            <i class="bi bi-arrow-repeat"></i>
-          </button>
         </div>
         <div class="card-body">
           <canvas id="deviceEnergy"></canvas>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 
-<!-- Displays the probability graph-->
+<!-- Displays the daily energy use graph-->
 <script>
+  
+  // Get device's energy use for the past 24 h
+  let pastDay = "{{device.energy_consumption_last_day}}".split(',');
+  // Change entries from strings to numbers, then sum every all entries
+  let sumDailyEnergyUse = pastDay.map(e => Number(e)).reduce((a, b) => {return a + b});
+  // Apply value to correct page element and round to three decimal places
+  document.getElementById("dailyEnergyUse").innerHTML = sumDailyEnergyUse.toFixed(3) + " kWh";
 
-  //Get the probability vector passed down from the controller
-  let probVector = "{{ probVector }}";
-  //Convert to an array
-  probVector = probVector.split(",");
-  console.log(probVector);
-  console.log(typeof(probVector));
+  //Get current date
+  let date = new Date();
+  let time_labels = [];
+  for (let i=0; i<=288; i++){
+    //Format minutes and hours to have leading zero and rounded to five like 00:05
+    let f_min = ("0" + (Math.floor(date.getMinutes() / 5) * 5)).slice(-2);
+    let f_hour = ("0" + date.getHours()).slice(-2);
 
-  let x = 5; //minutes interval
-  let times = []; // time array
-  let tt = 0; // start time
-  let ap = ['AM', 'PM']; // AM-PM
+    time_labels.push(`${f_hour}:${f_min}`);
 
-  //loop to increment the time and push results in array
-  for (let i = 0; tt < 24 * 60; i++) {
-    let hh = Math.floor(tt / 60); // getting hours of day in 0-24 format
-    let mm = (tt % 60); // getting minutes of the hour in 0-55 format
-    times[i] = ("0" + (hh % 12)).slice(-2) + ':' + ("0" + mm).slice(-2) + ap[Math.floor(hh / 12)]; // pushing data in array in [00:00 - 12:00 AM/PM format]
-    tt = tt + x;
+    //Increment the date by five minutes
+    date.setMinutes(date.getMinutes() + 5);
   }
-  console.log(times);
+  time_labels.shift()
+
   let ctx = document.getElementById("deviceEnergy").getContext("2d");
   let chart = new Chart(ctx, {
     // The type of chart we want to create
     type: "line",
     data: {
-      labels: times,
+      labels: time_labels,
       datasets: [
         {
-          label: "Device Energy Consumption (5min) (1/12Wh)",
-          borderColor: "rgb(99, 132, 255)",
+          label: "Energy Consumption",
+          borderColor: "rgb(255, 201, 25)",
           fill: false,
-          data: probVector,
+          data: pastDay,
+          yAxisID: 'y',
         },
       ],
     },
     // Configuration options go here
-    options: {},
+    options: {
+      stacked: true,
+      scales: {
+        yAxes: [{
+          id: 'y',
+          scaleLabel: {
+            display: true,
+            labelString: 'kWh'
+          },
+          position: 'left',
+          display: true,
+          ticks: {
+            min: 0,
+          }
+        }]
+      },
+      elements: {
+        point: {
+          radius: 0,
+          hitRadius: 10,
+          hoverRadius: 10
+        }
+      }
+    }
   });
 </script>
-
 
 {% endblock %}

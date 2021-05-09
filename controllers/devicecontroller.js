@@ -1,13 +1,15 @@
 let Device = require("../models/device");
 const { body, validationResult } = require("express-validator");
 let async = require("async");
-let { activeProbability } = require("../scripts/active_probability");
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
 const { listenerCount } = require("../models/device");
+let auth = require('../controllers/authcontroller');
 
 /* Display a list of all devices */
 exports.device_list = function (req, res, next) { 
+  // checking if user is logged in, else redirect to login screen
+  if (auth.isAuthenticated(req, res))
   //Find all devices that links to the user
   UserProfile.find({user: req.cookies["auth"]}).exec(function (err, found_profile) {
     if (err) {return next(err);}
@@ -20,12 +22,12 @@ exports.device_list = function (req, res, next) {
         device_list: device_list,
     });
     })
-
   });
 };
 
 // Display detail page for a specific device.
 exports.device_detail = function (req, res, next) {
+  if (auth.isAuthenticated(req, res))
   async.parallel(
     {
       device: function (callback) {
@@ -40,15 +42,10 @@ exports.device_detail = function (req, res, next) {
         err.status = 404;
         return next(err);
       }
-      console.log("activetime:" + typeof results.device.activetime);
-      let probVector = activeProbability(results.device.activetime);
-      console.log(probVector);
-
       // Successful, so render.
       res.render("device_detail", {
         title: results.device.name,
         device: results.device,
-        probVector: probVector,
       });
     }
   );
@@ -61,9 +58,7 @@ exports.device_create_post = [
     .trim()
     .isLength({ min: 1 })
     .escape()
-    .withMessage("Device name must be specified")
-    .isAlphanumeric()
-    .withMessage("You can not use non-alphanumeric characters"),
+    .withMessage("Device name must be specified"),
   body("energyusage")
     .trim()
     .isNumeric()
@@ -165,9 +160,7 @@ exports.device_edit_post = [
     .trim()
     .isLength({ min: 1 })
     .escape()
-    .withMessage("Device name must be specified")
-    .isAlphanumeric()
-    .withMessage("You can not use non-alphanumeric characters"),
+    .withMessage("Device name must be specified"),
   body("energyusage")
     .trim()
     .isNumeric()

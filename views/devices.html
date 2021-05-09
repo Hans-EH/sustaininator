@@ -45,7 +45,6 @@
         <tr>
           <th>Device name</th>
           <th>Power consumption</th>
-          <th>Last modified</th>
           <th>Status</th>
           <th>Edit</th>
           <th>Delete</th>
@@ -54,14 +53,13 @@
         <tr>
           <td><a class="device-inspec" href="devices/device_detail/{{device._id}}">{{device.name}}</a></td>
           <td>{{device.power}} W</td>
-          <td></td>
           {% if device.state == "ON" %}
             <td><span class="greendot"></span></td>
           {% else %}
             <td><span class="reddot"></span></td>
           {% endif %}
-          <td><a href="devices/edit/{{device._id}}"><i class="bi bi-gear"></i></a></td>
-          <td><button class="btn btn-sm" onclick="deleteCheck('{{device._id}}')"><i class="bi bi-trash"></i></button></i></td>
+          <td><a href="devices/edit/{{device._id}}"><i class="bi bi-gear device-edit"></i></a></td>
+          <td><button class="btn btn-sm" onclick="deleteCheck('{{device._id}}')"><i class="bi bi-trash delete-device"></i></button></i></td>
         </tr>
         {% else %}
         {% endfor %}

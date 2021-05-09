@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "test": "jest"
+    "cy:run": "cypress run",
+    "test": "start-server-and-test start http://localhost:3000 cy:run"
   },
   "jest": {
     "testEnvironment": "node"
@@ -28,5 +29,7 @@
     "nunjucks": "^3.2.3",
     "pug": "^3.0.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "start-server-and-test": "^1.12.1"
+  }
 }
