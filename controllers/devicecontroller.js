@@ -192,16 +192,16 @@ exports.device_edit_post = [
             if (err) {return next(err); }
             if (found_device === null) {
               //Name did change and is not taken - Create new device with old id and new information
-              let device = new Device({
+              let device = {
+                _id: req.params.id,
                 name: req.body.devicename,
                 power: req.body.energyusage,
                 activetime: req.body.activeArr,
-                _id: req.params.id,
-              });
+              };
               //Find and update the device
-              Device.findByIdAndUpdate(req.params.id, device, {}, function (err) {
+              Device.findByIdAndUpdate(req.params.id, device, {setDefaultsOnInsert: false}, function (err) {
                 if (err) {return next(err);}
-                //Success - redirect back to device list page
+                //Successfully updated device - redirect back to device list page
                 res.redirect("/devices");
               });
             }
@@ -232,13 +232,13 @@ exports.device_edit_post = [
             }
             else {
               //Name did not change, but new information was given - Update this device with new information
-              let device = new Device({
+              let device = {
+                _id: req.params.id,
                 power: req.body.energyusage,
                 activetime: req.body.activeArr,
-                _id: req.params.id,
-              });
+              };
               //Find and update the device
-              Device.findByIdAndUpdate(req.params.id, device, {}, function (err) {
+              Device.findByIdAndUpdate(req.params.id, device, {setDefaultsOnInsert: false}, function (err) {
                 if (err) {return next(err);}
                 //Success - redirect back to device list page
                 res.redirect("/devices");
