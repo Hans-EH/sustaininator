@@ -1,110 +1,111 @@
-/* This is the server side update loop */
-let async = require('async');
 let Device = require('../models/device');
 let UserProfile = require('../models/user_profile')
 let User = require('../models/user');
 
-//This function handles all of the updates every five minutes
+/* This function handles all of the updates and is called every five minutes
+
+    It goes through every profile and through every device the profile have, then it:
+    1 - updates its state based on the probability it have turning on at current time
+    2 - updates the total amount of energy the device have consumed over the last day and its lifetime
+    3 - updates the profiles total amount of energy consumed by taking the sum of all the active devices it has
+
+*/
 exports.update = function() {
-    // 1 - Collect a list of all devices
-    // 2 - Calculate a list of all the devices that should be on
-    // 3 - Update the status
-    // 3.5 - Sum all the devices power consumption
-    // 4 - Save the results to the database
-
-    //updateState()
-    //updateDeviceEnergyConsumption()
-    //updateUserProfileEnergyConsumption()
-}
-
-/* loop over all devices with state: "ON"
-   update the last day's energy use array
-   update the device's total energy use */
-function updateDeviceEnergyConsumption(){
-
-    Device.find({state: "ON"}).exec((err, device_list) => {
-        if (err) {return next(err);}
-
-        //Update the energyusage 
-        for (let device of device_list) {
-            device.energy_consumption_last_day.shift();
-            device.energy_consumption_last_day.push(device.power / (12 * 1000));
-
-            device.lifetime_energy_consumption += device.power / (12 * 1000);
-
-            //Save
-            device.save(function(err, next) {
-                if (err) {return next(err)}
-            });
-        }
-    });
-}
-
-// loop over all/a user profiles update their last day's energy use array -
-// - by looping over all of their devices -> user profile needs a device list
-// update each user profile's total energy use
-function updateUserProfileEnergyConsumption(){
-
-    UserProfile.find().exec((err, user_profiles) => {
-        if (err) {return next(err);}
-        if (user_profiles) {
-            for (let user_profile of user_profiles) {
-                let profile_sum = 0;
-                for (let device_id of user_profile.devices) {
-                    Device.find({id: device_id, state: "ON"}).exec((err, found_device) => {
-                        if (err) {return next(err);}
-                        if (found_device) {
-                            profile_sum += device.power / (12 * 1000)
-                        }
-                    });
-                    
-                }
-                //The sum of all the devices energy usage is now summed - add it to the profile
-                user_profile.total_energy_consumption_last_day.shift()
-                user_profile.total_energy_consumption_last_day.push(profile_sum);
-
-                //Save to db
-                user_profile.save(function (err, next) {
-                    if (err) {return next(err)}
-                });
-            }
-        }
-        else {
-            console.log("No profiles is added")
-        }
-    })
-}
-
-//Updates all the states in the database
-function updateState() {
+    
+    // Get the current local time
     let day = new Date();
-    //Format a time string and round down the minutes to nearest five minute interval
-    //ex. 00:04 becomes 00:00, 00:06 becomes 00:05
+
+    // Format a time string and round down the minutes to nearest five minute interval
+    // ex. 00:04 becomes 00:00, 00:06 becomes 00:05
     let hour = day.getHours();
     let minutes = Math.floor(day.getMinutes() / 5);
 
-    //Get the index in the probVector of current time
-    let index = 12 * hour + minutes
-
-    //Find all devices and update their state if they should be activated
-    Device.find().exec((err, device_list) => {
-        if (err) {return next(err)};
-        for (let device of device_list) {
-            if (shouldActivate(device.probVector[index])) {
-                device.state = "ON";
-                console.log(`${device.name} should be activated!, with prob ${device.probVector[index]}`)
-            } 
-            else {device.state = "OFF";}
-
-            //Save the device
-            device.save(function(err, next) {
-                if (err) {return next(err)}
-            })
+    // Convert the current local time as an index between 0 and 288
+    let time_index = 12 * hour + minutes
+    
+    UserProfile.find({}).populate('devices').exec(function (err, user_profiles) {
+        if (err) {return new Error('User profiles could not be updated!')}
+        for (let user_profile of user_profiles) {
+            let total_energy_of_active_devices = 0
+            for (let device of user_profile.devices) {
+                if (shouldActivate(device, time_index)){
+                    updateState(device, 'ON')
+                    updateDeviceEnergyConsumption(device, 'ON')
+                    total_energy_of_active_devices += (device.power / (12 * 1000)) //Convert to KWh
+                }
+                else {
+                    updateState(device, 'OFF')
+                    updateDeviceEnergyConsumption(device, 'OFF')
+                }
+            }
+            updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices)
         }
     })
+
+}
+//Updates the state of a single device
+function updateState(device, state) {
+
+    if (state === 'ON') {
+        device.state = 'ON'
+    }
+    else device.state = 'OFF'
+
+    //Save the device
+    device.save(function (err) {
+        if (err) {return new Error(`${device.name} could not be updated!`)}
+    });
 }
 
-function shouldActivate(p){
-    return  Math.random() < p;
+// Update a single device lifetime and last-day energy consumption
+function updateDeviceEnergyConsumption(device, state){
+
+    //Shift the array five-minutes to the left and if ON push device's energy use in the next 5 minutes in kWh
+    // Energy = Power * Time, Example 1: E = 2 W * 1 h = 2 Wh, Example 2: E = 1000 W * 1 h = 1000 Wh = 1 kWh
+    // Example 3 (5 minutes): E = 7 W * (1/12) h = (7/12) Wh = (7/12)/1000 kWh = 7/(12 * 1000) kWh
+    device.energy_consumption_last_day.shift();
+
+    if (state === 'ON') {
+        device.energy_consumption_last_day.push(device.power / (12 * 1000));
+        device.lifetime_energy_consumption += device.power / (12 * 1000);
+    }
+    else {
+        device.energy_consumption_last_day.push(0);
+    }
+
+    //Save the device
+    device.save(function(err, next) {
+        if (err) {return new Error(`${device.name}'s energy consumption could not be updated!`)}
+    });
 }
 
+// Update a single user profiles energy consumption
+function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices){
+
+    // Shift the array five-minutes to the left
+    user_profile.total_energy_consumption_last_day.shift();
+
+    // Round and add the energy consumption of all the profiles active devices
+    user_profile.total_energy_consumption_last_day.push(Math.round(total_energy_of_active_devices * 100) / 100);
+
+    //Save profile to db
+    user_profile.save(function (err, next) {
+        if (err) {return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" could not be updated!`)}
+        //console.log(`User profile "${user_profile.firstname}" was successfully updated!`)
+    });
+}
+
+/**
+ * 
+ * @param {*} device A device schema instance of the Device model
+ * @param {*} time_index An index of the current time
+ * @returns true if a given device at current time have a probablilty higher than a pseudorandom number
+ *          false otherwise
+ */
+function shouldActivate(device, time_index){
+
+    //Get the probability of the device
+    prob_of_activating = device.probVector[time_index];
+
+    return  Math.random() < prob_of_activating;
+}

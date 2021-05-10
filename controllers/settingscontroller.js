@@ -1,6 +1,6 @@
 // Packages
 const { body, validationResult } = require("express-validator");
-const auth = require("./AuthController");
+const auth = require("../controllers/authcontroller");
 
 // Models
 let UserProfile = require("../models/user_profile");
@@ -66,7 +66,11 @@ exports.user_settings_post = [
             },
           ];
 
-          res.render("settings", { title: "Settings", messages: messages });
+          res.render("settings", {
+            title: "Settings",
+            test: "tester",
+            messages: messages,
+          });
         }
       });
     }
