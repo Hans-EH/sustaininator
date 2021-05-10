@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 let User = require("../models/user");
 let UserProfile = require("../models/user_profile");
 let auth = require("../controllers/authcontroller");
-const { Mongoose } = require("mongoose");
+const { Mongoose } = require("mongoose"); // unused?
 
 exports.auth_get = function (req, res, next) {
   res.render("login", { title: "Login", route: "/login" });
@@ -25,7 +25,7 @@ exports.auth_post = [
     } else {
       // Form data
       let tried_email = req.body.email;
-      let tried_pass = req.body.password;
+      let tried_pass = req.body.password; //not used?
 
       User.findOne({ email: tried_email }).exec(function (err, found_user) {
         // Connection or other errors

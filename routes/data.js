@@ -13,19 +13,7 @@ router.get("/carbondata", dataController.carbon_data);
 // GET forcast data, including labels, last 30 days and the forecast
 router.get("/forecastdata", dataController.forecastdata);
 
-// GET offshore wind production data
-//router.get("/offshorewind", dataController.greenenergi_off_wind);
-
-// GET onshore wind production data
-//router.get("/onshorewind", dataController.greenenergi_on_wind);
-
-// GET solar production data
-//router.get("/solar", dataController.greenenergi_solar);
-
-// GET labels for energi production data
-//router.get("/energilabels", dataController.greenenergi_labels);
-
-// GET everything for green energi production
+// GET everything for green energy production
 router.get("/greenenergy", dataController.greenEnergy);
 
 // Exports router to app

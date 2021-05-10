@@ -1,6 +1,6 @@
 // auth controller for validating that user is logged in
-let auth = require("../controllers/authcontroller");
-let graph_data = require("../models/cache_graph_data");
+let auth = require("../controllers/authcontroller");    // This appears unused
+let graph_data = require("../models/cache_graph_data"); // This appears unused
 // Node fetch package
 const fetch = require("node-fetch");
 
@@ -16,6 +16,7 @@ exports.co2emission = function (req, res, next) {
       const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
       let data = await fetch(URI).then((response) => response.json());
+      //console.log("this is data in fetchCO2data after uri fetch:", data);
 
       let dataValues = [];
 
@@ -84,9 +85,11 @@ exports.carbon_data = function (req, res, next) {
       let data_labels = [];
       const URI = process.env.WEB_HOST + "data/co2emission";
       let data = await fetch(URI).then((response) => response.json());
+      //console.log("this is data in post_carbon_data after uri fetch:", data);
       const URL2 =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
       let labels = await fetch(URL2).then((response) => response.json());
+      //console.log("this is labels in post_carbon_data after uri2 fetch:", data);
       //create the moving average datasets
       createData(1, data, carbon_1);
       createData(3, data, carbon_3)
@@ -371,138 +374,13 @@ exports.forecastdata = function (req, res, next) {
 
   fetchforecastdata();
 };
-/* 
-
-// Controller for fetching onshore wind production
-exports.greenenergi_on_wind = function (req, res, next) {
-  async function fetch_on_wind_data() {
-    try {
-      const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
-      let data = await fetch(URI).then((response) => response.json());
-      // Arrays for labels and values
-      let dataValuesOnWind = [];
-
-      // Iterate over reponse results
-      for (let i = 0; i < data.result.records.length; i++) {
-        // Push labels and values
-        if (data.result.records[i].PriceArea == "DK1") {
-          dataValuesOnWind.push(data.result.records[i].OnshoreWindPower);
-        }
-      }
-
-      // Reverse Arrays
-      dataValuesOnWind = dataValuesOnWind.reverse();
-
-      res.json(dataValuesOnWind);
-    } catch (error) {
-      console.error(error);
-      res.send(false);
-    }
-  }
-
-  fetch_on_wind_data();
-};
-
-// Controller for fetching offshore wind production
-exports.greenenergi_off_wind = function (req, res, next) {
-  async function fetch_off_wind_data() {
-    try {
-      const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
-      let data = await fetch(URI).then((response) => response.json());
-      // Arrays for labels and values
-      let dataValuesOffWind = [];
-
-      // Iterate over reponse results
-      for (let i = 0; i < data.result.records.length; i++) {
-        // Push labels and values
-        if (data.result.records[i].PriceArea == "DK1") {
-          dataValuesOffWind.push(data.result.records[i].OffshoreWindPower);
-        }
-      }
-
-      // Reverse Arrays
-      dataValuesOffWind = dataValuesOffWind.reverse();
-
-      res.json(dataValuesOffWind);
-    } catch (error) {
-      console.error(error);
-      res.send(false);
-    }
-  }
-
-  fetch_off_wind_data();
-};
-
-// Controller for fetching solar production
-exports.greenenergi_solar = function (req, res, next) {
-  async function fetch_solar_data() {
-    try {
-      const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
-      let data = await fetch(URI).then((response) => response.json());
-      // Arrays for labels and values
-      let dataValuesSolar = [];
-
-      // Iterate over reponse results
-      for (let i = 0; i < data.result.records.length; i++) {
-        // Push labels and values
-        if (data.result.records[i].PriceArea == "DK1") {
-          dataValuesSolar.push(data.result.records[i].SolarPower);
-        }
-      }
-
-      // Reverse Array
-      dataValuesSolar = dataValuesSolar.reverse();
-
-      res.json(dataValuesSolar);
-    } catch (error) {
-      console.error(error);
-      res.send(false);
-    }
-  }
-  fetch_solar_data();
-};
-
-
-// Controller for calculating green energi labels
-exports.greenenergi_labels = function (req, res, next) {
-  async function fetch_energi_labels() {
-    try {
-      const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
-      let data = await fetch(URI).then((response) => response.json());
-      // Arrays for labels and values
-      let data_labels = [];
-
-      // Iterate over reponse results
-      for (let i = 0; i < data.result.records.length; i++) {
-        // Push labels
-        if (data.result.records[i].PriceArea == "DK1") {
-          data_labels.push(data.result.records[i].Minutes5DK.slice(-8, -3));
-        }
-      }
-
-      // Reverse Arrays
-      data_labels = data_labels.reverse();
-
-      res.json(data_labels);
-    } catch (error) {
-      console.error(error);
-      res.send(false);
-    }
-  }
-
-  fetch_energi_labels();
-}; */
 
 // Controller for green energy data
 exports.greenEnergy = async function (req, res, next) {
   try {
-    // Fetch all the good shit
+    // Fetch values and timestamps from energidataservice.dk
     const URI =
-      'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576';
+      'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 576'; //576 = 1 day, 4032 = 1 week, 16128 = 4 weeks
     let data = await fetch(URI).then((response) => response.json());
 
     // Arrays for labels and values to be shown on green energy chart
@@ -511,7 +389,7 @@ exports.greenEnergy = async function (req, res, next) {
     let dataOnshoreWind = [];
     let dataSolar = [];
 
-    // Experimental: Iterate over every other point in results adding east and west value-pair together for each time interval
+    // Iterate over every other point in results adding east and west value-pair together for each time interval
     // Push values into respective data arrays
     for (let i = 0; i < data.result.records.length; i = i + 2) {
       dataTimestamp.push(data.result.records[i].Minutes5DK.slice(-8, -3));
@@ -520,13 +398,13 @@ exports.greenEnergy = async function (req, res, next) {
       dataSolar.push(data.result.records[i].SolarPower + data.result.records[i + 1].SolarPower);
     }
 
-    // Reverse Arrays
+    // Reverse arrays, since values come as newest-to-oldest, and we want to draw them from oldest-to-newest
     dataTimestamp = dataTimestamp.reverse();
     dataOffshoreWind = dataOffshoreWind.reverse();
     dataOnshoreWind = dataOnshoreWind.reverse();
     dataSolar = dataSolar.reverse();
 
-    // Not sure what happens with this result
+    // Return arrays in response
     res.json({ dataTimestamp, dataOffshoreWind, dataOnshoreWind, dataSolar });
   } catch (error) {
     console.error(error);

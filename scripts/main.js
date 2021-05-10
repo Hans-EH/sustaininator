@@ -1,6 +1,6 @@
-let Device = require('../models/device');
+let Device = require('../models/device'); // unused?
 let UserProfile = require('../models/user_profile')
-let User = require('../models/user');
+let User = require('../models/user'); // unused?
 
 /* This function handles all of the updates and is called every five minutes
 

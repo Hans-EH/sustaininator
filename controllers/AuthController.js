@@ -1,4 +1,4 @@
-let User = require("../models/user");
+let User = require("../models/user"); // unused?
 
 exports.isAuthenticated = function (req, res) {
   if (req.cookies["auth"]) {
