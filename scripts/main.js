@@ -1,6 +1,7 @@
 let Device = require('../models/device'); // unused?
 let UserProfile = require('../models/user_profile')
-let User = require('../models/user'); // unused?
+let User = require('../models/user');
+const user_profile = require('../models/user_profile');
 
 /* This function handles all of the updates and is called every five minutes
 
@@ -43,6 +44,30 @@ exports.update = function() {
     })
 
 }
+
+
+function monitorSolar() {
+    /*
+        1 feth data
+        2 udregn om der er stigning i energy
+        3 hvis ja, lav card i db
+        4 ellers nej.
+    */
+}
+
+// Monitor
+function monitorWind() {
+
+
+    // Find and populate users advices array
+    
+    
+}
+
+function monitorCO2emission() {
+
+}
+
 //Updates the state of a single device
 function updateState(device, state) {
 

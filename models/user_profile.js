@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 // User Profile Model
 let userProfileSchema = new Schema({
   user: { type: Schema.Types.ObjectId, ref: "User", required: true },
-  devices: [{type: Schema.Types.ObjectId, ref: "Device"}],
+  devices: [{ type: Schema.Types.ObjectId, ref: "Device" }],
+  advices: [{ type: Schema.Types.ObjectId, ref: "AdviceCard" }],
   firstname: { type: String },
   lastname: { type: String },
   pref_currency: { type: String },
