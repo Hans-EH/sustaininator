@@ -87,7 +87,7 @@ exports.carbon_data = function (req, res, next) {
       let data = await fetch(URI).then((response) => response.json());
       //console.log("this is data in post_carbon_data after uri fetch:", data);
       const URL2 =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 17280'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 576'; //every second is a correct datapoint, we need for a month of datapoints which is 17280
       let labels = await fetch(URL2).then((response) => response.json());
       //console.log("this is labels in post_carbon_data after uri2 fetch:", data);
       //create the moving average datasets

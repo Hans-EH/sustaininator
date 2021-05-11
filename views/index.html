@@ -424,10 +424,7 @@
         // The type of chart we want to create
         type: "line",
         data: {
-          labels: carbon_data.data_labels.slice(
-            carbon_data.data_labels.length - DATADAY,
-            carbon_data.data_labels.length
-          ),
+          labels: carbon_data.data_labels,
           datasets: [
             {
               label: "CO2 Emission last 24 hours",
