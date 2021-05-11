@@ -1,6 +1,48 @@
 const fetch = require("node-fetch");
+var mongoose = require("mongoose");
+let AdviceCard = require("../models/advice_card");
+const UserProfile = require("../models/user_profile");
 
-async function monitorSolar() {
+
+
+const createSolarAdvice = (pctIncrease) => {
+    console.log("entered");
+    let mongoDB = "mongodb+srv://jsaad:augaug1@cluster0.g6o9l.mongodb.net/project_skarp?retryWrites=true&w=majority";
+    mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+    var db = mongoose.connection;
+    db.on("error", console.error.bind(console, "MongoDB connection error:"));
+    console.log("connected");
+
+
+    let advice_card = new AdviceCard({
+        class: "event",
+        grade: 1,
+        title: "The Sun is out!",
+        message: `Heyooo, suns out guns out.. ${pctIncrease}% increased solar enery production at the moment, enjou the clean energy`
+    })
+
+    advice_card.save(function (err) {
+        if (err) { console.log("couldn't save advice"); } else {
+            UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
+                for (let userprofile of user_profiles) {
+                    userprofile.advices.push(advice_card.id);
+
+                    console.log(userprofile.advices.length);
+
+                    userprofile.save(function (err) {
+                        if (err) {
+                            console.log("couldn't save user profile");
+                        } else {
+                            console.log(`${userprofile.id} saved`);
+                        }
+                    })
+                }
+            });
+        }
+    })
+};
+
+exports.monitorSolar = async function monitorSolar() {
     try {
         // Fetch URI for solar data
         const URI =
@@ -23,7 +65,7 @@ async function monitorSolar() {
         // "13" -> 13
         // Push solar data points to array is timestamp is between 22:00 -> 05:00
         for (let j = 0; j < dataTimestamp.length; j++) {
-            if (parseInt(dataTimestamp[j].slice(-8, -6)) > 05 && parseInt(dataTimestamp[j]) < 21) {
+            if (parseInt(dataTimestamp[j]) > 05 && parseInt(dataTimestamp[j]) < 21) {
                 dayTimeSolar.push(dataSolar[j]);
                 //console.log(`${dataTimestamp[j]} -> Solar: ${dataSolar[j]}`); // TEST
             }
@@ -37,16 +79,26 @@ async function monitorSolar() {
 
         // Find Average of daytime solar datapoints
         let average = sum / dayTimeSolar.length;
-        console.log(`Average solar prod: ${average}`); // TEST
+        //console.log(`Average solar prod: ${average}`); // TEST
+
+        // Calculate percentage difference average to current
+        let pctIncrease = Math.floor((dataSolar[0] / average) * 100 - 100);
 
         // Compare current energy prod, with average
         if (dataSolar[0] >= average) {
-            console.log(`Current: ${dataSolar[0]} is smaller than average: ${average}`); // TEST
-        } 
-        
+            console.log(`Current: ${dataSolar[0]} is greater than average: ${average}`); // TEST
+            createSolarAdvice(pctIncrease);
+        }
+
     } catch (e) {
         console.error(e);
     }
-}
+};
 
+
+// Ligger i update loop
 monitorSolar();
+
+
+
+//createAdvice()

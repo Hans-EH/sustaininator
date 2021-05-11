@@ -93,6 +93,7 @@ exports.device_create_post = [
             power: req.body.energyusage,
             activetime: req.body.activeArr.split(',').map((val) => Number(val)),
           });
+          
           // Data from form is valid.
           // Check if Device with same name already exists.
           Device.findOne({ name: req.body.devicename }).exec(function (err,found_device) {

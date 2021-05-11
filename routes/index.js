@@ -9,73 +9,15 @@ let login_controller = require("../controllers/logincontroller");
 let auth = require("../controllers/authcontroller");
 let graph_data = require("../models/cache_graph_data");
 let Device = require("../models/device");
+let AdviceCard = require("../models/advice_card");
 
 /* ======= HOMEPAGE ======= */
 // GET request for homepage
 router.get("/", function (req, res, next) {
   // checking if user is logged in
   if (auth.isAuthenticated(req, res))
-    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (err, profile_data) {
+    UserProfile.findOne({ user: req.cookies["auth"] }).populate("advices").exec(function (err, profile_data) {
       if (err) { return next(err); }
-
-      let advices = [
-        {
-          class: "status",
-          type: 5,
-          title: "You're a true climate hero!",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 2
-        },
-        {
-          class: "status",
-          type: 4,
-          title: "You're doing great!",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 4
-        },
-        {
-          class: "status",
-          type: 3,
-          title: "Hang in there!",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 6
-        },
-        {
-          class: "status",
-          type: 2,
-          title: "Keep calm and keep trying!",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 8
-        },
-        {
-          class: "status",
-          type: 1,
-          title: "Want some help?",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 10
-        },
-        {
-          class: "event",
-          type: 3,
-          title: "High CO2 emissions!",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 2
-        },
-        {
-          class: "event",
-          type: 2,
-          title: "It's windy today!",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 2
-        },
-        {
-          class: "event",
-          type: 1,
-          title: "The sun is out!",
-          message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
-          time_since: 4
-        },
-      ];
 
       //Count the number of devices
       Device.find({ user_profile: profile_data })
@@ -87,7 +29,7 @@ router.get("/", function (req, res, next) {
             route: "/",
             profile_data: profile_data,
             counted_devices: counted_devices,
-            advices: advices,
+            advices: profile_data.advices,
             carbon_data: process.env.WEB_HOST + "data/carbondata",
             forecast_data: process.env.WEB_HOST + "data/forecastdata",
             green_energy: process.env.WEB_HOST + "data/greenenergy"
@@ -95,6 +37,19 @@ router.get("/", function (req, res, next) {
         });
     });
 });
+
+
+router.get("/cards", function (req, res, next) {
+  if (auth.isAuthenticated(req, res))
+
+    UserProfile.findOne({ user: req.cookies["auth"] }).populate("advices").exec(function (err, user_profile) {
+      let advices = user_profile.advices;
+
+      console.log(advices);
+
+      res.json(advices);
+    });
+})
 
 //GET navbar
 router.get("/navbar", function (req, res, next) {

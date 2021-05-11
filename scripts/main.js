@@ -41,7 +41,6 @@ exports.update = function () {
             updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices)
         }
     })
-
 }
 
 
