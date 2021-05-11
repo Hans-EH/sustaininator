@@ -1,7 +1,7 @@
+require("dotenv").config();
 var createError = require("http-errors");
 var compression = require("compression");
 var express = require("express");
-require("dotenv").config();
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
@@ -66,7 +66,7 @@ let min_until_start = Math.ceil(new Date().getMinutes() / 5) * 5 - new Date().ge
 console.log(`Minutes until update: ${min_until_start} mins`)
 setTimeout(() => {
   setInterval(update, five_minute_interval)
-  },
+},
   min_until_start * 60 * 1000 //To get milliseconds
 )
 

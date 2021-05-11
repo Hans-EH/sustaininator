@@ -1,7 +1,6 @@
 let Device = require('../models/device'); // unused?
 let UserProfile = require('../models/user_profile')
 let User = require('../models/user');
-const user_profile = require('../models/user_profile');
 
 /* This function handles all of the updates and is called every five minutes
 
@@ -11,8 +10,8 @@ const user_profile = require('../models/user_profile');
     3 - updates the profiles total amount of energy consumed by taking the sum of all the active devices it has
 
 */
-exports.update = function() {
-    
+exports.update = function () {
+
     // Get the current local time
     let day = new Date();
 
@@ -23,13 +22,13 @@ exports.update = function() {
 
     // Convert the current local time as an index between 0 and 288
     let time_index = 12 * hour + minutes
-    
+
     UserProfile.find({}).populate('devices').exec(function (err, user_profiles) {
-        if (err) {return new Error('User profiles could not be updated!')}
+        if (err) { return new Error('User profiles could not be updated!') }
         for (let user_profile of user_profiles) {
             let total_energy_of_active_devices = 0
             for (let device of user_profile.devices) {
-                if (shouldActivate(device, time_index)){
+                if (shouldActivate(device, time_index)) {
                     updateState(device, 'ON')
                     updateDeviceEnergyConsumption(device, 'ON')
                     total_energy_of_active_devices += (device.power / (12 * 1000)) //Convert to KWh
@@ -60,8 +59,8 @@ function monitorWind() {
 
 
     // Find and populate users advices array
-    
-    
+
+
 }
 
 function monitorCO2emission() {
@@ -78,12 +77,12 @@ function updateState(device, state) {
 
     //Save the device
     device.save(function (err) {
-        if (err) {return new Error(`${device.name} could not be updated!`)}
+        if (err) { return new Error(`${device.name} could not be updated!`) }
     });
 }
 
 // Update a single device lifetime and last-day energy consumption
-function updateDeviceEnergyConsumption(device, state){
+function updateDeviceEnergyConsumption(device, state) {
 
     //Shift the array five-minutes to the left and if ON push device's energy use in the next 5 minutes in kWh
     // Energy = Power * Time, Example 1: E = 2 W * 1 h = 2 Wh, Example 2: E = 1000 W * 1 h = 1000 Wh = 1 kWh
@@ -99,13 +98,13 @@ function updateDeviceEnergyConsumption(device, state){
     }
 
     //Save the device
-    device.save(function(err, next) {
-        if (err) {return new Error(`${device.name}'s energy consumption could not be updated!`)}
+    device.save(function (err, next) {
+        if (err) { return new Error(`${device.name}'s energy consumption could not be updated!`) }
     });
 }
 
 // Update a single user profiles energy consumption
-function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices){
+function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices) {
 
     // Shift the array five-minutes to the left
     user_profile.total_energy_consumption_last_day.shift();
@@ -115,7 +114,7 @@ function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active
 
     //Save profile to db
     user_profile.save(function (err, next) {
-        if (err) {return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" could not be updated!`)}
+        if (err) { return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" could not be updated!`) }
         //console.log(`User profile "${user_profile.firstname}" was successfully updated!`)
     });
 }
@@ -127,10 +126,10 @@ function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active
  * @returns true if a given device at current time have a probablilty higher than a pseudorandom number
  *          false otherwise
  */
-function shouldActivate(device, time_index){
+function shouldActivate(device, time_index) {
 
     //Get the probability of the device
     prob_of_activating = device.probVector[time_index];
 
-    return  Math.random() < prob_of_activating;
+    return Math.random() < prob_of_activating;
 }
