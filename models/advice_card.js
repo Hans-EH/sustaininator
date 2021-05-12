@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let adviceCardSchema = new Schema({
-    user_profile: { type: Schema.Types.ObjectId, ref: "UserProfile", required: true },
+    user_profile: { type: Schema.Types.ObjectId, ref: "UserProfile" },
     class: { type: String, enum: ["status", "event"] },
     grade: { type: Number },
     title: { type: String },
