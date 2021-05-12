@@ -19,6 +19,14 @@ router.get("/", function (req, res, next) {
     UserProfile.findOne({ user: req.cookies["auth"] }).populate("advices").exec(function (err, profile_data) {
       if (err) { return next(err); }
 
+      for (advice of profile_data.advices) {
+        let constructed_time = advice.created.getHours() + 2;
+
+        console.log(advice);
+        console.log(`Created: ${advice.created}\nNow: ${constructed_time}`);
+      }
+
+
       //Count the number of devices
       Device.find({ user_profile: profile_data })
         .countDocuments(function (err, counted_devices) {
