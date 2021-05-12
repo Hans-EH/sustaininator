@@ -13,9 +13,15 @@ console.log("connected");
 // Check if any event type has been create since one hour
 function recentExists(grade) {
     AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
+      console.log("grade is ", grade);
         advices_arr.forEach((advice) => {
             if ((new Date() - advice.created) < ONE_HOUR) {
+              console.log("advicing");
                 return true;
+            }
+            else {
+              console.log("time was less than 1 hour");
+              return false;
             }
         })
     });
@@ -23,16 +29,16 @@ function recentExists(grade) {
 
 // Function used to create and save advice to db and each user
 const createAdvice = (pctIncrease, type) => {
-    console.log("entered");
+    console.log("entered createAdvice");
     let advice_card;
-    // Switching advice depeding on type
+    // Switching advice depending on type
     switch (type) {
         case 1:
             advice_card = new AdviceCard({
                 class: "event",
                 grade: type,
                 title: "The Sun is out!",
-                message: `Heyooo, suns out guns out.. ${pctIncrease}% increased solar enery production at the moment, enjou the clean energy`
+                message: `Heyooo, sun's out guns out.. ${pctIncrease}% increased solar energy production at the moment, enjoy the clean energy`
             })
             break;
 
@@ -40,8 +46,8 @@ const createAdvice = (pctIncrease, type) => {
             advice_card = new AdviceCard({
                 class: "event",
                 grade: type,
-                title: "It's windy today !",
-                message: `Heyooo, suns out guns out.. ${pctIncrease}% increased solar enery production at the moment, enjou the clean energy`
+                title: "It's windy today!",
+                message: `Woohooo, hold on to your hats! ${pctIncrease}% increased wind energy production at the moment, don't blow your chance to use all that clean energy`
             })
             break;
 
@@ -50,13 +56,13 @@ const createAdvice = (pctIncrease, type) => {
                 class: "event",
                 grade: type,
                 title: "Too much CO2!",
-                message: `Heyooo, suns out guns out.. ${pctIncrease}% increased solar enery production at the moment, enjou the clean energy`
+                message: `Uh oh, CO2 levels are.. ${pctIncrease}% above average at the moment, you can help the environment by delaying energy hungry activities`
             })
             break;
 
         default:
-            console.log("Fucked up");
-            break
+            console.log("Incorrect type received by switch");
+            break;
     }
 
     // Save AdviceCard to MongoDB database
@@ -67,17 +73,19 @@ const createAdvice = (pctIncrease, type) => {
 
             // Find all users userprofile and populate advices with documents instead of IDs
             UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
+              console.log("user_profiles has length ", user_profiles.length);
+              //console.log(user_profiles);
 
                 // Iterate over all found user_profiles
                 for (let userprofile of user_profiles) {
 
-                    // Check if a usersprofile contains more than 10 advices 
+                    // Check if a usersprofile contains 10 or more advices 
                     if (userprofile.advices.length >= 10) {
 
                         // Delete the oldest entry in userprofile.advices
-                        while (userprofile.advices.length >= 10) {
+                        //while (userprofile.advices.length >= 10) {
                             userprofile.advices.shift();
-                        }
+                        //}
                     }
 
                     // Push new AdviceCard Document to user advices array
@@ -88,10 +96,11 @@ const createAdvice = (pctIncrease, type) => {
                         if (err) {
                             console.log("couldn't save user profile");
                         } else {
-                            console.log(`${userprofile.id} saved`);
+                            console.log(`${userprofile.firstname} saved`);
                         }
                     });
                 }
+                console.log('out of userprofile for-loop seemingly before saving is done');
             });
         }
     });
@@ -100,10 +109,15 @@ const createAdvice = (pctIncrease, type) => {
 
 async function monitorSolar() {
     try {
-        // Fetch URI for solar data
+        // Fetch URI for solar data for 1 week
         const URI =
-            'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-        let data = await fetch(URI).then((response) => response.json());
+            'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+            //'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+            //let d = ;
+            console.time('solarFetch');
+            let data = await fetch(URI).then((response) => response.json());
+            //d = Date.now();
+            console.timeEnd('solarFetch');
 
         // Create raw data arrays
         let dataTimestamp = [];
@@ -119,7 +133,7 @@ async function monitorSolar() {
         let dayTimeSolar = [];
 
         // parseInt = "13" -> 13
-        // Push solar data points to array is timestamp is between 22:00 -> 05:00
+        // Push solar data points to array is timestamp is between 21:00 -> 05:00
         for (let j = 0; j < dataTimestamp.length; j++) {
             if (parseInt(dataTimestamp[j]) > 05 && parseInt(dataTimestamp[j]) < 21) {
                 dayTimeSolar.push(dataSolar[j]);
@@ -148,7 +162,7 @@ async function monitorSolar() {
         if (dataSolar[0] <= average) { // change back to greater than
             // Check if any recent solar advices has been created
             if (!recentExists(SOLAR_GRADE)) {
-                console.log("Recent advice doesn't exists");
+                console.log("Recent advice doesn't exist");
                 createAdvice(pctIncrease, SOLAR_GRADE);
             }
         } else {
@@ -157,25 +171,26 @@ async function monitorSolar() {
     } catch (e) {
         console.error(e);
     } finally {
-        console.log("Function Executed");
+        console.log("monitorSolar Executed");
     }
+    console.log("how did we get here so soon?");
 };
 
 
 async function monitorWind() {
     try {
-        // Fetch URI for solar data
+        // Fetch URI for wind data for 1 week
         const URI =
             'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "OffshoreWindPower", "OnshoreWindPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
         let data = await fetch(URI).then((response) => response.json());
 
         // Create raw data arrays
-        let dataTimestamp = [];
+        //let dataTimestamp = [];
         let dataWind = [];
 
         let records = data.result.records;
         let totalWindDK1, totalWindDK2;
-        // Find sum of DK1 and DK2 and push to arrays
+        // Find sum of DK1 and DK2 and push to array
         for (let i = 0; i < records.length; i = i + 2) {
             totalWindDK1 = records[i].OffshoreWindPower + records[i].OnshoreWindPower;
             totalWindDK2 = records[i + 1].OffshoreWindPower + records[i + 1].OnshoreWindPower;
@@ -199,10 +214,10 @@ async function monitorWind() {
         /* ======= ADVICE CARD CREATION SECTION ====== */
         const WIND_GRADE = 2;
 
-        if (dataWind[0] <= average) {
+        if (dataWind[0] <= average) { // remember to flip sign to >= for actual use case
             if (!recentExists(WIND_GRADE)) {
                 console.log("current wind: " + dataWind[0]);
-                console.log("Recent wind advicecard doesn't exists");
+                console.log("Recent wind advicecard existsn't, let's make one");
                 createAdvice(pctIncrease, WIND_GRADE);
             }
         } else {
@@ -210,15 +225,15 @@ async function monitorWind() {
         }
 
     } catch (error) {
-        console.error(e);
+        console.error(error);
     } finally {
         console.log("Function Executed");
     }
 };
 
 // Ligger i update loop
-//monitorSolar();
+monitorSolar();
 
-monitorWind();
+//monitorWind();
 
 //createAdvice()

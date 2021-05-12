@@ -1,9 +1,9 @@
 let Device = require("../models/device");
 const { body, validationResult } = require("express-validator");
 let async = require("async");
-let User = require("../models/user");
+let User = require("../models/user"); // unused?
 let UserProfile = require("../models/user_profile");
-const { listenerCount } = require("../models/device");
+const { listenerCount } = require("../models/device"); // unused?
 let auth = require('../controllers/authcontroller');
 
 /* Display a list of all devices */
