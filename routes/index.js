@@ -21,7 +21,6 @@ router.get("/", function (req, res, next) {
 
       for (advice of profile_data.advices) {
         let constructed_time = advice.created.getHours() + 2;
-
         console.log(advice);
         console.log(`Created: ${advice.created}\nNow: ${constructed_time}`);
       }
@@ -37,7 +36,7 @@ router.get("/", function (req, res, next) {
             route: "/",
             profile_data: profile_data,
             counted_devices: counted_devices,
-            advices: profile_data.advices,
+            advices: profile_data.advices.reverse(),
             carbon_data: process.env.WEB_HOST + "data/carbondata",
             forecast_data: process.env.WEB_HOST + "data/forecastdata",
             green_energy: process.env.WEB_HOST + "data/greenenergy"
