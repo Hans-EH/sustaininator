@@ -344,6 +344,7 @@
               >
                 energidataservice.dk
               </a>
+              <div id="model_order"></div>
             </small>
           </div>
         </div>
@@ -430,14 +431,14 @@
               label: "CO2 Emission last 24 hours",
               borderColor: "rgb(0, 255, 0)",
               fill: false,
-              data: carbon_data.carbon_1.slice(0, DATADAY),
+              data: carbon_data.carbon_1,
               yAxisID: "y",
             },
             {
               label: "CO2 Emission 3 days running average",
               borderColor: "rgb(255, 255, 0)",
               fill: false,
-              data: carbon_data.carbon_3.slice(0, DATADAY),
+              data: carbon_data.carbon_3,
               hidden: true,
               yAxisID: "y",
             },
@@ -445,7 +446,7 @@
               label: "CO2 Emission 7 days running average",
               borderColor: "rgb(255, 153, 0)",
               fill: false,
-              data: carbon_data.carbon_7.slice(0, DATADAY),
+              data: carbon_data.carbon_7,
               hidden: true,
               yAxisID: "y",
             },
@@ -668,6 +669,9 @@
       let data = await fetch("{{ forecast_data }}").then((response) =>
         response.json()
       );
+      let model_text = "Model order is "+data.best_model_order+", with an average error of "+data.best_model_fitness+". Graph median is "+data.median+" with a standard deviation of "+data.standard_deviation+".";
+      console.log(model_text);
+      document.getElementById("model_order").innerText = model_text;
 
       var ctx = document.getElementById("chartForecast").getContext("2d");
       var chart = new Chart(ctx, {
@@ -677,13 +681,13 @@
           labels: data.forecast_labels,
           datasets: [
             {
-              label: "Carbon emissions g/KWh last 7 days",
+              label: "Carbon emissions g/KWh last "+data.days_past+" days",
               borderColor: "rgb(0, 0, 255)",
               fill: false,
               data: data.data,
             },
             {
-              label: "Emissions forecasted",
+              label: "Emissions forecasted "+data.days_forecast+" days",
               borderColor: "rgb(255, 0, 0)",
               fill: false,
               data: data.forecast_data,
