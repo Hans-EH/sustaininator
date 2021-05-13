@@ -68,8 +68,10 @@ const createAdvice = async (pctIncrease, type) => {
     advice_card.save(function (err, result) {
         if (err) {
             console.log(err);
+        } else {
+            console.log(result.id);
+            return result.id;
         }
-        return result
     });
 };
 
@@ -166,12 +168,15 @@ async function monitorWind(data) {
         if (dataWind[0] >= average) { // remember to flip sign to >= for actual use case
             if (!recentExists(WIND_GRADE)) {
                 console.log("Recent Wind advicecard doesn't exists");
-                createAdvice(pctIncrease, WIND_GRADE);
+                //createAdvice(pctIncrease, WIND_GRADE);
+                return true;
             } else {
                 console.log("Recent Wind advicecard exists"); // DEBUGGING
+                return false;
             }
         } else {
             console.log("Wind not blowing enough");
+            return false;
         }
     } catch (error) {
         console.error(error);
@@ -188,20 +193,18 @@ async function eventCallStack() {
 
     console.log("\n== before advice creation ==");
 
-    let solar_should_create = monitorSolar(data);
-    let wind_should_create = monitorWind(data);
-    const should_create = await Promise.all([solar_should_create, wind_should_create])
+    const should_create = await Promise.all([monitorSolar(data), monitorWind(data)]);
 
     let solar_advice = null;
     console.log(should_create[0]);
     if (should_create[0]) {
-        console.log(should_create[0]);
-        solar_advice = createAdvice(15, SOLAR_GRADE);
+        solar_advice = await createAdvice(15, SOLAR_GRADE);
+        console.log(`Solar Advice: ${solar_advice}`);
     }
 
     let wind_advice = null;
+    console.log(should_create[1]);
     if (should_create[1]) {
-        console.log(should_create[1]);
         wind_advice = createAdvice(pctIncrease, WIND_GRADE);
     }
 
