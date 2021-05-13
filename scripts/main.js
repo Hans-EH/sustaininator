@@ -44,28 +44,6 @@ exports.update = function () {
 }
 
 
-function monitorSolar() {
-    /*
-        1 feth data
-        2 udregn om der er stigning i energy
-        3 hvis ja, lav card i db
-        4 ellers nej.
-    */
-}
-
-// Monitor
-function monitorWind() {
-
-
-    // Find and populate users advices array
-
-
-}
-
-function monitorCO2emission() {
-
-}
-
 //Updates the state of a single device
 function updateState(device, state) {
 
@@ -129,6 +107,5 @@ function shouldActivate(device, time_index) {
 
     //Get the probability of the device
     prob_of_activating = device.probVector[time_index];
-
     return Math.random() < prob_of_activating;
 }

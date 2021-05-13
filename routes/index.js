@@ -19,10 +19,9 @@ router.get("/", function (req, res, next) {
     UserProfile.findOne({ user: req.cookies["auth"] }).populate("advices").exec(function (err, profile_data) {
       if (err) { return next(err); }
 
+      // Calcute Time since creation for Cards
       for (advice of profile_data.advices) {
-        let constructed_time = advice.created.getHours() + 2;
-        console.log(advice);
-        console.log(`Created: ${advice.created}\nNow: ${constructed_time}`);
+        advice.timeSince = Math.round((new Date() - advice.created) / (60 * 1000));
       }
 
 

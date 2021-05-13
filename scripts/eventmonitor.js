@@ -13,15 +13,15 @@ console.log("connected");
 // Check if any event type has been create since one hour
 function recentExists(grade) {
     AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
-      console.log("grade is ", grade);
+        console.log("grade is ", grade);
         advices_arr.forEach((advice) => {
             if ((new Date() - advice.created) < ONE_HOUR) {
-              console.log("advicing");
+                console.log("advicing");
                 return true;
             }
             else {
-              console.log("time was less than 1 hour");
-              return false;
+                console.log("time was less than 1 hour");
+                return false;
             }
         })
     });
@@ -73,8 +73,8 @@ const createAdvice = (pctIncrease, type) => {
 
             // Find all users userprofile and populate advices with documents instead of IDs
             UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
-              console.log("user_profiles has length ", user_profiles.length);
-              //console.log(user_profiles);
+                console.log("user_profiles has length ", user_profiles.length);
+                //console.log(user_profiles);
 
                 // Iterate over all found user_profiles
                 for (let userprofile of user_profiles) {
@@ -84,7 +84,7 @@ const createAdvice = (pctIncrease, type) => {
 
                         // Delete the oldest entry in userprofile.advices
                         //while (userprofile.advices.length >= 10) {
-                            userprofile.advices.shift();
+                        userprofile.advices.shift();
                         //}
                     }
 
@@ -94,9 +94,9 @@ const createAdvice = (pctIncrease, type) => {
                     // Save the users profile after changes
                     userprofile.save(function (err) {
                         if (err) {
-                            console.log("couldn't save user profile");
+                            console.log(`couldn't save user profile for grade: ${type}\n ${err}`);
                         } else {
-                            console.log(`${userprofile.firstname} saved`);
+                            console.log(`${userprofile.id} saved - grade : ${type} `);
                         }
                     });
                 }
@@ -107,17 +107,17 @@ const createAdvice = (pctIncrease, type) => {
 };
 
 
-async function monitorSolar() {
+async function monitorSolar(data) {
     try {
         // Fetch URI for solar data for 1 week
         const URI =
             'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-            //'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-            //let d = ;
-            console.time('solarFetch');
-            let data = await fetch(URI).then((response) => response.json());
-            //d = Date.now();
-            console.timeEnd('solarFetch');
+        //'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+        //let d = ;
+        console.time('solarFetch');
+        let data = await fetch(URI).then((response) => response.json());
+        //d = Date.now();
+        console.timeEnd('solarFetch');
 
         // Create raw data arrays
         let dataTimestamp = [];
@@ -149,7 +149,6 @@ async function monitorSolar() {
 
         // Find Average of daytime solar datapoints
         let average = sum / dayTimeSolar.length;
-        //console.log(`Average solar prod: ${average}`); // TEST
 
         // Calculate percentage difference average to current
         let pctIncrease = Math.floor((dataSolar[0] / average) * 100 - 100);
@@ -162,7 +161,7 @@ async function monitorSolar() {
         if (dataSolar[0] <= average) { // change back to greater than
             // Check if any recent solar advices has been created
             if (!recentExists(SOLAR_GRADE)) {
-                console.log("Recent advice doesn't exist");
+                console.log("Recent Solar advicecard doesn't exists");
                 createAdvice(pctIncrease, SOLAR_GRADE);
             }
         } else {
@@ -177,11 +176,11 @@ async function monitorSolar() {
 };
 
 
-async function monitorWind() {
+async function monitorWind(data) {
     try {
         // Fetch URI for wind data for 1 week
         const URI =
-            'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "OffshoreWindPower", "OnshoreWindPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+            'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
         let data = await fetch(URI).then((response) => response.json());
 
         // Create raw data arrays
@@ -231,9 +230,7 @@ async function monitorWind() {
     }
 };
 
+
 // Ligger i update loop
 monitorSolar();
-
-//monitorWind();
-
-//createAdvice()
+monitorWind();
