@@ -13,17 +13,14 @@ console.log("connected");
 // Check if any event type has been create since one hour
 function recentExists(grade) {
     AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
-        console.log("grade is ", grade);
         advices_arr.forEach((advice) => {
             if ((new Date() - advice.created) < ONE_HOUR) {
-                console.log("advicing");
                 return true;
             }
             else {
-                console.log("time was less than 1 hour");
                 return false;
             }
-        })
+        });
     });
 }
 
@@ -110,12 +107,12 @@ const createAdvice = (pctIncrease, type) => {
 async function monitorSolar(data) {
     try {
         // Fetch URI for solar data for 1 week
-        const URI =
-            'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-        //'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-        //let d = ;
+        // const URI =
+        //     'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+        // //'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+        // //let d = ;
         console.time('solarFetch');
-        let data = await fetch(URI).then((response) => response.json());
+        // let data = await fetch(URI).then((response) => response.json());
         //d = Date.now();
         console.timeEnd('solarFetch');
 
@@ -179,9 +176,9 @@ async function monitorSolar(data) {
 async function monitorWind(data) {
     try {
         // Fetch URI for wind data for 1 week
-        const URI =
-            'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-        let data = await fetch(URI).then((response) => response.json());
+        // const URI =
+        //     'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+        // let data = await fetch(URI).then((response) => response.json());
 
         // Create raw data arrays
         //let dataTimestamp = [];
@@ -231,6 +228,15 @@ async function monitorWind(data) {
 };
 
 
+async function callStack() {
+    const URI =
+        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
+    let data = await fetch(URI).then((response) => response.json());
+
+    await monitorSolar(data).then(() => {
+        monitorWind(data);
+    });
+}
+
 // Ligger i update loop
-monitorSolar();
-monitorWind();
+callStack()
