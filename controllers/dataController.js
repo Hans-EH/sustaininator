@@ -139,9 +139,9 @@ exports.forecastdata = function (req, res, next) {
       let forecast_labels = [];
       let forecast_data = [];
       //adjust how many days back it should count
-      let days_past = 3;
+      let days_past = 1;
       //add extra labels and the new datapoints for forecasting the future:
-      let days_forecasted = 5;
+      let days_forecasted = 3;
 
       for (let i = labels.length - (days_past * 12 * 24); i < labels.length; i++) {
         data.push(raw_emissions_data[i - 1]);
@@ -155,18 +155,20 @@ exports.forecastdata = function (req, res, next) {
       }
 
       let best_model_placeholder = [];
-      //generate_forecast(1, raw_emissions_data, days_past, days_forecasted);
+      //this is just to copy the data to be displayed on the homepage
       best_model_placeholder = find_best_model(data, days_past);
       let best_model_order = best_model_placeholder[0];
       let best_model_fitness = best_model_placeholder[1];
       let median = avg(data,0,data.length);
       let standard_deviation = STD(data,median);
+
       //moving average function with seasonality and a autoregressiv part.
       function generate_forecast(q, data, days_past, days_forecasted) {
         //amount of data points in a day
         let day = 12 * 24;
         let season_data = seasonal_view(data, day);
-
+        //somehow fixes an error of going down to zero at forecasting. no idea.
+        days_forecasted += 2;
         //forcastes days already gone by, using even older data.
         for (let d = days_past; d > 0; d--) {
           //starts at the oldest time, and goes forward to the newest time
@@ -184,6 +186,9 @@ exports.forecastdata = function (req, res, next) {
             forecast_data.push(forecast_add_data(season_data[t], d, q, forecast_data[forecast_data.length - 1]));
           }
         }
+        //removing the extra 2 days created to solve som weird behavior in days_forecasted +=2
+        forecast_data.splice(-day*2,day*2)
+
       };
 
       //gives back the MA result for 1 time of the day using seasonal data
@@ -227,7 +232,8 @@ exports.forecastdata = function (req, res, next) {
       function bound(data, mu, pre_data, from, order, result) {
         //tight bound, such that no entry can be larger than the average of mu and the previous entry plus STD
         //to hold it within realistic data level, and previous data level
-        let c = mu;
+        //this is an autoregressive part
+        let c = pre_data;
         //so that it doesnt deviatte to far from the standard
         let x = STD(data.slice(from, from + order), mu);
         let max_mvmt = max_movement(data);
