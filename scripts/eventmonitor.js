@@ -3,12 +3,13 @@ var mongoose = require("mongoose");
 let AdviceCard = require("../models/advice_card");
 const UserProfile = require("../models/user_profile");
 const ONE_HOUR = 3600000;
+const SOLAR_GRADE = 1;
+const WIND_GRADE = 2;
 
 let mongoDB = "mongodb+srv://jsaad:augaug1@cluster0.g6o9l.mongodb.net/project_skarp?retryWrites=true&w=majority";
 mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
-console.log("connected");
 
 // Check if any event type has been create since one hour
 function recentExists(grade) {
@@ -25,8 +26,9 @@ function recentExists(grade) {
 }
 
 // Function used to create and save advice to db and each user
-const createAdvice = (pctIncrease, type) => {
-    console.log("entered createAdvice");
+const createAdvice = async (pctIncrease, type) => {
+    console.log(`entered createAdvice for type: ${type}`);
+
     let advice_card;
     // Switching advice depending on type
     switch (type) {
@@ -63,59 +65,17 @@ const createAdvice = (pctIncrease, type) => {
     }
 
     // Save AdviceCard to MongoDB database
-    advice_card.save(function (err) {
+    advice_card.save(function (err, result) {
         if (err) {
-            console.log("couldn't save advice");
-        } else {
-
-            // Find all users userprofile and populate advices with documents instead of IDs
-            UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
-                console.log("user_profiles has length ", user_profiles.length);
-                //console.log(user_profiles);
-
-                // Iterate over all found user_profiles
-                for (let userprofile of user_profiles) {
-
-                    // Check if a usersprofile contains 10 or more advices 
-                    if (userprofile.advices.length >= 10) {
-
-                        // Delete the oldest entry in userprofile.advices
-                        //while (userprofile.advices.length >= 10) {
-                        userprofile.advices.shift();
-                        //}
-                    }
-
-                    // Push new AdviceCard Document to user advices array
-                    userprofile.advices.push(advice_card.id);
-
-                    // Save the users profile after changes
-                    userprofile.save(function (err) {
-                        if (err) {
-                            console.log(`couldn't save user profile for grade: ${type}\n ${err}`);
-                        } else {
-                            console.log(`${userprofile.id} saved - grade : ${type} `);
-                        }
-                    });
-                }
-                console.log('out of userprofile for-loop seemingly before saving is done');
-            });
+            console.log(err);
         }
+        return result
     });
 };
 
 
 async function monitorSolar(data) {
     try {
-        // Fetch URI for solar data for 1 week
-        // const URI =
-        //     'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-        // //'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-        // //let d = ;
-        console.time('solarFetch');
-        // let data = await fetch(URI).then((response) => response.json());
-        //d = Date.now();
-        console.timeEnd('solarFetch');
-
         // Create raw data arrays
         let dataTimestamp = [];
         let dataSolar = [];
@@ -152,34 +112,30 @@ async function monitorSolar(data) {
 
         /* ======= ADVICE CARD CREATION SECTION ====== */
 
-        const SOLAR_GRADE = 1;
-
         // Compare current energy prod, with average
-        if (dataSolar[0] <= average) { // change back to greater than
+        if (dataSolar[0] >= 0) { // change back to greater than
             // Check if any recent solar advices has been created
             if (!recentExists(SOLAR_GRADE)) {
                 console.log("Recent Solar advicecard doesn't exists");
-                createAdvice(pctIncrease, SOLAR_GRADE);
+                return true;
+            } else {
+                console.log("Recent Solar advicecard exists"); // DEBUGGING
+                return false;
             }
         } else {
             console.log("No card needed");
+            return false;
         }
     } catch (e) {
         console.error(e);
     } finally {
-        console.log("monitorSolar Executed");
+        console.log("--> monitorSolar Executed");
     }
-    console.log("how did we get here so soon?");
 };
 
 
 async function monitorWind(data) {
     try {
-        // Fetch URI for wind data for 1 week
-        // const URI =
-        //     'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-        // let data = await fetch(URI).then((response) => response.json());
-
         // Create raw data arrays
         //let dataTimestamp = [];
         let dataWind = [];
@@ -202,41 +158,89 @@ async function monitorWind(data) {
         // Find average of wind datapoints
         let average = sum / dataWind.length;
 
-        console.log(`Average wind: ${average}`); // DEBUGGING 
-
         // Find percentage difference average to current
         let pctIncrease = Math.floor((dataWind[0] / average) * 100 - 100);
 
         /* ======= ADVICE CARD CREATION SECTION ====== */
-        const WIND_GRADE = 2;
 
-        if (dataWind[0] <= average) { // remember to flip sign to >= for actual use case
+        if (dataWind[0] >= average) { // remember to flip sign to >= for actual use case
             if (!recentExists(WIND_GRADE)) {
-                console.log("current wind: " + dataWind[0]);
-                console.log("Recent wind advicecard existsn't, let's make one");
+                console.log("Recent Wind advicecard doesn't exists");
                 createAdvice(pctIncrease, WIND_GRADE);
+            } else {
+                console.log("Recent Wind advicecard exists"); // DEBUGGING
             }
         } else {
             console.log("Wind not blowing enough");
         }
-
     } catch (error) {
         console.error(error);
     } finally {
-        console.log("Function Executed");
+        console.log("--> MonitorWind Executed");
     }
 };
 
 
-async function callStack() {
+async function eventCallStack() {
     const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
     let data = await fetch(URI).then((response) => response.json());
 
-    await monitorSolar(data).then(() => {
-        monitorWind(data);
-    });
+    console.log("\n== before advice creation ==");
+
+    let solar_should_create = monitorSolar(data);
+    let wind_should_create = monitorWind(data);
+    const should_create = await Promise.all([solar_should_create, wind_should_create])
+
+    let solar_advice = null;
+    console.log(should_create[0]);
+    if (should_create[0]) {
+        console.log(should_create[0]);
+        solar_advice = createAdvice(15, SOLAR_GRADE);
+    }
+
+    let wind_advice = null;
+    if (should_create[1]) {
+        console.log(should_create[1]);
+        wind_advice = createAdvice(pctIncrease, WIND_GRADE);
+    }
+
+
+    // Save the users profile after changes
+    // UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
+    //     console.log("\n== entering saving ==");
+
+    //     for (let userprofile of user_profiles) {
+
+    //         if (solar_advice) {
+    //             while (userprofile.advices.length >= 10) {
+    //                 userprofile.advices.shift();
+    //             }
+    //             userprofile.advices.push(new_solar_advice);
+
+    //             console.log(userprofile.advices[0].created);
+    //         }
+
+
+    //         if (wind_advice) {
+    //             while (userprofile.advices.length >= 10) {
+    //                 userprofile.advices.shift();
+    //             }
+    //             userprofile.advices.push(wind_advice);
+
+    //             console.log(userprofile.advices);
+    //         }
+
+    //         userprofile.save(function (err) {
+    //             if (err) {
+    //                 console.log(`couldn't save user profile \n ${err}`);
+    //             } else {
+    //                 console.log(`${userprofile.id} saved `);
+    //             }
+    //         });
+    //     }
+    // });
 }
 
 // Ligger i update loop
-callStack()
+eventCallStack()
