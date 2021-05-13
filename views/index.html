@@ -122,9 +122,11 @@
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-end">
               <h5 class="card-title mb-1">{{ advice.title }}</h5>
-              <small class="text-muted mb-1"
-                >{{ advice.timeSince }} mins ago</small
-              >
+              <small class="text-muted mb-1">
+                {% if advice.timeSince == 0 %}
+                <span class="text-success">New</span> {% else %} {{
+                advice.timeSince }} mins ago {% endif %}
+              </small>
             </div>
 
             <p class="card-text">{{ advice.message }}</p>
@@ -685,7 +687,16 @@
       let data = await fetch("{{ forecast_data }}").then((response) =>
         response.json()
       );
-      let model_text = "Model order is "+data.best_model_order+", with an average error of "+data.best_model_fitness+". Graph median is "+data.median+" with a standard deviation of "+data.standard_deviation+".";
+      let model_text =
+        "Model order is " +
+        data.best_model_order +
+        ", with an average error of " +
+        data.best_model_fitness +
+        ". Graph median is " +
+        data.median +
+        " with a standard deviation of " +
+        data.standard_deviation +
+        ".";
       console.log(model_text);
       document.getElementById("model_order").innerText = model_text;
 
@@ -697,13 +708,13 @@
           labels: data.forecast_labels,
           datasets: [
             {
-              label: "Carbon emissions g/KWh last "+data.days_past+" days",
+              label: "Carbon emissions g/KWh last " + data.days_past + " days",
               borderColor: "rgb(0, 0, 255)",
               fill: false,
               data: data.data,
             },
             {
-              label: "Emissions forecasted "+data.days_forecast+" days",
+              label: "Emissions forecasted " + data.days_forecast + " days",
               borderColor: "rgb(255, 0, 0)",
               fill: false,
               data: data.forecast_data,
