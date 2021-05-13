@@ -196,14 +196,14 @@ async function eventCallStack() {
     const should_create = await Promise.all([monitorSolar(data), monitorWind(data)]);
 
     let solar_advice = null;
-    console.log(should_create[0]);
+    console.log("should_create[0]", should_create[0]);
     if (should_create[0]) {
         solar_advice = await createAdvice(15, SOLAR_GRADE);
         console.log(`Solar Advice: ${solar_advice}`);
     }
 
     let wind_advice = null;
-    console.log(should_create[1]);
+    console.log("should_create[1]", should_create[1]);
     if (should_create[1]) {
         wind_advice = createAdvice(pctIncrease, WIND_GRADE);
     }
