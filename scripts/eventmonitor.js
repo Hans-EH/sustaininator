@@ -1,17 +1,16 @@
 const fetch = require("node-fetch");
-var mongoose = require("mongoose");
 let AdviceCard = require("../models/advice_card");
 const UserProfile = require("../models/user_profile");
 const ONE_HOUR = 3600000;
 const SOLAR_GRADE = 1;
 const WIND_GRADE = 2;
 
-let mongoDB = "mongodb+srv://jsaad:augaug1@cluster0.g6o9l.mongodb.net/project_skarp?retryWrites=true&w=majority";
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-
-// Check if any event type has been create since one hour - Virker
+/**
+ * Finds the percentile carbon emissions value in the 30 days average carbon data then compares
+ * with the current carbon emission value
+ * @param {*} goal
+ * @return true if above, false otherwise
+ */
 function recentExists(grade) {
     AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
         let exists = false;
@@ -20,7 +19,6 @@ function recentExists(grade) {
                 exist = true;
             }
         });
-
         return exists;
     });
 }
@@ -122,7 +120,7 @@ async function monitorSolar(data) {
         // Compare current energy prod, with average
         if (dataSolar[0] >= average) { // change back to greater than
             // Check if any recent solar advices has been created
-            if (recentExists(SOLAR_GRADE)) {
+            if (!recentExists(SOLAR_GRADE)) {
                 console.log("Recent Solar advicecard doesn't exists");
                 return [true, pctIncrease];
             } else {
@@ -175,7 +173,7 @@ async function monitorWind(data) {
         /* ======= ADVICE CARD CREATION SECTION ====== */
 
         if (dataWind[0] >= average) { // remember to flip sign to >= for actual use case
-            if (recentExists(WIND_GRADE)) {
+            if (!recentExists(WIND_GRADE)) {
                 console.log("Recent Wind advicecard doesn't exists");
                 //createAdvice(pctIncrease, WIND_GRADE);
                 return [true, pctIncrease];
@@ -249,5 +247,3 @@ exports.eventCallStack = async function eventCallStack() {
     };
 }
 
-// Ligger i update loop
-// eventCallStack()
