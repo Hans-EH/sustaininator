@@ -3,6 +3,9 @@ let Device = require('../models/device'); // unused?
 let UserProfile = require('../models/user_profile')
 let User = require('../models/user');
 
+// Functions
+let eventMonitoring = require("./eventmonitor");
+
 /* This function handles all of the updates and is called every five minutes
 
     It goes through every profile and through every device the profile have, then it:
@@ -59,7 +62,10 @@ exports.update = async function () {
             updateUserProfileCarbonScoreLastDay(user_profile, average_carbon_data, latest_carbon_value);
             //updateUserProfileCarbonSinceCreated(user_profile, latest_carbon_value);
         }
-    })
+    });
+
+    // Monitoring for Events
+    eventMonitoring.eventCallStack();
 }
 
 //Updates the state of a single device
