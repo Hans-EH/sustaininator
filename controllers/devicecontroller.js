@@ -254,11 +254,19 @@ exports.device_edit_post = [
 
 /* Handle deletion of a device */
 exports.device_delete_get = function (req, res, next) {
+  //Find and delete ObjectID from profile
+  UserProfile.findOne({user: req.cookies["auth"]}).exec(function (err, found_profile) {
+    if (err) {return next(err);}
+    found_profile.devices.splice(found_profile.devices.indexOf(req.params.id), 1)
+
+    found_profile.save(function(err) {
+      if (err) {return new Error("Device could not be deleted on profile")}
+      console.log("Device got deleted on device list of profile!")
+    })
+  });
   //Find and delete the device
   Device.findByIdAndDelete(req.params.id, {}, function (err) {
-    if (err) {
-      return next(err);
-    }
+    if (err) {return next(err);}
     //Redirect back to same page for a refresh
     res.redirect("/devices");
   });

@@ -123,7 +123,7 @@ function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active
 //Updates a user profiles carbon the score last day if the current carbon emission is lower than their set carbon goal
 function updateUserProfileCarbonScoreLastDay(user_profile, avg_carbon_data, cur_carbon_value) {
 
-    console.log(`${user_profile.firstname}: ${user_profile.sustainable_goals}, type: ${typeof(user_profile.sustainable_goals)}`)
+    //console.log(`${user_profile.firstname}: ${user_profile.sustainable_goals}, type: ${typeof(user_profile.sustainable_goals)}`)
     if (isAboveClimateGoal(user_profile.sustainable_goals, avg_carbon_data, cur_carbon_value)) {
         user_profile.carbon_score_last_day.shift();
         user_profile.carbon_score_last_day.push(true)
