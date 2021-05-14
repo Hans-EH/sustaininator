@@ -14,7 +14,8 @@ let userProfileSchema = new Schema({
   carbon_saved: { type: Number },
   carbon_footprint: { type: Number },
   sustainable_goals: { type: Number },
-  total_energy_consumption_last_day: { type: Array, default: new Array(288).fill(0) }
+  total_energy_consumption_last_day: { type: Array, default: new Array(288).fill(0) },
+  carbon_score_last_day: { type: [Boolean], default: new Array(288).fill(false)},
 });
 
 module.exports = mongoose.model("UserProfile", userProfileSchema);

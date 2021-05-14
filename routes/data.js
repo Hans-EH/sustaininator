@@ -16,5 +16,8 @@ router.get("/forecastdata", dataController.forecastdata);
 // GET everything for green energy production
 router.get("/greenenergy", dataController.greenEnergy);
 
+// GET Carbon emission last 30 days
+router.get("/carbon30", dataController.carbon_data_30)
+
 // Exports router to app
 module.exports = router;

@@ -408,6 +408,10 @@
         inputData.sort(compareNumbers);
         //calculating percentile
         let percentileNr = Math.floor((inputData.length / 100) * p);
+        //Check if max and in that case lower the index by one to be in range of array
+        if (percentileNr === inputData.length) {
+          percentileNr = inputData.length - 1
+        }
         //new dataline to be filled for use as a graph.
         let newDataLine = [];
         console.log(
