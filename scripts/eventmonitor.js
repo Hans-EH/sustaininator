@@ -38,7 +38,7 @@ const createAdvice = async (pctIncrease, type) => {
                 grade: type,
                 title: "The Sun is out!",
                 message: `Heyooo, sun's out guns out.. ${pctIncrease}% increased solar energy production at the moment, enjoy the clean energy`
-            })
+            });
             break;
 
         case 2:
@@ -47,7 +47,7 @@ const createAdvice = async (pctIncrease, type) => {
                 grade: type,
                 title: "It's windy today!",
                 message: `Woohooo, hold on to your hats! ${pctIncrease}% increased wind energy production at the moment, don't blow your chance to use all that clean energy`
-            })
+            });
             break;
 
         case 3:
@@ -56,7 +56,7 @@ const createAdvice = async (pctIncrease, type) => {
                 grade: type,
                 title: "Too much CO2!",
                 message: `Uh oh, CO2 levels are.. ${pctIncrease}% above average at the moment, you can help the environment by delaying energy hungry activities`
-            })
+            });
             break;
 
         default:
@@ -127,11 +127,11 @@ async function monitorSolar(data) {
                 return [true, pctIncrease];
             } else {
                 console.log("Recent Solar advicecard exists"); // DEBUGGING
-                return [false, pctIncrease];
+                return [false];
             }
         } else {
             console.log("No card needed");
-            return false;
+            return [false];
         }
     } catch (e) {
         console.error(e);
@@ -181,11 +181,11 @@ async function monitorWind(data) {
                 return [true, pctIncrease];
             } else {
                 console.log("Recent Wind advicecard exists"); // DEBUGGING
-                return [false, pctIncrease];
+                return [false];
             }
         } else {
             console.log("Wind not blowing enough");
-            return [false, pctIncrease];
+            return [false];
         }
     } catch (error) {
         console.error(error);
@@ -195,27 +195,25 @@ async function monitorWind(data) {
 };
 
 
-async function eventCallStack() {
+exports.eventCallStack = async function eventCallStack() {
     const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
     let data = await fetch(URI).then((response) => response.json());
 
     console.log("\n== before advice creation ==");
 
+    // *_sc -> should create advice 
     const solar_sc = await monitorSolar(data);
     const wind_sc = await monitorWind(data);
     //const co2_sc = await monitorCO2emission(data);
 
-    //console.log(solar_sc);
-    //console.log(wind_sc);
-
     let solar_advice = null;
-    if (solar_sc[0]) {
+    if (solar_sc[0] == true) {
         solar_advice = await createAdvice(solar_sc[1], SOLAR_GRADE);
     }
 
     let wind_advice = null;
-    if (wind_sc[0]) {
+    if (wind_sc[0] == true) {
         wind_advice = await createAdvice(wind_sc[1], WIND_GRADE);
     }
 
@@ -243,11 +241,8 @@ async function eventCallStack() {
                 }
 
                 userprofile.save(function (err) {
-                    if (err) {
-                        console.log(`couldn't save user profile \n ${err}`);
-                    } else {
-                        console.log(`${userprofile.id} saved `);
-                    }
+                    if (err) { console.log(`couldn't save user profile \n ${err}`); }
+                    else { console.log(`${userprofile.id} saved `); }
                 });
             }
         });
@@ -255,4 +250,4 @@ async function eventCallStack() {
 }
 
 // Ligger i update loop
-eventCallStack()
+// eventCallStack()

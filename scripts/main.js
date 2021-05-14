@@ -2,6 +2,9 @@ let Device = require('../models/device'); // unused?
 let UserProfile = require('../models/user_profile')
 let User = require('../models/user');
 
+// Functions
+let eventMonitoring = require("./eventmonitor");
+
 /* This function handles all of the updates and is called every five minutes
 
     It goes through every profile and through every device the profile have, then it:
@@ -40,7 +43,10 @@ exports.update = function () {
             }
             updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices)
         }
-    })
+    });
+
+    // Monitoring for Events
+    eventMonitoring.eventCallStack();
 }
 
 
