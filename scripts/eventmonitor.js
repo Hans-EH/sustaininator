@@ -11,7 +11,7 @@ mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 var db = mongoose.connection;
 db.on("error", console.error.bind(console, "MongoDB connection error:"));
 
-// Check if any event type has been create since one hour
+// Check if any event type has been create since one hour - Virker
 function recentExists(grade) {
     AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
         advices_arr.forEach((advice) => {
@@ -65,14 +65,15 @@ const createAdvice = async (pctIncrease, type) => {
     }
 
     // Save AdviceCard to MongoDB database
-    advice_card.save(function (err, result) {
-        if (err) {
-            console.log(err);
-        } else {
-            console.log(result.id);
-            return result.id;
-        }
-    });
+    return advice_card.save()
+        .then((new_card) => {
+            console.log("On save\n");
+            console.log(new_card);
+            return new_card;
+        })
+        .catch((err) => {
+            return err;
+        });
 };
 
 
@@ -163,9 +164,11 @@ async function monitorWind(data) {
         // Find percentage difference average to current
         let pctIncrease = Math.floor((dataWind[0] / average) * 100 - 100);
 
+        console.log(`Current: ${dataWind[0]} - Average: ${average}`);
+
         /* ======= ADVICE CARD CREATION SECTION ====== */
 
-        if (dataWind[0] >= average) { // remember to flip sign to >= for actual use case
+        if (dataWind[0] <= average) { // remember to flip sign to >= for actual use case
             if (!recentExists(WIND_GRADE)) {
                 console.log("Recent Wind advicecard doesn't exists");
                 //createAdvice(pctIncrease, WIND_GRADE);
@@ -192,57 +195,51 @@ async function eventCallStack() {
     let data = await fetch(URI).then((response) => response.json());
 
     console.log("\n== before advice creation ==");
-
     const should_create = await Promise.all([monitorSolar(data), monitorWind(data)]);
 
     let solar_advice = null;
     console.log("should_create[0]", should_create[0]);
     if (should_create[0]) {
         solar_advice = await createAdvice(15, SOLAR_GRADE);
-        console.log(`Solar Advice: ${solar_advice}`);
     }
 
     let wind_advice = null;
     console.log("should_create[1]", should_create[1]);
     if (should_create[1]) {
-        wind_advice = createAdvice(pctIncrease, WIND_GRADE);
+        wind_advice = await createAdvice(12, WIND_GRADE);
     }
 
 
-    // Save the users profile after changes
-    // UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
-    //     console.log("\n== entering saving ==");
+    //Save the users profile after changes
+    UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
+        console.log("\n== entering saving ==");
 
-    //     for (let userprofile of user_profiles) {
+        for (let userprofile of user_profiles) {
 
-    //         if (solar_advice) {
-    //             while (userprofile.advices.length >= 10) {
-    //                 userprofile.advices.shift();
-    //             }
-    //             userprofile.advices.push(new_solar_advice);
-
-    //             console.log(userprofile.advices[0].created);
-    //         }
+            if (should_create[0]) {
+                while (userprofile.advices.length >= 10) {
+                    userprofile.advices.shift();
+                }
+                userprofile.advices.push(solar_advice);
+            }
 
 
-    //         if (wind_advice) {
-    //             while (userprofile.advices.length >= 10) {
-    //                 userprofile.advices.shift();
-    //             }
-    //             userprofile.advices.push(wind_advice);
+            if (should_create[1]) {
+                while (userprofile.advices.length >= 10) {
+                    userprofile.advices.shift();
+                }
+                userprofile.advices.push(wind_advice);
+            }
 
-    //             console.log(userprofile.advices);
-    //         }
-
-    //         userprofile.save(function (err) {
-    //             if (err) {
-    //                 console.log(`couldn't save user profile \n ${err}`);
-    //             } else {
-    //                 console.log(`${userprofile.id} saved `);
-    //             }
-    //         });
-    //     }
-    // });
+            userprofile.save(function (err) {
+                if (err) {
+                    console.log(`couldn't save user profile \n ${err}`);
+                } else {
+                    console.log(`${userprofile.id} saved `);
+                }
+            });
+        }
+    });
 }
 
 // Ligger i update loop
