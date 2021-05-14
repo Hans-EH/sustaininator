@@ -46,15 +46,66 @@ router.get("/", function (req, res, next) {
 
 
 router.get("/cards", function (req, res, next) {
-  if (auth.isAuthenticated(req, res))
+  let advices = [
+    {
+      class: "status",
+      grade: 5,
+      title: "You're a true climate hero!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 2
+    },
+    {
+      class: "status",
+      grade: 4,
+      title: "You're doing great!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 4
+    },
+    {
+      class: "status",
+      grade: 3,
+      title: "Hang in there!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 6
+    },
+    {
+      class: "status",
+      grade: 2,
+      title: "Keep calm and keep trying!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 8
+    },
+    {
+      class: "status",
+      grade: 1,
+      title: "Want some help?",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 10
+    },
+    {
+      class: "event",
+      grade: 3,
+      title: "High CO2 emissions!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 2
+    },
+    {
+      class: "event",
+      grade: 2,
+      title: "It's windy today!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 2
+    },
+    {
+      class: "event",
+      grade: 1,
+      title: "The sun is out!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 4
+    },
+  ];
 
-    UserProfile.findOne({ user: req.cookies["auth"] }).populate("advices").exec(function (err, user_profile) {
-      let advices = user_profile.advices;
-
-      console.log(advices);
-
-      res.json(advices);
-    });
+  res.render("cards", { title: "Lol", advices: advices });
 })
 
 //GET navbar

@@ -1,42 +1,44 @@
 {% extends 'auth_base.html' %} {% block content %}
 
 <h3>Account performance messages</h3>
-<div class="row" id="msgContainer">
-  {% for message in messages %}
+<!-- User Info Cards -->
+<div class="row mb-3" id="cardContainer">
+  {% set advicesLen = advices.length %} {% if advicesLen> 0 %} {% for advice in
+  advices %}
   <div class="col-12 col-md-6">
     <div class="card mb-3">
       <div class="row g-0">
-        {% if message.class == "status" %}
+        {% if advice.class == "status" %}
         <div class="bg-light col-md-4 p-3 d-flex align-middle">
-          {% if message.type == 5 %}
+          {% if advice.grade == 5 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/vgood.svg"
             alt="..."
           />
-          {% elif message.type == 4 %}
+          {% elif advice.grade == 4 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/good.svg"
             alt="..."
           />
-          {% elif message.type == 3 %}
+          {% elif advice.grade == 3 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/neutral.svg"
             alt="..."
           />
-          {% elif message.type == 2 %}
+          {% elif advice.grade == 2 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/bad.svg"
             alt="..."
           />
-          {% elif message.type == 1 %}
+          {% elif advice.grade == 1 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
@@ -47,21 +49,21 @@
         </div>
         {% else %}
         <div class="bg-light col-md-4 p-3 d-flex justify-content-center">
-          {% if message.type == 3 %}
+          {% if advice.grade == 3 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/pollution.svg"
             alt="..."
           />
-          {% elif message.type == 2 %}
+          {% elif advice.grade == 2 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/windy.svg"
             alt="..."
           />
-          {% elif message.type == 1 %}
+          {% elif advice.grade == 1 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
@@ -74,16 +76,18 @@
         <div class="col-md-8">
           <div class="card-body">
             <div class="d-flex justify-content-between align-items-end">
-              <h5 class="card-title mb-1">{{ message.title }}</h5>
-              <small class="text-muted mb-1"
-                >{{ message.time_since}} mins ago</small
-              >
+              <h5 class="card-title mb-1">{{ advice.title }}</h5>
+              <small class="text-muted mb-1">
+                {% if advice.timeSince == 0 %}
+                <span class="text-success">New</span> {% else %} {{
+                advice.timeSince }} mins ago {% endif %}
+              </small>
             </div>
 
-            <p class="card-text">{{ message.msg }}</p>
+            <p class="card-text">{{ advice.message }}</p>
 
             <div class="d-flex justify-content-end">
-              {% if message.class == "status" %}
+              {% if advice.class == "status" %}
               <a class="btn btn-outline-success btn-sm me-2" href="/"
                 >See more</a
               >
@@ -97,7 +101,23 @@
       </div>
     </div>
   </div>
-  {% endfor %}
+  {% endfor %} {% else%}
+  <div class="my-3 border p-3">
+    <img
+      class="img-fluid mx-auto d-block"
+      id="recommender-image"
+      src="/images/cards/empty_cards.svg"
+      alt="..."
+    />
+    <div class="mx-auto mt-3 d-block w-50 text-center">
+      <h3>You don't have any advices yet</h3>
+      <p class="text-secondary">
+        We are still looking for ways to
+        <span class="text-success">sustanify</span> your home energy usage.
+      </p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 
 <!-- <h3>Generic Power messages</h3>

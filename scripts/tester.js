@@ -1,65 +1,105 @@
-/* const ONE_HOUR = 3600000;
 
-setInterval(() => {
-    // Fetched from db
-    let advice_created = new Date("Wed May 12 2021 14:35:00 GMT+0200 (GMT+02:00)");
-
-    if ((new Date() - advice_created) > ONE_HOUR) {
-        console.log(`Yes : ${new Date() - advice_created}`);
-    }
-}, 1000); */
-
-var assert = require('assert');
-
-let i = 9;
-try{
-  assert(!(i%2));
-}
-catch (e) { console.log(e)}
+const fetch = require("node-fetch");
+var mongoose = require("mongoose");
+const AdviceCard = require("../models/advice_card");
+const UserProfile = require("../models/user_profile");
+const { waterfall } = require("async");
+const ONE_HOUR = 3600000;
+const SOLAR_GRADE = 1;
+const WIND_GRADE = 2;
 
 
-async function testAsync(){
-  return new Promise((resolve,reject)=>{
-      //here our function should be implemented 
-      setTimeout(()=>{
-        console.log("Hello 111 from inside the testAsync function");
-        //resolve("SUCC");
-        console.log("Hello 333 from inside the testAsync function");
-        reject("ERR");
-      } , 2000);
-  });
+let mongoDB = "mongodb+srv://jsaad:augaug1@cluster0.g6o9l.mongodb.net/project_skarp?retryWrites=true&w=majority";
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+var db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
+const findAndLogAdviceOne = async (GRADE) => {
+    var advice_card = await findAdvice(GRADE);
+    console.log("Second Call");
+    console.log(advice_card);
+
+    return advice_card;
 }
 
-function testAsync2(){
-  return new Promise((resolve,reject)=>{
-      //here our function should be implemented 
-      setTimeout(()=>{
-        console.log("Hello 444 from inside the testAsync function");
-        resolve(console.log("Hello 555 inside the testAsync function"));
-        console.log("Hello 666 from inside the testAsync function");
-        //reject();
-      } , 2000);
-  });
+const findAndLogAdviceTwo = async (GRADE) => {
+    var advice_card = await findAndLogAdviceOne(GRADE);
+    console.log("Third Call");
+    console.log(advice_card);
 }
 
-async function callerFun(){
-  try{
-    console.log("Caller");
-    await testAsync();
-  }
-  catch(e){
-    console.log(e);
-  }
-  try{
-    console.log("After waiting");
-    console.log("Caller 2");
-    await testAsync2();
-    console.log("After MORE waiting");
-  }
-  catch(e){
-    console.log(e);
-  }
+const findAdvice = (GRADE) => {
+    return AdviceCard.findOne({ grade: GRADE })
+        .exec()
+        .then((card) => {
+            console.log("First call");
+            console.log(card);
+            return card;
+        })
+        .catch((err) => {
+            return err;
+        });
+};
+
+//findAndLogAdviceTwo(SOLAR_GRADE);
+
+// TEsting on save
+
+
+// Monitor Solar 
+const SaveAndLogAdviceOne = async (GRADE) => {
+    let pctIncrease = 12;
+    var advice_card = await saveAdvice(pctIncrease, GRADE);
+    console.log("First Call:");
+    console.log(advice_card);
+
+    return advice_card;
 }
 
-callerFun();
 
+// Monitor Wind
+const SaveAndLogAdviceTwo = async (GRADE) => {
+    let pctIncrease = 15;
+    var advice_card = await saveAdvice(pctIncrease, GRADE);
+    console.log("Second Call:");
+    console.log(advice_card);
+
+    return advice_card;
+}
+
+// Monitor CallStack
+const eventCallStack = async () => {
+    var advice_card_one = await SaveAndLogAdviceOne(SOLAR_GRADE);
+    var advice_card_two = await SaveAndLogAdviceTwo(WIND_GRADE);
+    console.log("Third Call");
+    console.log(advice_card_one);
+    console.log(advice_card_two);
+
+    UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
+        console.log(user_profiles);
+    });
+}
+
+
+// Create Advice
+const saveAdvice = (pctIncrease, GRADE) => {
+    advice_card = new AdviceCard({
+        class: "event",
+        grade: GRADE,
+        title: "The Sun is out!",
+        message: `Heyooo, sun's out guns out.. ${pctIncrease}% increased solar energy production at the moment, enjoy the clean energy`
+    })
+
+    return advice_card.save()
+        .then((new_card) => {
+            console.log("On save\n");
+            console.log(new_card);
+            return new_card;
+        })
+        .catch((err) => {
+            return err;
+        });
+};
+
+
+eventCallStack();
