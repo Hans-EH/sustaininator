@@ -1,6 +1,10 @@
+const fetch = require("node-fetch");
 let Device = require('../models/device'); // unused?
 let UserProfile = require('../models/user_profile')
 let User = require('../models/user');
+
+// Functions
+let eventMonitoring = require("./eventmonitor");
 
 /* This function handles all of the updates and is called every five minutes
 
@@ -8,9 +12,10 @@ let User = require('../models/user');
     1 - updates its state based on the probability it have turning on at current time
     2 - updates the total amount of energy the device have consumed over the last day and its lifetime
     3 - updates the profiles total amount of energy consumed by taking the sum of all the active devices it has
+    4 - updates the profiles carbon scores to test wether they are doing good or bad
 
 */
-exports.update = function () {
+exports.update = async function () {
 
     // Get the current local time
     let day = new Date();
@@ -23,6 +28,19 @@ exports.update = function () {
     // Convert the current local time as an index between 0 and 288
     let time_index = 12 * hour + minutes
 
+    // Get the latest CO2 emissions value from energinet
+    let URI_latest = 'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 1';
+    let latest_carbon_data = await fetch(URI_latest).then((response) => response.json());
+    let latest_carbon_value = latest_carbon_data["result"]["records"]["0"]["CO2Emission"];
+    // Get the latest 30 days average worth of CO2 datapoints from own api endpoint
+    let URI_30_days = process.env.WEB_HOST + "data/carbon30";
+    let average_carbon_data = await fetch(URI_30_days).then((response) => response.json());
+    average_carbon_data = average_carbon_data["carbon_30"]
+    //Sort the avg_carbon_data from low->high to later find the users percentile line
+    average_carbon_data.sort((a,b) => a - b);
+
+
+    // Do the updates
     UserProfile.find({}).populate('devices').exec(function (err, user_profiles) {
         if (err) { return new Error('User profiles could not be updated!') }
         for (let user_profile of user_profiles) {
@@ -38,11 +56,17 @@ exports.update = function () {
                     updateDeviceEnergyConsumption(device, 'OFF')
                 }
             }
-            updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices)
-        }
-    })
-}
+            //Do profile specific things...
+            updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices);
 
+            updateUserProfileCarbonScoreLastDay(user_profile, average_carbon_data, latest_carbon_value);
+            //updateUserProfileCarbonSinceCreated(user_profile, latest_carbon_value);
+        }
+    });
+
+    // Monitoring for Events
+    eventMonitoring.eventCallStack();
+}
 
 //Updates the state of a single device
 function updateState(device, state) {
@@ -90,11 +114,56 @@ function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active
     user_profile.total_energy_consumption_last_day.push(Math.round(total_energy_of_active_devices * 100) / 100);
 
     //Save profile to db
-    user_profile.save(function (err, next) {
-        if (err) { return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" could not be updated!`) }
+    user_profile.save(function (err) {
+        if (err) { return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" energy consumption could not be updated!`) }
         //console.log(`User profile "${user_profile.firstname}" was successfully updated!`)
     });
 }
+
+//Updates a user profiles carbon the score last day if the current carbon emission is lower than their set carbon goal
+function updateUserProfileCarbonScoreLastDay(user_profile, avg_carbon_data, cur_carbon_value) {
+
+    //console.log(`${user_profile.firstname}: ${user_profile.sustainable_goals}, type: ${typeof(user_profile.sustainable_goals)}`)
+    if (isAboveClimateGoal(user_profile.sustainable_goals, avg_carbon_data, cur_carbon_value)) {
+        user_profile.carbon_score_last_day.shift();
+        user_profile.carbon_score_last_day.push(true)
+    } else {
+        user_profile.carbon_score_last_day.shift();
+        user_profile.carbon_score_last_day.push(false)
+    }
+    
+    user_profile.save(function (err) {
+        if (err) { return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" carbon score could not be updated!`) }
+        //console.log(`User profile "${user_profile.firstname}" carbon score was successfully updated!`)
+    });
+}
+
+/**
+ * Finds the percentile carbon emissions value in the 30 days average carbon data then compares
+ * with the current carbon emission value
+ * @param {*} goal 
+ * @return true if above, false otherwise
+ */
+function isAboveClimateGoal(carbon_goal, avg_carbon_data, cur_carbon_value) {
+    //Get the latest datapoint on CO2 emissions from energinet
+    //Get data from last 30 days of CO2 emissions to calculate percentile savings
+    //Calculate if this point is above or below the climate goal
+    
+    //Get the index in the sorted avg_carbon_data that is the users carbon goal
+    //Ex. Carbon Goal = 10%, avg_carbon_data = [1,2,3,4,5,6,7,8,9,10]
+    //Output => index 0
+    let percentile_index = Math.floor((avg_carbon_data.length / 100) * (100 - carbon_goal))
+    //Check if max and in that case lower the index by one to be in range of array
+    if (percentile_index === avg_carbon_data.length) {
+        percentile_index = avg_carbon_data.length - 1
+    }
+    //Get the value in avg_carbon_data
+    let avg_carbon_value = avg_carbon_data[percentile_index];
+    console.log(`carbon_avg: ${avg_carbon_value}`)
+    return cur_carbon_value < avg_carbon_value;
+
+}
+
 
 /**
  * 

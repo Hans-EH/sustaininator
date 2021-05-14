@@ -113,6 +113,26 @@ exports.carbon_data = function (req, res, next) {
   }
   post_carbon_data();
 };
+//controller for creating the carbon moving average over 30 days graph
+exports.carbon_data_30 = function (req, res, next) {
+  async function post_carbon_data() {
+    try {
+      //defining the arrays to be used
+      let carbon_30 = [];
+
+      const URI = process.env.WEB_HOST + "data/co2emission";
+      let data = await fetch(URI).then((response) => response.json());
+
+      createData(30, data, carbon_30);
+
+      res.json({carbon_30});
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  post_carbon_data();
+};
 
 // Controller for fetching and posting label data.
 exports.forecastdata = function (req, res, next) {
