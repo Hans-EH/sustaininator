@@ -4,6 +4,7 @@ const UserProfile = require("../models/user_profile");
 const ONE_HOUR = 3600000;
 const SOLAR_GRADE = 1;
 const WIND_GRADE = 2;
+const CARBON_GRADE = 3;
 
 /**
  * Finds the percentile carbon emissions value in the 30 days average carbon data then compares
@@ -193,6 +194,90 @@ async function monitorWind(data) {
 };
 
 
+async function monitorCarbon(data) {
+    try {
+        // Fetch carbon data
+        const URI = process.env.WEB_HOST + "data/carbondata";
+        let data = await fetch(URI).then((response) => response.json());
+
+        // Get 30 days moving average
+
+
+
+
+        /* ======= ADVICE CARD CREATION SECTION ====== */
+
+        // Compare current energy prod, with average
+        if (dataSolar[0] >= average) { // change back to greater than
+            // Check if any recent solar advices has been created
+            if (!recentExists(CARBON_GRADE)) {
+                console.log("Recent Solar advicecard doesn't exists");
+                return [true, pctIncrease];
+            } else {
+                console.log("Recent Solar advicecard exists"); // DEBUGGING
+                return [false];
+            }
+        } else {
+            console.log("No card needed");
+            return [false];
+        }
+
+    } catch (e) {
+        console.error(e);
+    } finally {
+        console.log("Carbon Impact Executed");
+    }
+
+}
+
+async function monitorCarbonImpact(data) {
+    try {
+        //get from profile data
+        let saving_procent = 50;
+        saving_procent = saving_procent / 100;
+        //forecasts data to collect
+        let data = [100, 120, 130, 140, 130, 120, 150, 170, 120, 100, 90, 80, 70, 60, 70, 80, 30, 20, 15, 20, 30, 20, 50, 40, 30, 60, 70, 80];
+        //last datapoint, to be copied
+        let data_now = 100;
+        console.log(data);
+        //i is hours here
+        let output = [];
+        for (let i = 0; i < data.length; i++) {
+            if (data_now > data[i] && data[i] < (data_now * saving_procent)) {
+                output.push(i);
+                output.push(data[i]);
+                output.push(saving_procent);
+                break;
+            }
+        };
+
+        console.log(`If you wait ${output[0]} hours, you can save ${(1 - (output[1] / data_now)) * 100}% compared to the current carbon footprint per KWh, which achieves your goal of saving ${output[2] * 100}%`);
+
+        /* ======= ADVICE CARD CREATION SECTION ====== */
+
+        // Compare current energy prod, with average
+        if (dataSolar[0] >= average) { // change back to greater than
+            // Check if any recent solar advices has been created
+            if (!recentExists(CARBON_GRADE)) {
+                console.log("Recent Solar advicecard doesn't exists");
+                return [true, pctIncrease];
+            } else {
+                console.log("Recent Solar advicecard exists"); // DEBUGGING
+                return [false];
+            }
+        } else {
+            console.log("No card needed");
+            return [false];
+        }
+
+    } catch (e) {
+        console.error(e);
+    } finally {
+        console.log("Carbon Impact Executed");
+    }
+}
+
+
 exports.eventCallStack = async function eventCallStack() {
     const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
@@ -203,7 +288,7 @@ exports.eventCallStack = async function eventCallStack() {
     // *_sc -> should create advice 
     const solar_sc = await monitorSolar(data);
     const wind_sc = await monitorWind(data);
-    //const co2_sc = await monitorCO2emission(data);
+    const carbon_sc = true;
 
     let solar_advice = null;
     if (solar_sc[0] == true) {
@@ -215,6 +300,10 @@ exports.eventCallStack = async function eventCallStack() {
         wind_advice = await createAdvice(wind_sc[1], WIND_GRADE);
     }
 
+    let carbon_advice = null;
+    if (carbon_sc[0] == true) {
+        carbon_advice = await createAdvice(18, CARBON_GRADE);
+    }
 
     // Save the users profile after changes
     if (solar_sc[0] == true || wind_sc[0] == true) {
@@ -238,6 +327,13 @@ exports.eventCallStack = async function eventCallStack() {
                     userprofile.advices.push(wind_advice);
                 }
 
+                if (carbon_sc[0]) {
+                    while (userprofile.advices.length >= 10) {
+                        userprofile.advices.shift();
+                    }
+                    userprofile.advices.push(_advice);
+                }
+
                 userprofile.save(function (err) {
                     if (err) { console.log(`couldn't save user profile \n ${err}`); }
                     else { console.log(`${userprofile.id} saved `); }
@@ -246,4 +342,3 @@ exports.eventCallStack = async function eventCallStack() {
         });
     };
 }
-

@@ -113,6 +113,7 @@ exports.carbon_data = function (req, res, next) {
   }
   post_carbon_data();
 };
+
 //controller for creating the carbon moving average over 30 days graph
 exports.carbon_data_30 = function (req, res, next) {
   async function post_carbon_data() {
@@ -125,7 +126,7 @@ exports.carbon_data_30 = function (req, res, next) {
 
       createData(30, data, carbon_30);
 
-      res.json({carbon_30});
+      res.json({ carbon_30 });
 
     } catch (error) {
       console.log(error);
@@ -154,7 +155,7 @@ exports.forecastdata = function (req, res, next) {
       }
       // Reverse Arrays
       labels = labels.reverse();
-      
+
       let data = [];
       let forecast_labels = [];
       let forecast_data = [];
@@ -179,8 +180,8 @@ exports.forecastdata = function (req, res, next) {
       best_model_placeholder = find_best_model(data, days_past);
       let best_model_order = best_model_placeholder[0];
       let best_model_fitness = best_model_placeholder[1];
-      let median = avg(data,0,data.length);
-      let standard_deviation = STD(data,median);
+      let median = avg(data, 0, data.length);
+      let standard_deviation = STD(data, median);
 
       //moving average function with seasonality and a autoregressiv part.
       function generate_forecast(q, data, days_past, days_forecasted) {
@@ -207,7 +208,7 @@ exports.forecastdata = function (req, res, next) {
           }
         }
         //removing the extra 2 days created to solve som weird behavior in days_forecasted +=2
-        forecast_data.splice(-day*2,day*2)
+        forecast_data.splice(-day * 2, day * 2)
 
       };
 
@@ -240,12 +241,12 @@ exports.forecastdata = function (req, res, next) {
       }
 
       //finds the maximal movement of graph data
-      function max_movement(data){
+      function max_movement(data) {
         let movement = [];
-        for(let i = 0; i < data.length-1; i++){
-          movement.push(Math.abs(data[i]-Math.abs(data[i+1])));
+        for (let i = 0; i < data.length - 1; i++) {
+          movement.push(Math.abs(data[i] - Math.abs(data[i + 1])));
         }
-        return avg(movement,0,movement.length);
+        return avg(movement, 0, movement.length);
       }
 
       //bounds the max and min function values
@@ -260,17 +261,17 @@ exports.forecastdata = function (req, res, next) {
         if (result > c + x) {
           result = c + x;
         }
-        if(result > forecast_data[forecast_data.length - 1]+max_mvmt){
-          result = forecast_data[forecast_data.length - 1]+max_mvmt;
+        if (result > forecast_data[forecast_data.length - 1] + max_mvmt) {
+          result = forecast_data[forecast_data.length - 1] + max_mvmt;
         }
         if (result < -1 * x + c) {
           result = -1 * x + c;
         }
-        if(result < forecast_data[forecast_data.length - 1]-max_mvmt){
-          result = forecast_data[forecast_data.length - 1]-max_mvmt;
+        if (result < forecast_data[forecast_data.length - 1] - max_mvmt) {
+          result = forecast_data[forecast_data.length - 1] - max_mvmt;
         }
         //makes a minimum bound of 0.
-        if(result <= 0){ 
+        if (result <= 0) {
           result = 0;
         };
         return result;
@@ -287,7 +288,7 @@ exports.forecastdata = function (req, res, next) {
 
       //correlation function, the closer the data is to the previous number, the higher the weight
       function correl(eps, pre_data) {
-        let x = (eps-pre_data)
+        let x = (eps - pre_data)
         //to not get an NaN error
         if (x < 1 && x > -1) { x = 1; }
         //takes sqrt, so that result isnt a tiny decimal
@@ -337,9 +338,9 @@ exports.forecastdata = function (req, res, next) {
           forecast_data = [];
           console.log(i + ": Model fitness: " + model_fits);
         }
-        console.log("best order: " + best_model_order+", with model fitness: "+best_model);
+        console.log("best order: " + best_model_order + ", with model fitness: " + best_model);
         generate_forecast(best_model_order, raw_emissions_data, days_past, days_forecasted);
-        return([best_model_order,best_model])
+        return ([best_model_order, best_model])
       }
 
       //calculates how well the model fits the data, by finding the deviation at each point
@@ -351,21 +352,21 @@ exports.forecastdata = function (req, res, next) {
         //returns the average deviation of the model from the backcasted data
         return avg(data_diff, 0, data_diff.length);
       }
-    //  random_plot(data,days_past,standard_deviation,median);
-    //  //randomely plot points within 1 standard deviation
-    //  model_fit(data,days_past);
-    //  function random_plot(data,days_past,standard_deviation,median){
-    //    let l = forecast_data.length;
-    //    forecast_data = [];
-    //    for(let i = 0; i<l; i++){
-    //      let x = getRandomArbitrary(median-standard_deviation,median+standard_deviation)
-    //      forecast_data.push(x)
-    //    }
-    //  }
-    //  //get random value between 29
-    //  function getRandomArbitrary(min, max) {
-    //    return Math.random() * (max - min) + min;
-    //  }
+      //  random_plot(data,days_past,standard_deviation,median);
+      //  //randomely plot points within 1 standard deviation
+      //  model_fit(data,days_past);
+      //  function random_plot(data,days_past,standard_deviation,median){
+      //    let l = forecast_data.length;
+      //    forecast_data = [];
+      //    for(let i = 0; i<l; i++){
+      //      let x = getRandomArbitrary(median-standard_deviation,median+standard_deviation)
+      //      forecast_data.push(x)
+      //    }
+      //  }
+      //  //get random value between 29
+      //  function getRandomArbitrary(min, max) {
+      //    return Math.random() * (max - min) + min;
+      //  }
 
       //seasonal creation of data, we push 30 days of data for the same time, in an array.
       function seasonal_view(data, day) {
@@ -389,19 +390,19 @@ exports.forecastdata = function (req, res, next) {
       //0: [1,2]
       //1: [2,3]
       //2: [3,4] 
-//      function lag_view(order, data) {
-//        //lagged data array to be used
-//        let lagged_data = [];
-//        //loops through, pushing the last order length lagged data sessions
-//        for (let i = 0; i < data.length - (order + 1); i++) {
-//          let x = [];
-//          for (let j = 0; j < order; j++) {
-//            x.push(data[i + j]);
-//          }
-//          lagged_data.push(x);
-//        }
-//        return lagged_data;
-//      };
+      //      function lag_view(order, data) {
+      //        //lagged data array to be used
+      //        let lagged_data = [];
+      //        //loops through, pushing the last order length lagged data sessions
+      //        for (let i = 0; i < data.length - (order + 1); i++) {
+      //          let x = [];
+      //          for (let j = 0; j < order; j++) {
+      //            x.push(data[i + j]);
+      //          }
+      //          lagged_data.push(x);
+      //        }
+      //        return lagged_data;
+      //      };
 
       //test if all functions work correct:
       function forecast_test() {
@@ -431,7 +432,7 @@ exports.forecastdata = function (req, res, next) {
       }
       //MA_test();
 
-      res.json({ forecast_labels, data, forecast_data, days_past, days_forecasted, best_model_order,best_model_fitness, median, standard_deviation});
+      res.json({ forecast_labels, data, forecast_data, days_past, days_forecasted, best_model_order, best_model_fitness, median, standard_deviation });
     } catch (error) {
       console.error(error);
       res.send(false);

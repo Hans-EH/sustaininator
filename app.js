@@ -56,6 +56,9 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
+
+// ==== EVENT/UPDATE LOOP ==== 
+
 // Server side - Update loop
 const five_minute_interval = 5 * 60 * 1000;
 
@@ -69,5 +72,7 @@ setTimeout(() => {
 },
   min_until_start * 60 * 1000 //To get milliseconds
 )
+
+// ==== EVENT/UPDATE LOOP ==== 
 
 module.exports = app;
