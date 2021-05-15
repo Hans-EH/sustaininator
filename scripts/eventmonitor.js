@@ -176,7 +176,6 @@ async function monitorWind(data) {
         if (dataWind[0] >= average) { // remember to flip sign to >= for actual use case
             if (!recentExists(WIND_GRADE)) {
                 console.log("Recent Wind advicecard doesn't exists");
-                //createAdvice(pctIncrease, WIND_GRADE);
                 return [true, pctIncrease];
             } else {
                 console.log("Recent Wind advicecard exists"); // DEBUGGING
@@ -334,7 +333,7 @@ exports.eventCallStack = async function eventCallStack() {
                     while (userprofile.advices.length >= 10) {
                         userprofile.advices.shift();
                     }
-                    userprofile.advices.push(_advice);
+                    userprofile.advices.push(carbon_advice);
                 }
 
                 userprofile.save(function (err) {
