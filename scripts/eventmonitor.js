@@ -4,7 +4,8 @@ const UserProfile = require("../models/user_profile");
 const ONE_HOUR = 3600000;
 const SOLAR_GRADE = 1;
 const WIND_GRADE = 2;
-const CARBON_GRADE = 3;
+const CARBON_HIGH_GRADE = 3;
+const CARBON_LOW_GRADE = 4;
 
 /**
  * Finds the percentile carbon emissions value in the 30 days average carbon data then compares
@@ -193,26 +194,29 @@ async function monitorWind(data) {
 };
 
 
-async function monitorCarbon(data) {
+async function monitorHighCarbon() {
     try {
         // Fetch carbon data
         const URI = process.env.WEB_HOST + "data/carbondata";
         let data = await fetch(URI).then((response) => response.json());
 
-        // Get 30 days moving average
+        //sorts the carbon_30 data.
+        data.carbon_30.sort();
+        //Find the entry in the middle, which corrosponds with the median entry. 
+        let median = data.carbon_30[Math.floor(data.carbon_30.length/2)];
+        console.log(average_emissions);
 
+        //Find the entry in the middle, which corrosponds with the median entry. 
+        let carbon_now = data.carbon_1[data.carbon_1.length-1];
 
-
-
-
-        // ^^^^^^^^^^^
+        //find procent increase/decrease from the median
+        let pctIncrease = Math.floor((carbon_now / median) * 100 - 100);
 
         /* ======= ADVICE CARD CREATION SECTION ====== */
-
         // Compare current energy prod, with average
-        if (dataSolar[0] >= average) { // change back to greater than
+        if (carbon_now >= median) { // change back to greater than
             // Check if any recent solar advices has been created
-            if (!recentExists(CARBON_GRADE)) {
+            if (!recentExists(CARBON_HIGH_GRADE)) {
                 console.log("Recent Carbon advicecard doesn't exists");
                 return [true, pctIncrease];
             } else {
@@ -220,7 +224,7 @@ async function monitorCarbon(data) {
                 return [false];
             }
         } else {
-            console.log("No card needed");
+            console.log("No carbon card needed");
             return [false];
         }
 
@@ -229,7 +233,47 @@ async function monitorCarbon(data) {
     } finally {
         console.log("Carbon Impact Executed");
     }
+}
 
+async function monitorLowCarbon() {
+    try {
+        // Fetch carbon data
+        const URI = process.env.WEB_HOST + "data/carbondata";
+        let data = await fetch(URI).then((response) => response.json());
+
+        //sorts the carbon_30 data.
+        data.carbon_30.sort();
+        //Find the entry in the middle, which corrosponds with the median entry. 
+        let median = data.carbon_30[Math.floor(data.carbon_30.length/2)];
+        console.log(average_emissions);
+
+        //Find the entry in the middle, which corrosponds with the median entry. 
+        let carbon_now = data.carbon_1[data.carbon_1.length-1];
+
+        //find procent increase/decrease from the median
+        let pctIncrease = Math.floor((carbon_now / median) * 100 - 100);
+
+        /* ======= ADVICE CARD CREATION SECTION ====== */
+        // Compare current energy prod, with average
+        if (carbon_now <= median) { // change back to greater than
+            // Check if any recent solar advices has been created
+            if (!recentExists(CARBON_LOW_GRADE)) {
+                console.log("Recent Carbon advicecard doesn't exists");
+                return [true, pctIncrease];
+            } else {
+                console.log("Recent Carbon advicecard exists"); // DEBUGGING
+                return [false];
+            }
+        } else {
+            console.log("No carbon card needed");
+            return [false];
+        }
+
+    } catch (e) {
+        console.error(e);
+    } finally {
+        console.log("Carbon Impact Executed");
+    }
 }
 
 async function monitorCarbonImpact(data) {
@@ -290,7 +334,8 @@ exports.eventCallStack = async function eventCallStack() {
     // *_sc -> should create advice 
     const solar_sc = await monitorSolar(data);
     const wind_sc = await monitorWind(data);
-    const carbon_sc = true;
+    const carbon_high_sc = await monitorHighCarbon();
+    //const carbon_low_sc = await monitorLowCarbon();
 
     let solar_advice = null;
     if (solar_sc[0] == true) {
@@ -302,10 +347,14 @@ exports.eventCallStack = async function eventCallStack() {
         wind_advice = await createAdvice(wind_sc[1], WIND_GRADE);
     }
 
-    let carbon_advice = null;
-    if (carbon_sc[0] == true) {
-        carbon_advice = await createAdvice(18, CARBON_GRADE);
+    let carbon_high_advice = null;
+    if (carbon_high_sc[0] == true) {
+        carbon_high_advice = await createAdvice(carbon_high_sc[1], CARBON_HIGH_GRADE);
     }
+//    let carbon_low_advice = null;
+//    if (carbon_low_sc[0] == true) {
+//        carbon_low_advice = await createAdvice(carbon_low_sc[1], CARBON_LOW_GRADE);
+//    }
 
     // Save the users profile after changes
     if (solar_sc[0] == true || wind_sc[0] == true) {
