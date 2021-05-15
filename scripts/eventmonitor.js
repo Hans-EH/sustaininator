@@ -59,6 +59,16 @@ const createAdvice = async (pctIncrease, type) => {
             });
             break;
 
+        case 4:
+            advice_card = new AdviceCard({
+                class: "event",
+                grade: type,
+                title: "Low CO2 emissions",
+                message: `Yay, CO2 levels are.. ${pctIncrease}% below average at the moment`
+            });
+            break;
+
+
         default:
             console.log("Incorrect type received by switch");
             break;
@@ -203,11 +213,11 @@ async function monitorHighCarbon() {
         //sorts the carbon_30 data.
         data.carbon_30.sort();
         //Find the entry in the middle, which corrosponds with the median entry. 
-        let median = data.carbon_30[Math.floor(data.carbon_30.length/2)];
+        let median = data.carbon_30[Math.floor(data.carbon_30.length / 2)];
         console.log(average_emissions);
 
         //Find the entry in the middle, which corrosponds with the median entry. 
-        let carbon_now = data.carbon_1[data.carbon_1.length-1];
+        let carbon_now = data.carbon_1[data.carbon_1.length - 1];
 
         //find procent increase/decrease from the median
         let pctIncrease = Math.floor((carbon_now / median) * 100 - 100);
@@ -244,11 +254,11 @@ async function monitorLowCarbon() {
         //sorts the carbon_30 data.
         data.carbon_30.sort();
         //Find the entry in the middle, which corrosponds with the median entry. 
-        let median = data.carbon_30[Math.floor(data.carbon_30.length/2)];
+        let median = data.carbon_30[Math.floor(data.carbon_30.length / 2)];
         console.log(average_emissions);
 
         //Find the entry in the middle, which corrosponds with the median entry. 
-        let carbon_now = data.carbon_1[data.carbon_1.length-1];
+        let carbon_now = data.carbon_1[data.carbon_1.length - 1];
 
         //find procent increase/decrease from the median
         let pctIncrease = Math.floor((carbon_now / median) * 100 - 100);
@@ -351,10 +361,10 @@ exports.eventCallStack = async function eventCallStack() {
     if (carbon_high_sc[0] == true) {
         carbon_high_advice = await createAdvice(carbon_high_sc[1], CARBON_HIGH_GRADE);
     }
-//    let carbon_low_advice = null;
-//    if (carbon_low_sc[0] == true) {
-//        carbon_low_advice = await createAdvice(carbon_low_sc[1], CARBON_LOW_GRADE);
-//    }
+    //    let carbon_low_advice = null;
+    //    if (carbon_low_sc[0] == true) {
+    //        carbon_low_advice = await createAdvice(carbon_low_sc[1], CARBON_LOW_GRADE);
+    //    }
 
     // Save the users profile after changes
     if (solar_sc[0] == true || wind_sc[0] == true) {
