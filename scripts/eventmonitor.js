@@ -205,16 +205,19 @@ async function monitorCarbon(data) {
 
 
 
+
+        // ^^^^^^^^^^^
+
         /* ======= ADVICE CARD CREATION SECTION ====== */
 
         // Compare current energy prod, with average
         if (dataSolar[0] >= average) { // change back to greater than
             // Check if any recent solar advices has been created
             if (!recentExists(CARBON_GRADE)) {
-                console.log("Recent Solar advicecard doesn't exists");
+                console.log("Recent Carbon advicecard doesn't exists");
                 return [true, pctIncrease];
             } else {
-                console.log("Recent Solar advicecard exists"); // DEBUGGING
+                console.log("Recent Carbon advicecard exists"); // DEBUGGING
                 return [false];
             }
         } else {
