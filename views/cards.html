@@ -49,7 +49,14 @@
         </div>
         {% else %}
         <div class="bg-light col-md-4 p-3 d-flex justify-content-center">
-          {% if advice.grade == 3 %}
+          {% if advice.grade == 4 %}
+          <img
+            class="img-fluid mx-auto d-block"
+            id="recommender-image"
+            src="/images/cards/low_carbon_2.svg"
+            alt="..."
+          />
+          {% elif advice.grade == 3 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
