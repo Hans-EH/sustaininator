@@ -214,7 +214,7 @@ async function monitorHighCarbon() {
         data.carbon_30.sort();
         //Find the entry in the middle, which corrosponds with the median entry. 
         let median = data.carbon_30[Math.floor(data.carbon_30.length / 2)];
-        console.log(average_emissions);
+        //console.log(average_emissions);
 
         //Find the entry in the middle, which corrosponds with the median entry. 
         let carbon_now = data.carbon_1[data.carbon_1.length - 1];
@@ -298,7 +298,6 @@ exports.eventCallStack = async function eventCallStack() {
     const wind_sc = await monitorWind(data);
     const carbon_high_sc = await monitorHighCarbon();
     //const carbon_low_sc = await monitorLowCarbon();
-
     let solar_advice = null;
     if (solar_sc[0] == true) {
         solar_advice = await createAdvice(solar_sc[1], SOLAR_GRADE);
@@ -340,16 +339,16 @@ exports.eventCallStack = async function eventCallStack() {
                     userprofile.advices.push(wind_advice);
                 }
 
-                if (carbon_sc[0]) {
+                if (carbon_high_sc[0]) {
                     while (userprofile.advices.length >= 10) {
                         userprofile.advices.shift();
                     }
-                    userprofile.advices.push(carbon_advice);
+                    userprofile.advices.push(carbon_high_advice);
                 }
 
                 userprofile.save(function (err) {
                     if (err) { console.log(`couldn't save user profile \n ${err}`); }
-                    else { console.log(`${userprofile.id} saved `); }
+                    else { console.log(`${userprofile.firstname} saved `); }
                 });
             }
         });
