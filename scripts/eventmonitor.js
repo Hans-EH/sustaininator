@@ -297,7 +297,7 @@ exports.eventCallStack = async function eventCallStack() {
     const solar_sc = await monitorSolar(data);
     const wind_sc = await monitorWind(data);
     const carbon_high_sc = await monitorHighCarbon();
-    //const carbon_low_sc = await monitorLowCarbon();
+    const carbon_low_sc = await monitorLowCarbon();
 
     let solar_advice = null;
     if (solar_sc[0] == true) {
@@ -313,10 +313,10 @@ exports.eventCallStack = async function eventCallStack() {
     if (carbon_high_sc[0] == true) {
         carbon_high_advice = await createAdvice(carbon_high_sc[1], CARBON_HIGH_GRADE);
     }
-    //    let carbon_low_advice = null;
-    //    if (carbon_low_sc[0] == true) {
-    //        carbon_low_advice = await createAdvice(carbon_low_sc[1], CARBON_LOW_GRADE);
-    //    }
+    let carbon_low_advice = null;
+    if (carbon_low_sc[0] == true) {
+        carbon_low_advice = await createAdvice(carbon_low_sc[1], CARBON_LOW_GRADE);
+    }
 
     // Save the users profile after changes
     if (solar_sc[0] == true || wind_sc[0] == true) {
