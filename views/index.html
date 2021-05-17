@@ -5,7 +5,40 @@
   <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>CO<sub>2</sub> saved</h5>
+        <h5>CO<sub>2</sub> saved, since: {{ time_since_creation }} 
+        <!-- Button trigger savings methology modal -->
+          <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              <i class="bi bi-patch-question-fill "></i>
+          </button>
+        </h5>
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Methology for calculating saved CO<sub>2</sub></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        In order to calculate saved CO<sub>2</sub>, the difference between the 30 day median and the current CO<sub>2</sub> emissions is found.
+        if the current CO<sub>2</sub> emissions is less than the 30 day median for the same time, then we use it, otherwise if the current CO<sub>2</sub> emissions is more than the 30 day average, then it is discarded.
+        <br><br>
+        If not discarded, then this difference is multiplied by the current electricity usage in KWh.<br><br>
+        <strong>Example 1:</strong>
+        Median CO<sub>2</sub> is 120g CO<sub>2</sub>/KWh, current is 100g CO<sub>2</sub>/KWh. 120-100 = 20g CO<sub>2</sub>/KWh. 
+        Current electricity usage amounts to 100KWh: 20g CO<sub>2</sub>/KWh * 100KWh = 200g CO<sub>2</sub>
+        <br><br>
+        <strong>Example 2:</strong>
+        Median CO<sub>2</sub> is 120g CO<sub>2</sub>/KWh, current is 150g CO<sub>2</sub>/KWh. 120-150 = -30g CO<sub>2</sub>/KWh. 
+        No CO<sub>2</sub> has therefore been saved.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal savings methology end -->
       </div>
       <div class="card-body">
         <p>{{ profile_data.carbon_saved.toFixed(2) }} kg CO<sub>2</sub></p>
@@ -15,7 +48,7 @@
   <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>CO<sub>2</sub> Total</h5>
+        <h5>CO<sub>2</sub> Total, since: {{ time_since_creation }}</h5>
       </div>
       <div class="card-body">
         <p>{{profile_data.carbon_footprint.toFixed(2) }} kg CO<sub>2</sub></p>
@@ -792,6 +825,7 @@
     forecastGraph();
     setLastUpdate("lastUpdateForecast");
   });
+  $('#myModal').modal(options)
 </script>
 
 <style>
