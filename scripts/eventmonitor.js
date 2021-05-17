@@ -147,14 +147,14 @@ async function monitorSolar(data) {
         if (dataSolar[0] >= average) { // change back to greater than
             // Check if any recent solar advices has been created
             if (await recentExists(SOLAR_GRADE) == false) {
-                console.log("Recent Solar advicecard doesn't exists");
+                console.log("Recent Solar advicecard doesn't exist");
                 return [true, pctIncrease];
             } else {
                 console.log("Recent Solar advicecard exists"); // DEBUGGING
                 return [false];
             }
         } else {
-            console.log("No card needed");
+            console.log("Not enough sun");
             return [false];
         }
     } catch (e) {
@@ -206,7 +206,7 @@ async function monitorWind(data) {
 
         if (dataWind[0] >= average) { // remember to flip sign to >= for actual use case
             if (await recentExists(WIND_GRADE) == false) {
-                console.log("Recent Wind advicecard doesn't exists");
+                console.log("Recent Wind advicecard doesn't exist");
                 return [true, pctIncrease];
             } else {
                 console.log("Recent Wind advicecard exists"); // DEBUGGING
@@ -258,14 +258,14 @@ async function monitorHighCarbon() {
         if (carbon_now >= median) { // change back to greater than
             // Check if any recent solar advices has been created
             if (await recentExists(CARBON_HIGH_GRADE) == false) {
-                console.log("Recent Carbon advicecard doesn't exists");
+                console.log("Recent Carbon advicecard doesn't exist");
                 return [true, pctIncrease];
             } else {
-                console.log("Recent Carbon advicecard exists"); // DEBUGGING
+                console.log("Recent Carbon advicecard exist"); // DEBUGGING
                 return [false];
             }
         } else {
-            console.log("No carbon card needed");
+            console.log("Carbondioxide too high");
             return [false];
         }
 
@@ -307,17 +307,17 @@ async function monitorLowCarbon() {
 
         /* ======= ADVICE CARD CREATION SECTION ====== */
         // Compare current energy prod, with average
-        if (carbon_now <= median) { // change back to greater than
+        if (carbon_now < median) { // change back to greater than
             // Check if any recent solar advices has been created
             if (await recentExists(CARBON_LOW_GRADE) == false) {
-                console.log("Recent Carbon advicecard doesn't exists");
+                console.log("Recent Carbon advicecard doesn't exist");
                 return [true, Math.abs(pctIncrease)];
             } else {
                 console.log("Recent Carbon advicecard exists"); // DEBUGGING
                 return [false];
             }
         } else {
-            console.log("No carbon card needed");
+            console.log("Carbondioxide low");
             return [false];
         }
 
@@ -327,8 +327,6 @@ async function monitorLowCarbon() {
         console.log("--> Monitor Carbon Low Executed");
     }
 }
-
-
 
 exports.eventCallStack = async function eventCallStack() {
     // Fetch Energinet.dk - danish energy production data
@@ -354,7 +352,6 @@ exports.eventCallStack = async function eventCallStack() {
         wind_advice = await createAdvice(wind_sc[1], WIND_GRADE);
     }
 
-
     let carbon_high_advice = null;
     if (carbon_high_sc[0] == true) {
         carbon_high_advice = await createAdvice(carbon_high_sc[1], CARBON_HIGH_GRADE);
@@ -378,7 +375,6 @@ exports.eventCallStack = async function eventCallStack() {
                     }
                     userprofile.advices.push(solar_advice);
                 }
-
 
                 if (wind_sc[0]) {
                     while (userprofile.advices.length >= MAX_ADVICES) {
