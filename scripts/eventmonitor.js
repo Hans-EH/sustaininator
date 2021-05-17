@@ -25,7 +25,11 @@ function recentExists(grade) {
     });
 }
 
-// Function used to create and save advice to db and each user
+/**
+ * Function used
+ * @param {*} goal
+ * @return true if above, false otherwise
+ */
 const createAdvice = async (pctIncrease, type) => {
     console.log(`entered createAdvice for type: ${type}`);
 
@@ -86,7 +90,7 @@ const createAdvice = async (pctIncrease, type) => {
         });
 };
 
-
+// Function to determine whether the energy
 async function monitorSolar(data) {
     try {
 
@@ -245,6 +249,7 @@ async function monitorHighCarbon() {
     }
 }
 
+
 async function monitorLowCarbon() {
     try {
         // Fetch carbon data
@@ -255,7 +260,7 @@ async function monitorLowCarbon() {
         data.carbon_30.sort();
         //Find the entry in the middle, which corrosponds with the median entry. 
         let median = data.carbon_30[Math.floor(data.carbon_30.length / 2)];
-        console.log(average_emissions);
+        //console.log(average_emissions);
 
         //Find the entry in the middle, which corrosponds with the median entry. 
         let carbon_now = data.carbon_1[data.carbon_1.length - 1];
@@ -285,6 +290,7 @@ async function monitorLowCarbon() {
         console.log("Carbon Impact Executed");
     }
 }
+
 
 exports.eventCallStack = async function eventCallStack() {
     const URI =
