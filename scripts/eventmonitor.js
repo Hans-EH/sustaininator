@@ -296,7 +296,7 @@ async function monitorLowCarbon() {
             // Check if any recent solar advices has been created
             if (!recentExists(CARBON_LOW_GRADE)) {
                 console.log("Recent Carbon advicecard doesn't exists");
-                return [true, pctIncrease];
+                return [true, Math.abs(pctIncrease)];
             } else {
                 console.log("Recent Carbon advicecard exists"); // DEBUGGING
                 return [false];
