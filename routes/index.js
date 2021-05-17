@@ -45,6 +45,12 @@ router.get("/", function (req, res, next) {
 });
 
 
+router.post("/card_remove", function (req, res, next) {
+  
+  res.send("ok");
+});
+
+
 router.get("/cards", function (req, res, next) {
   let advices = [
     {

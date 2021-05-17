@@ -8,9 +8,9 @@ const CARBON_HIGH_GRADE = 3;
 const CARBON_LOW_GRADE = 4;
 
 /**
- * Finds the percentile carbon emissions value in the 30 days average carbon data then compares
- * with the current carbon emission value
- * @param {*} goal
+ * Function used find out if a card of similar type has been
+ * created in the time between now and the ONE_HOUR constant
+ * @param {*} grade Recieces the grade of that should be checked
  * @return true if above, false otherwise
  */
 function recentExists(grade) {
@@ -26,8 +26,10 @@ function recentExists(grade) {
 }
 
 /**
- * Function used
- * @param {*} goal
+ * Function used The pick the right content that should be used
+ * in the mongoose model for the AdviceCard, including type and value
+ * @param {*} pctIncrease The amount that a value strays from average [Integer]
+ * @param {*} type The type of GRADE that the card should be created [0-5]
  * @return true if above, false otherwise
  */
 const createAdvice = async (pctIncrease, type) => {
@@ -90,7 +92,12 @@ const createAdvice = async (pctIncrease, type) => {
         });
 };
 
-// Function to determine whether the energy
+/**
+ * Function used the calculate of the current solar energy production
+ * is higher or lower than the average production in one week.
+ * @param {*} data from energinet.dk, that is data about the danish energy production.
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorSolar(data) {
     try {
 
@@ -154,7 +161,12 @@ async function monitorSolar(data) {
     }
 };
 
-
+/**
+ * Function used the calculate of the current wind energy production
+ * is higher or lower than the average production in one week.
+ * @param {*} data from energinet.dk, that is data about the danish energy production.
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorWind(data) {
     try {
 
@@ -207,10 +219,15 @@ async function monitorWind(data) {
     }
 };
 
-
+/**
+ * Function used the calculate of CO2 emission used in energy production
+ * is higher than the average emissions in one week.
+ * @param {*} data - preprocessed data from energinet.dk but from our own endpoint
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorHighCarbon() {
     try {
-        // Fetch carbon data
+        // Fetch carbon data - processed energynet production data
         const URI = process.env.WEB_HOST + "data/carbondata";
         let data = await fetch(URI).then((response) => response.json());
 
@@ -249,10 +266,15 @@ async function monitorHighCarbon() {
     }
 }
 
-
+/**
+ * Function used the calculate of CO2 emission used in energy production
+ * is lower than the average emissions in one week.
+ * @param {*} data - preprocessed data from energinet.dk but from our own endpoint
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorLowCarbon() {
     try {
-        // Fetch carbon data
+        // Fetch carbon data - processed energynet production data
         const URI = process.env.WEB_HOST + "data/carbondata";
         let data = await fetch(URI).then((response) => response.json());
 
@@ -293,6 +315,7 @@ async function monitorLowCarbon() {
 
 
 exports.eventCallStack = async function eventCallStack() {
+    // Fetch Energinet.dk - danish energy production data
     const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
     let data = await fetch(URI).then((response) => response.json());
@@ -315,6 +338,10 @@ exports.eventCallStack = async function eventCallStack() {
         wind_advice = await createAdvice(wind_sc[1], WIND_GRADE);
     }
 
+
+    console.log(`Carbon Low: ${carbon_low_sc[0]}`);
+    console.log(`Carbon High: ${carbon_high_sc[0]}`);
+
     let carbon_high_advice = null;
     if (carbon_high_sc[0] == true) {
         carbon_high_advice = await createAdvice(carbon_high_sc[1], CARBON_HIGH_GRADE);
@@ -325,7 +352,7 @@ exports.eventCallStack = async function eventCallStack() {
     }
 
     // Save the users profile after changes
-    if (solar_sc[0] == true || wind_sc[0] == true) {
+    if (solar_sc[0] == true || wind_sc[0] == true || carbon_high_sc[0] == true || carbon_low_sc[0] == true) {
         UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
             console.log("\n== entering saving ==");
 
@@ -351,6 +378,13 @@ exports.eventCallStack = async function eventCallStack() {
                         userprofile.advices.shift();
                     }
                     userprofile.advices.push(carbon_high_advice);
+                }
+
+                if (carbon_low_sc[0]) {
+                    while (userprofile.advices.length >= 10) {
+                        userprofile.advices.shift();
+                    }
+                    userprofile.advices.push(carbon_low_advice);
                 }
 
                 userprofile.save(function (err) {
