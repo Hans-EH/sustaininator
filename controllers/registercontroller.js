@@ -53,7 +53,6 @@ exports.register_post = [
               user: new_user,
               firstname: req.body.firstname,
               lastname: req.body.lastname,
-              money_saved: 0,
               carbon_saved: 0,
               carbon_footprint: 0,
               sustainable_goals: 0,

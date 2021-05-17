@@ -10,7 +10,6 @@ let userProfileSchema = new Schema({
   firstname: { type: String },
   lastname: { type: String },
   pref_currency: { type: String },
-  money_saved: { type: Number },
   carbon_saved: { type: Number },
   carbon_footprint: { type: Number },
   sustainable_goals: { type: Number },

@@ -73,6 +73,7 @@ setTimeout(() => {
   min_until_start * 60 * 1000 //To get milliseconds
 )
 
+update()
 // ==== EVENT/UPDATE LOOP ==== 
 
 module.exports = app;
