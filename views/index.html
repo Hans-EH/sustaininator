@@ -1,38 +1,28 @@
 {% extends 'auth_base.html' %} {% block content %}
 
 <h1 class="display-6 mb-3">Hello {{profile_data.firstname}}</h1>
-<div class="row mb-3">
-  <div class="col-3">
-    <div class="mini-card card h-100 text-center">
-      <div class="card-header">
-        <h5>Money saved</h5>
-      </div>
-      <div class="card-body">
-        <p>{{profile_data.money_saved}} DKK</p>
-      </div>
-    </div>
-  </div>
-  <div class="col-3">
+<div class="row mb-4">
+  <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
         <h5>CO<sub>2</sub> saved</h5>
       </div>
       <div class="card-body">
-        <p>{{profile_data.carbon_saved}} g CO<sub>2</sub>e</p>
+        <p>{{profile_data.carbon_saved}} g CO<sub>2</sub></p>
       </div>
     </div>
   </div>
-  <div class="col-3">
+  <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
         <h5>Carbon footprint</h5>
       </div>
       <div class="card-body">
-        <p>{{profile_data.carbon_footprint}} kg CO<sub>2</sub>e</p>
+        <p>{{profile_data.carbon_footprint.toFixed(2) }} kg CO<sub>2</sub></p>
       </div>
     </div>
   </div>
-  <div class="col-3">
+  <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
         <h5>
@@ -725,7 +715,7 @@
               data: data.data,
             },
             {
-              label: "Emissions forecasted " + data.days_forecast + " days",
+              label: "Emissions forecasted " + data.days_forecasted + " days",
               borderColor: "rgb(255, 0, 0)",
               fill: false,
               data: data.forecast_data,
