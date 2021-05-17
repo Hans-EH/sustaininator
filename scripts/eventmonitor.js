@@ -14,22 +14,18 @@ const CARBON_LOW_GRADE = 4;
  * @return true if above, false otherwise
  */
 async function recentExists(grade) {
-    let exists = true;
-    AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
+    let exists = false;
 
-        for (let i = 0; i < advices_arr.length; i++) {
-            if ((new Date() - advices_arr[i].created) < ONE_HOUR) {
-                exists = true;
+    await AdviceCard.find({ class: "event", grade: grade })
+        .then((advices_arr) => {
+            for (let i = 0; i < advices_arr.length; i++) {
+                if ((new Date() - advices_arr[i].created) < ONE_HOUR) {
+                    exists = true;
+                }
             }
-        }
-
-        // advices_arr.forEach((advice) => {
-        //     if ((new Date() - advice.created) < ONE_HOUR) {
-        //         exists = true;
-        //     }
-        // });
-        return exists;
-    });
+        }).catch((err) => {
+            console.log(err);
+        });
 
     console.log(`Recent status: ${exists}`) // DEBUGGING
     return exists;
