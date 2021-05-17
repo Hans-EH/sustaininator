@@ -20,7 +20,7 @@ async function recentExists(grade) {
         .then((advices_arr) => {
             for (let i = 0; i < advices_arr.length; i++) {
                 if ((new Date() - advices_arr[i].created) < ONE_HOUR) {
-                    exists = true;
+                    exists = false;
                 }
             }
         }).catch((err) => {

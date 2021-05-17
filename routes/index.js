@@ -38,16 +38,32 @@ router.get("/", function (req, res, next) {
             carbon_data: process.env.WEB_HOST + "data/carbondata",
             forecast_data: process.env.WEB_HOST + "data/forecastdata",
             green_energy: process.env.WEB_HOST + "data/greenenergy",
-            time_since_creation: String(profile_data.created).slice(4,15),
+            time_since_creation: String(profile_data.created).slice(4, 15),
           });
         });
     });
 });
 
 
-router.post("/card_remove", function (req, res, next) {
+router.post("/remove-advice/:id", function (req, res, next) {
+  if (auth.isAuthenticated(req, res))
 
-  res.send("ok");
+    // findByIdAndDelete
+    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (err, userprofile) {
+      console.log(userprofile.advices);
+      userprofile.advices = userprofile.advices.filter(item => item != req.params.id);
+
+      userprofile.save(function (err) {
+        if (err) {
+          console.log(`couldn't save user profile \n ${err}`);
+          res.redirect("/");
+        }
+        else {
+          console.log(`${userprofile.id} saved `);
+          res.redirect("/");
+        }
+      });
+    });
 });
 
 
