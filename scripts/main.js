@@ -60,9 +60,9 @@ exports.update = async function () {
             //Do profile specific things...
             updateUserProfileEnergyConsumption(user_profile, total_energy_of_active_devices);
             updateTotalProfileCarbonEmissions(user_profile, total_energy_of_active_devices, latest_carbon_value)
-
+            updateUserProfileCarbonSavings(user_profile, average_carbon_data, latest_carbon_value, total_energy_of_active_devices);
             updateUserProfileCarbonScoreLastDay(user_profile, average_carbon_data, latest_carbon_value);
-            //updateUserProfileCarbonSinceCreated(user_profile, latest_carbon_value);
+            
         }
     });
 
@@ -133,6 +133,28 @@ function updateTotalProfileCarbonEmissions(user_profile, total_energy_of_active_
         //console.log("Carbon emissions updated with value: " + total_energy_of_active_devices * latest_carbon_value)
     })
 
+}
+
+//The amount of savings is the difference between the current carbon emissions and the median 
+//times the energy currently used
+function updateUserProfileCarbonSavings(user_profile, avg_carbon_data, latest_carbon_value, total_energy_of_active_devices) {
+
+    avg_carbon_data.sort((a,b) => a - b);
+    //Get median value
+    let median = avg_carbon_data[Math.floor(avg_carbon_data.length / 2)];
+    // Get the difference in carbon values between current and median
+    let difference = median - latest_carbon_value;
+    
+    //Only add to savings if the difference is positive
+    if (difference > 0) {
+        user_profile.carbon_saved += (difference * total_energy_of_active_devices) / 1000 //Convert to kg CO2
+    }
+    console.log("Difference: " + difference + " median: " + median);
+    user_profile.save(function (err) {
+        if (err) {return new Error("User profiles carbon savings could not be saved!")}
+        //Saved
+    })
+    
 }
 
 //Updates a user profiles carbon the score last day if the current carbon emission is lower than their set carbon goal
