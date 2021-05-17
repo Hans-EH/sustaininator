@@ -1,312 +1,310 @@
-{% extends 'auth_base.html'%}
-{% block content %}
-<h1>Edit: {{device.name}}</h1>
+{% extends 'auth_base.html'%} {% block content %}
+<h3 class="display-6 mb-3">Edit: {{device.name}}</h3>
 <!-- Tab content -->
 <div class="container-fluid px-0">
-    <form action="" method="POST">
+  <form action="" method="POST">
+    <!-- Alert field -->
+    {% if name_taken %}
+    <div class="alert alert-warning">Name already in use!</div>
+    {% elif no_modification %}
+    <div class="alert alert-warning">Nothing was changed!</div>
+    {% endif %}
+    <div class="form-floating mb-3">
+      <input
+        type="text"
+        name="devicename"
+        class="form-control name-input"
+        id="floatingInput"
+        placeholder="Device Name"
+        required
+        value="{{device.name}}"
+      />
+      <label for="floatingInput">Name</label>
+    </div>
 
-      <!-- Alert field -->
-      {% if name_taken %}
-            <div class="alert alert-warning"> Name already in use!</div>
-      {% elif no_modification %}
-            <div class="alert alert-warning"> Nothing was changed!</div>
-      {% endif %}
-      <div class="form-floating mb-3">
-        <input
-          type="text"
-          name="devicename"
-          class="form-control name-input"
-          id="floatingInput"
-          placeholder="Device Name"
-          required
-          value="{{device.name}}"
-        />
-        <label for="floatingInput">Name</label>
-      </div>
+    <!-- Energy usage field -->
+    <div class="form-floating mb-3">
+      <input
+        type="number"
+        name="energyusage"
+        class="form-control energy-consumption"
+        id="floatingInput"
+        placeholder="name@example.com"
+        value="{{device.power}}"
+        required
+      />
+      <label for="floatingInput">Energy consumption in watts (W)</label>
+    </div>
 
-      <!-- Energy usage field -->
-      <div class="form-floating mb-3">
-        <input
-          type="number"
-          name="energyusage"
-          class="form-control energy-consumption"
-          id="floatingInput"
-          placeholder="name@example.com"
-          value="{{device.power}}"
-          required
-        />
-        <label for="floatingInput">Energy consumption in watts (W)</label>
-      </div>
-
-      <div class="wrapper mb-3">
-        <h6 class="text-center">Time of day at which the device is active</h6>
-        <div class="d-flex justify-content-center mb-1">
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-00"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-00" for="btn-check-00"
-            >00:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-01"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-01" for="btn-check-01"
-            >01:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-02"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-02" for="btn-check-02"
-            >02:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-03"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-03" for="btn-check-03"
-            >03:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-04"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-04" for="btn-check-04"
-            >04:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-05"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-05" for="btn-check-05"
-            >05:00</label
-          ><br />
-        </div>
-
-        <div class="d-flex justify-content-center mb-1">
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-06"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-06" for="btn-check-06"
-            >06:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-07"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-07" for="btn-check-07"
-            >07:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-08"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-08" for="btn-check-08"
-            >08:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-09"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-09" for="btn-check-09"
-            >09:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-10"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-10" for="btn-check-10"
-            >10:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-11"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-11" for="btn-check-11"
-            >11:00</label
-          >
-        </div>
-
-        <div class="d-flex justify-content-center mb-1">
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-12"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-12" for="btn-check-12"
-            >12:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-13"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-13" for="btn-check-13"
-            >13:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-14"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-14" for="btn-check-14"
-            >14:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-15"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-15" for="btn-check-15"
-            >15:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-16"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-16" for="btn-check-16"
-            >16:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-17"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-17" for="btn-check-17"
-            >17:00</label
-          >
-        </div>
-
-        <div class="d-flex justify-content-center mb-1">
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-18"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-18" for="btn-check-18"
-            >18:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-19"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-19" for="btn-check-19"
-            >19:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-20"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-20" for="btn-check-20"
-            >20:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-21"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-21" for="btn-check-21"
-            >21:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-22"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-22" for="btn-check-22"
-            >22:00</label
-          >
-          <input
-            type="checkbox"
-            class="btn-check"
-            id="btn-check-23"
-            autocomplete="off"
-          />
-          <label class="btn btn-secondary mx-1 time-23" for="btn-check-23"
-            >23:00</label
-          >
-        </div>
-      </div>
-      <!-- Hidden input to store array of active time slots to be passed with POST-->
-      <input type="hidden" id="timeslots" name="activeArr" value=""/>
-      <!-- Submit Button -->
+    <div class="wrapper mb-3">
+      <h6 class="text-center">Time of day at which the device is active</h6>
       <div class="d-flex justify-content-center mb-1">
-        <button type="submit" class="btn btn-primary w-25 update-button center">Update</button>
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-00"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-00" for="btn-check-00"
+          >00:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-01"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-01" for="btn-check-01"
+          >01:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-02"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-02" for="btn-check-02"
+          >02:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-03"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-03" for="btn-check-03"
+          >03:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-04"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-04" for="btn-check-04"
+          >04:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-05"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-05" for="btn-check-05"
+          >05:00</label
+        ><br />
       </div>
-    </form>
-  </div>
-  <script>
-    //Show checked activetimes of the device activetimes
-    let checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    let activetimes = "{{device.activetime}}".split(',');
 
-    for (let i=0; i<activetimes.length; i++){
-      if (activetimes[i] == 1) {
-        checkboxes[i]["checked"] = true;
-      }
+      <div class="d-flex justify-content-center mb-1">
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-06"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-06" for="btn-check-06"
+          >06:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-07"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-07" for="btn-check-07"
+          >07:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-08"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-08" for="btn-check-08"
+          >08:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-09"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-09" for="btn-check-09"
+          >09:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-10"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-10" for="btn-check-10"
+          >10:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-11"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-11" for="btn-check-11"
+          >11:00</label
+        >
+      </div>
+
+      <div class="d-flex justify-content-center mb-1">
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-12"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-12" for="btn-check-12"
+          >12:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-13"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-13" for="btn-check-13"
+          >13:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-14"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-14" for="btn-check-14"
+          >14:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-15"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-15" for="btn-check-15"
+          >15:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-16"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-16" for="btn-check-16"
+          >16:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-17"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-17" for="btn-check-17"
+          >17:00</label
+        >
+      </div>
+
+      <div class="d-flex justify-content-center mb-1">
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-18"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-18" for="btn-check-18"
+          >18:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-19"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-19" for="btn-check-19"
+          >19:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-20"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-20" for="btn-check-20"
+          >20:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-21"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-21" for="btn-check-21"
+          >21:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-22"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-22" for="btn-check-22"
+          >22:00</label
+        >
+        <input
+          type="checkbox"
+          class="btn-check"
+          id="btn-check-23"
+          autocomplete="off"
+        />
+        <label class="btn btn-secondary mx-1 time-23" for="btn-check-23"
+          >23:00</label
+        >
+      </div>
+    </div>
+    <!-- Hidden input to store array of active time slots to be passed with POST-->
+    <input type="hidden" id="timeslots" name="activeArr" value="" />
+    <!-- Submit Button -->
+    <div class="d-flex justify-content-center mb-1">
+      <button type="submit" class="btn btn-primary w-25 update-button center">
+        Update
+      </button>
+    </div>
+  </form>
+</div>
+<script>
+  //Show checked activetimes of the device activetimes
+  let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  let activetimes = "{{device.activetime}}".split(",");
+
+  for (let i = 0; i < activetimes.length; i++) {
+    if (activetimes[i] == 1) {
+      checkboxes[i]["checked"] = true;
     }
-    //Set hidden input to be the device activetimes on page load
-    document.getElementById('timeslots').value = activetimes;
+  }
+  //Set hidden input to be the device activetimes on page load
+  document.getElementById("timeslots").value = activetimes;
 
-    //Keep track of which checkboxes have been checked
-    checkboxes.forEach(checkbox => {
-      return checkbox.addEventListener("click", () => {
-        //Create an array that will contain the index of checked checkboxes
-        let activeArr = new Array(24).fill(0);
+  //Keep track of which checkboxes have been checked
+  checkboxes.forEach((checkbox) => {
+    return checkbox.addEventListener("click", () => {
+      //Create an array that will contain the index of checked checkboxes
+      let activeArr = new Array(24).fill(0);
 
-        //Push the index of a checked checkbox
-        for (let i = 0; i < checkboxes.length; i++) {
+      //Push the index of a checked checkbox
+      for (let i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i]["checked"] === true) {
+          activeArr[i] = 1;
+        }
+      }
 
-          if (checkboxes[i]['checked'] === true){
-            activeArr[i] = 1;
-          }
-        };
-        
-        //Set the hidden input value to the array
-        document.getElementById('timeslots').value = activeArr;
-
-      });
+      //Set the hidden input value to the array
+      document.getElementById("timeslots").value = activeArr;
     });
-  </script>
+  });
+</script>
 {% endblock %}

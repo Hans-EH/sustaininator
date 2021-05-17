@@ -47,7 +47,7 @@ const createAdvice = async (pctIncrease, type) => {
                 class: "event",
                 grade: type,
                 title: "The Sun is out!",
-                message: `Heyooo, sun's out guns out.. ${pctIncrease}% increased solar energy production at the moment, enjoy the clean energy`
+                message: `Heyooo, sun's out guns out.. we're seeing ${pctIncrease}% increased solar energy production at the moment, enjoy the clean energy. And probably the great weather, too! Remember to use sunscreen! Unless it's raining... we didn't check for that. Sorry.`
             });
             break;
 
@@ -56,7 +56,7 @@ const createAdvice = async (pctIncrease, type) => {
                 class: "event",
                 grade: type,
                 title: "It's windy today!",
-                message: `Woohooo, hold on to your hats! ${pctIncrease}% increased wind energy production at the moment, don't blow your chance to use all that clean energy`
+                message: `Woohooo, hold on to your hats! ${pctIncrease}% increased wind energy production, don't blow your chance to use all that cheap, clean energy. By the way, do you know why wind energy is so cheap? Because the birds already paid the price... well, Enjoy!`
             });
             break;
 
@@ -65,7 +65,7 @@ const createAdvice = async (pctIncrease, type) => {
                 class: "event",
                 grade: type,
                 title: "Too much CO2!",
-                message: `Uh oh, CO2 levels are.. ${pctIncrease}% above average at the moment, you can help the environment by delaying energy hungry activities`
+                message: `Uh oh, current CO2 levels are ${pctIncrease}% above average. You can help the environment by delaying energy hungry activities. You wouldn't want to be responsible for global warming now, would you? Not that we're logging your information or anything.`
             });
             break;
 
@@ -74,7 +74,7 @@ const createAdvice = async (pctIncrease, type) => {
                 class: "event",
                 grade: type,
                 title: "Low CO2 emissions",
-                message: `Yay, CO2 levels are.. ${pctIncrease}% below average at the moment`
+                message: `Yay, CO2 levels are ${pctIncrease}% below average. Now is the time to charge your devices and find excuses for why you can't hoover right now. So plug in that Tesla, blast your favourite music, and bake a cake. It's partytime! With a clean conscience!`
             });
             break;
 

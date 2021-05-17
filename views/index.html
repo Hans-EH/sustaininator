@@ -5,7 +5,44 @@
   <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>CO<sub>2</sub> saved</h5>
+        <h3 class="fs-5">CO<sub>2</sub> saved 
+        <!-- Button trigger savings methology modal -->
+          <a type="button" data-bs-toggle="modal" data-bs-target="#co2savedModal">
+              <i class="bi bi-patch-question-fill "></i>
+          </a>
+        </h3>
+<!-- Modal -->
+<div class="modal fade" id="co2savedModal" tabindex="-1" aria-labelledby="co2savedModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="co2savedModal">Method for calculating saved CO<sub>2</sub></h5>
+        <button type="button" style="margin: 0px; padding: 0px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <strong>CO<sub>2</sub> is the total saved since account creation: {{ time_since_creation }}</strong>
+        <br><br>
+
+        In order to calculate saved CO<sub>2</sub>, the difference between the 30 day median and the current CO<sub>2</sub> emissions is found.
+        if the current CO<sub>2</sub> emissions is less than the 30 day median for the same time, then we use it, otherwise if the current CO<sub>2</sub> emissions is more than the 30 day average, then it is discarded.
+        <br><br>
+        If not discarded, then this difference is multiplied by the current electricity usage in KWh.<br><br>
+        <strong>Example 1:</strong>
+        Median CO<sub>2</sub> is 120g CO<sub>2</sub>/KWh, current is 100g CO<sub>2</sub>/KWh. 120-100 = 20g CO<sub>2</sub>/KWh. 
+        Current electricity usage amounts to 100KWh: 20g CO<sub>2</sub>/KWh * 100KWh = 200g CO<sub>2</sub>
+        <br><br>
+        <strong>Example 2:</strong>
+        Median CO<sub>2</sub> is 120g CO<sub>2</sub>/KWh, current is 150g CO<sub>2</sub>/KWh. 120-150 = -30g CO<sub>2</sub>/KWh. 
+        No CO<sub>2</sub> has therefore been saved.
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal savings methology end -->
       </div>
       <div class="card-body">
         <p>{{ profile_data.carbon_saved.toFixed(2) }} kg CO<sub>2</sub></p>
@@ -15,7 +52,30 @@
   <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>CO<sub>2</sub> Total</h5>
+        <h3 class="fs-5">CO<sub>2</sub> footprint
+          <a type="button" data-bs-toggle="modal" data-bs-target="#co2emittedModal">
+              <i class="bi bi-patch-question-fill "></i>
+          </a>
+        </h3>
+<!-- Modal -->
+<div class="modal fade" id="co2emittedModal" tabindex="-1" aria-labelledby="co2emittedModal" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="co2emittedModal">Method for calculating CO<sub>2</sub> footprint</h5>
+        <button type="button" style="margin: 0px; padding: 0px;" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        CO<sub>2</sub> footprint is the total CO<sub>2</sub> emissions of your account since account creation: {{ time_since_creation }}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal total co2 emissions methology end -->
+
       </div>
       <div class="card-body">
         <p>{{profile_data.carbon_footprint.toFixed(2) }} kg CO<sub>2</sub></p>
@@ -454,7 +514,7 @@
           datasets: [
             {
               label: "CO2 Emission last 24 hours",
-              borderColor: "rgb(0, 255, 0)",
+              borderColor: "rgb(37, 141, 44)",
               fill: false,
               data: carbon_data.carbon_1,
               yAxisID: "y",
@@ -573,24 +633,24 @@
           datasets: [
             {
               label: "Offshore Energy Production",
-              borderColor: "rgb(99, 132, 255)",
-              backgroundColor: "rgb(99, 132, 255)",
+              borderColor: "rgb(0, 89, 179)",
+              backgroundColor: "rgba(0, 89, 179, 0.7)",
               data: green_energy_data.dataOffshoreWind,
               fill: true,
               yAxisID: "y_l",
             },
             {
               label: "Onshore Energy Production",
-              borderColor: "rgb(132, 255, 99)",
-              backgroundColor: "rgb(132, 255, 99)",
+              borderColor: "rgb(37, 141, 44)",
+              backgroundColor: "rgba(37, 141, 44, 0.7)",
               data: green_energy_data.dataOnshoreWind,
               fill: true,
               yAxisID: "y_l",
             },
             {
               label: "Solar Energy Production",
-              borderColor: "rgb(255, 255, 55)",
-              backgroundColor: "rgb(255, 255, 55)",
+              borderColor: "rgb(255, 204, 0)",
+              backgroundColor: "rgb(255, 204, 0, 0.7)",
               data: green_energy_data.dataSolar,
               fill: true,
               yAxisID: "y_l",
@@ -601,10 +661,10 @@
         // Configuration options go here
         options: {
           hover: {
-            mode: 'index',
+            mode: "index",
           },
           tooltips: {
-            mode: 'index',
+            mode: "index",
           },
           scales: {
             yAxes: [
@@ -725,7 +785,7 @@
           datasets: [
             {
               label: "Carbon emissions g/KWh last " + data.days_past + " days",
-              borderColor: "rgb(0, 0, 255)",
+              borderColor: "rgb(0, 89, 179)",
               fill: false,
               data: data.data,
             },
