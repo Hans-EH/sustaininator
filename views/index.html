@@ -546,8 +546,8 @@
           datasets: [
             {
               label: "Offshore Energy Production",
-              borderColor: "rgb(99, 132, 255)",
-              backgroundColor: "rgb(99, 132, 255)",
+              borderColor: "rgb(0, 89, 179)",
+              backgroundColor: "rgba(0, 89, 179, 0.7)",
               data: green_energy_data.dataOffshoreWind,
               fill: true,
               yAxisID: "y_l",
@@ -555,15 +555,15 @@
             {
               label: "Onshore Energy Production",
               borderColor: "rgb(37, 141, 44)",
-              backgroundColor: "rgb(37, 141, 44)",
+              backgroundColor: "rgba(37, 141, 44, 0.7)",
               data: green_energy_data.dataOnshoreWind,
               fill: true,
               yAxisID: "y_l",
             },
             {
               label: "Solar Energy Production",
-              borderColor: "rgb(255, 255, 55)",
-              backgroundColor: "rgb(255, 255, 55)",
+              borderColor: "rgb(255, 204, 0)",
+              backgroundColor: "rgb(255, 204, 0, 0.7)",
               data: green_energy_data.dataSolar,
               fill: true,
               yAxisID: "y_l",
@@ -720,7 +720,7 @@
           datasets: [
             {
               label: "Carbon emissions g/KWh last " + data.days_past + " days",
-              borderColor: "rgb(0, 0, 255)",
+              borderColor: "rgb(0, 89, 179)",
               fill: false,
               data: data.data,
             },
