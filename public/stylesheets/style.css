@@ -97,3 +97,33 @@ input[type="checkbox"]:hover + label {
 #recommender-image {
   max-height: 170px;
 }
+
+a {
+  color: #258d2c !important;
+}
+
+a:hover {
+  color: #1b6520 !important;
+}
+
+.nav-pills .nav-link.active,
+.nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #258d2c !important;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #258d2c !important;
+  border-color: #258d2c !important;
+}
+
+.btn-primary:hover {
+  color: #fff;
+  background-color: #1b6520 !important;
+  border-color: #1b6520 !important;
+}
+
+.navbar a {
+  color: #000 !important;
+}
