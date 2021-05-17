@@ -561,6 +561,9 @@
         response.json()
       );
 
+      // Get home energy data from profile
+      let home_energy_data = "{{profile_data.total_energy_consumption_last_day}}".split(",");
+
       var ctx = document.getElementById("chartCO2").getContext("2d");
       var chart = new Chart(ctx, {
         // The type of chart we want to create
@@ -612,6 +615,14 @@
               steppedLine: true,
               yAxisID: "y",
             },
+            {
+              label: "Home Energy Consumption",
+              borderColor: "rgb(255, 201, 25)",
+              data: home_energy_data,
+              fill: false,
+              yAxisID: "y_r",
+              
+            },
           ],
         },
         // Configuration options go here
@@ -626,6 +637,22 @@
                   labelString: "g / kWh",
                 },
               },
+              {
+                id: "y_r",
+                scaleLabel: {
+                  display: true,
+                  labelString: "Home Energy Consumption (kWh)",
+                },
+                position: "right",
+                display: true,
+                ticks: {
+                  min: 0,
+                  suggestedMax: 0.5,
+                },
+                grid: {
+                  drawOnChartArea: false, // only want the grid lines for one axis to show up
+                },
+              },
             ],
           },
           elements: {
@@ -634,6 +661,9 @@
               hitRadius: 10,
               hoverRadius: 10,
             },
+            line: {
+              tension: 0
+            }
           },
         },
       });
@@ -652,9 +682,6 @@
       let green_energy_data = await fetch("{{green_energy}}").then((response) =>
         response.json()
       );
-      // Do the splits
-      let home_energy_data =
-        "{{profile_data.total_energy_consumption_last_day}}".split(",");
 
       var ctx = document.getElementById("chartGreenEnergy").getContext("2d");
       var chart = new Chart(ctx, {
@@ -687,12 +714,6 @@
               fill: true,
               yAxisID: "y_l",
             },
-            {
-              label: "Home Energy Consumption",
-              borderColor: "rgb(255, 201, 25)",
-              data: home_energy_data,
-              yAxisID: "y_r",
-            },
           ],
         },
 
@@ -715,22 +736,6 @@
                 },
                 position: "left",
                 display: true,
-              },
-              {
-                id: "y_r",
-                scaleLabel: {
-                  display: true,
-                  labelString: "Home Energy Consumption (kWh)",
-                },
-                position: "right",
-                display: true,
-                ticks: {
-                  min: 0,
-                  suggestedMax: 0.5,
-                },
-                grid: {
-                  drawOnChartArea: false, // only want the grid lines for one axis to show up
-                },
               },
             ],
           },

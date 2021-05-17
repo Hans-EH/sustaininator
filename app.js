@@ -57,7 +57,7 @@ app.use(function (err, req, res, next) {
 });
 
 
-// ==== EVENT/UPDATE LOOP ==== 
+// ==== EVENT/UPDATE LOOP 5 min ==== 
 
 // Server side - Update loop
 const five_minute_interval = 5 * 60 * 1000;
@@ -74,6 +74,22 @@ setTimeout(() => {
 )
 
 update()
-// ==== EVENT/UPDATE LOOP ==== 
+// ==== EVENT/UPDATE LOOP 24 hours ==== 
+const UPDATE_TIME = "03:00"
+const DAY_INTERVAL = 24 * 60 * 60 * 1000
+//Create a new date at the specified update time
+let update_date = new Date()
+update_date.setDate(new Date().getDate() + 1)
+update_date.setHours(UPDATE_TIME.slice(0,2))
+update_date.setMinutes(UPDATE_TIME.slice(3,5))
+update_date.setSeconds(0)
+update_date.setMilliseconds(0)
+
+//Time in milliseconds until the interval should be started
+let time_until_update = update_date.getTime() - new Date().getTime()
+setTimeout(() => {
+  setInterval(updateDaily, DAY_INTERVAL)
+}, time_until_update
+)
 
 module.exports = app;

@@ -1,11 +1,8 @@
 const fetch = require("node-fetch");
-let Device = require('../models/device'); // unused?
 let UserProfile = require('../models/user_profile')
-let User = require('../models/user');
 
 // Functions
 let eventMonitoring = require("./eventmonitor");
-const user_profile = require("../models/user_profile");
 
 /* This function handles all of the updates and is called every five minutes
 
@@ -62,6 +59,8 @@ exports.update = async function () {
             updateTotalProfileCarbonEmissions(user_profile, total_energy_of_active_devices, latest_carbon_value)
             updateUserProfileCarbonSavings(user_profile, average_carbon_data, latest_carbon_value, total_energy_of_active_devices);
             updateUserProfileCarbonScoreLastDay(user_profile, average_carbon_data, latest_carbon_value);
+            updateUserProfileCarbonLastDay(user_profile, latest_carbon_value, total_energy_of_active_devices);
+
 
         }
     });
@@ -69,6 +68,8 @@ exports.update = async function () {
     // Monitoring for Events
     eventMonitoring.eventCallStack();
 }
+
+// === Update functions ===
 
 //Updates the state of a single device
 function updateState(device, state) {
@@ -175,6 +176,21 @@ function updateUserProfileCarbonScoreLastDay(user_profile, avg_carbon_data, cur_
     });
 }
 
+//Updates the profiles carbon emissions the last day by inserting a single datapoint to queue
+function updateUserProfileCarbonLastDay(user_profile, latest_carbon_value, total_energy_of_active_devices) {
+
+    let curr_carbon_emission = latest_carbon_value * total_energy_of_active_devices;
+    //Insert co2 datapoint into queue
+    user_profile.carbon_emission_last_day.shift();
+    user_profile.carbon_emission_last_day.push(curr_carbon_emission);
+
+    user_profile.save(function (err) {
+        if (err) { return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" co2 emissions could not be updated`) }
+        //Saved
+    });
+}
+// === Helper functions ===
+
 /**
  * Finds the percentile carbon emissions value in the 30 days average carbon data then compares
  * with the current carbon emission value
@@ -214,4 +230,37 @@ function shouldActivate(device, time_index) {
     //Get the probability of the device
     prob_of_activating = device.probVector[time_index];
     return Math.random() < prob_of_activating;
+}
+
+/* This function handles all of the daily updates
+
+    1. Creates a status card based on the last days report
+    2. Aggregates data into a weekly report
+*/
+exports.updateDaily = async function () {
+
+    UserProfile.find({}).exec(function (err, user_profiles) {
+        if (err) {return new Error("Could not find any profiles in daily update")}
+        for (user_profile of user_profiles) {
+
+            //Do daily profile stuff...
+            updateUserProfileCarbonLastWeek(user_profile);
+        }
+    })
+}
+
+//Creates a datapoint that is the sum of the past day
+function updateUserProfileCarbonLastWeek(user_profile) { //TODO test if it works
+
+    //Sum the profiles carbon emission
+    let daily_carbon_emission = user_profile.reduce((sum, next) => {return sum + next});
+
+    //Insert into weekly queue
+    user_profile.carbon_emission_last_week.shift();
+    user_profile.carbon_emission_last_week.push(daily_carbon_emission);
+
+    //Save
+    user_profile.save(function (err) {
+        if (err) {return new Error(`${user_profile.firstname} failed to save weekly carbon data!`)}
+    })
 }
