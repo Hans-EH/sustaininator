@@ -8,26 +8,38 @@ const CARBON_HIGH_GRADE = 3;
 const CARBON_LOW_GRADE = 4;
 
 /**
- * Finds the percentile carbon emissions value in the 30 days average carbon data then compares
- * with the current carbon emission value
- * @param {*} goal
+ * Function used find out if a card of similar type has been
+ * created in the time between now and the ONE_HOUR constant
+ * @param {*} grade Recieces the grade of that should be checked
  * @return true if above, false otherwise
  */
-function recentExists(grade) {
+async function recentExists(grade) {
+    let exists = true;
     AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
-        let exists = false;
-        advices_arr.forEach((advice) => {
-            if ((new Date() - advice.created) < ONE_HOUR) {
-                exist = true;
+
+        for (let i = 0; i < advices_arr.length; i++) {
+            if ((new Date() - advices_arr[i].created) < ONE_HOUR) {
+                exists = true;
             }
-        });
+        }
+
+        // advices_arr.forEach((advice) => {
+        //     if ((new Date() - advice.created) < ONE_HOUR) {
+        //         exists = true;
+        //     }
+        // });
         return exists;
     });
+
+    console.log(`Recent status: ${exists}`) // DEBUGGING
+    return exists;
 }
 
 /**
- * Function used
- * @param {*} goal
+ * Function used The pick the right content that should be used
+ * in the mongoose model for the AdviceCard, including type and value
+ * @param {*} pctIncrease The amount that a value strays from average [Integer]
+ * @param {*} type The type of GRADE that the card should be created [0-5]
  * @return true if above, false otherwise
  */
 const createAdvice = async (pctIncrease, type) => {
@@ -81,7 +93,6 @@ const createAdvice = async (pctIncrease, type) => {
     // Save AdviceCard to MongoDB database
     return advice_card.save()
         .then((new_card) => {
-            console.log("On save\n");
             console.log(new_card);
             return new_card;
         })
@@ -90,7 +101,12 @@ const createAdvice = async (pctIncrease, type) => {
         });
 };
 
-// Function to determine whether the energy
+/**
+ * Function used the calculate of the current solar energy production
+ * is higher or lower than the average production in one week.
+ * @param {*} data from energinet.dk, that is data about the danish energy production.
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorSolar(data) {
     try {
 
@@ -136,7 +152,7 @@ async function monitorSolar(data) {
         // Compare current energy prod, with average
         if (dataSolar[0] >= average) { // change back to greater than
             // Check if any recent solar advices has been created
-            if (!recentExists(SOLAR_GRADE)) {
+            if (await recentExists(SOLAR_GRADE) == false) {
                 console.log("Recent Solar advicecard doesn't exists");
                 return [true, pctIncrease];
             } else {
@@ -154,7 +170,12 @@ async function monitorSolar(data) {
     }
 };
 
-
+/**
+ * Function used the calculate of the current wind energy production
+ * is higher or lower than the average production in one week.
+ * @param {*} data from energinet.dk, that is data about the danish energy production.
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorWind(data) {
     try {
 
@@ -184,12 +205,13 @@ async function monitorWind(data) {
         // Find percentage difference average to current
         let pctIncrease = Math.floor((dataWind[0] / average) * 100 - 100);
 
-        console.log(`Current: ${dataWind[0]} - Average: ${average}`);
+
+        console.log(`---> Wind Current: ${dataWind[0]} - Average: ${average}`);
 
         /* ======= ADVICE CARD CREATION SECTION ====== */
 
         if (dataWind[0] >= average) { // remember to flip sign to >= for actual use case
-            if (!recentExists(WIND_GRADE)) {
+            if (await recentExists(WIND_GRADE) == false) {
                 console.log("Recent Wind advicecard doesn't exists");
                 return [true, pctIncrease];
             } else {
@@ -207,30 +229,41 @@ async function monitorWind(data) {
     }
 };
 
-
+/**
+ * Function used the calculate of CO2 emission used in energy production
+ * is higher than the average emissions in one week.
+ * @param {*} data - preprocessed data from energinet.dk but from our own endpoint
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorHighCarbon() {
     try {
-        // Fetch carbon data
+
+        console.log("\n == CARBON HIGH MONITOR ==");
+
+        // Fetch carbon data - processed energynet production data
         const URI = process.env.WEB_HOST + "data/carbondata";
         let data = await fetch(URI).then((response) => response.json());
 
         //sorts the carbon_30 data.
         data.carbon_30.sort();
+
         //Find the entry in the middle, which corrosponds with the median entry. 
         let median = data.carbon_30[Math.floor(data.carbon_30.length / 2)];
-        //console.log(average_emissions);
 
         //Find the entry in the middle, which corrosponds with the median entry. 
         let carbon_now = data.carbon_1[data.carbon_1.length - 1];
 
         //find procent increase/decrease from the median
         let pctIncrease = Math.floor((carbon_now / median) * 100 - 100);
+
+
+        console.log(`---> Carbon Current: ${carbon_now} - Average: ${median}`);
 
         /* ======= ADVICE CARD CREATION SECTION ====== */
         // Compare current energy prod, with average
         if (carbon_now >= median) { // change back to greater than
             // Check if any recent solar advices has been created
-            if (!recentExists(CARBON_HIGH_GRADE)) {
+            if (await recentExists(CARBON_HIGH_GRADE) == false) {
                 console.log("Recent Carbon advicecard doesn't exists");
                 return [true, pctIncrease];
             } else {
@@ -245,22 +278,30 @@ async function monitorHighCarbon() {
     } catch (e) {
         console.error(e);
     } finally {
-        console.log("Carbon Impact Executed");
+        console.log("--> Monitor Carbon High Executed");
     }
 }
 
-
+/**
+ * Function used the calculate of CO2 emission used in energy production
+ * is lower than the average emissions in one week.
+ * @param {*} data - preprocessed data from energinet.dk but from our own endpoint
+ * @return [true, pctIncrease] or [false];
+ */
 async function monitorLowCarbon() {
     try {
-        // Fetch carbon data
+
+        console.log("\n == CARBON LOW MONITOR ==");
+
+        // Fetch carbon data - processed energynet production data
         const URI = process.env.WEB_HOST + "data/carbondata";
         let data = await fetch(URI).then((response) => response.json());
 
         //sorts the carbon_30 data.
         data.carbon_30.sort();
+
         //Find the entry in the middle, which corrosponds with the median entry. 
         let median = data.carbon_30[Math.floor(data.carbon_30.length / 2)];
-        //console.log(average_emissions);
 
         //Find the entry in the middle, which corrosponds with the median entry. 
         let carbon_now = data.carbon_1[data.carbon_1.length - 1];
@@ -268,13 +309,15 @@ async function monitorLowCarbon() {
         //find procent increase/decrease from the median
         let pctIncrease = Math.floor((carbon_now / median) * 100 - 100);
 
+        console.log(`---> Carbon Current: ${carbon_now} - Average: ${median}`);
+
         /* ======= ADVICE CARD CREATION SECTION ====== */
         // Compare current energy prod, with average
         if (carbon_now <= median) { // change back to greater than
             // Check if any recent solar advices has been created
-            if (!recentExists(CARBON_LOW_GRADE)) {
+            if (await recentExists(CARBON_LOW_GRADE) == false) {
                 console.log("Recent Carbon advicecard doesn't exists");
-                return [true, pctIncrease];
+                return [true, Math.abs(pctIncrease)];
             } else {
                 console.log("Recent Carbon advicecard exists"); // DEBUGGING
                 return [false];
@@ -287,12 +330,13 @@ async function monitorLowCarbon() {
     } catch (e) {
         console.error(e);
     } finally {
-        console.log("Carbon Impact Executed");
+        console.log("--> Monitor Carbon Low Executed");
     }
 }
 
 
 exports.eventCallStack = async function eventCallStack() {
+    // Fetch Energinet.dk - danish energy production data
     const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
     let data = await fetch(URI).then((response) => response.json());
@@ -315,17 +359,19 @@ exports.eventCallStack = async function eventCallStack() {
         wind_advice = await createAdvice(wind_sc[1], WIND_GRADE);
     }
 
+
     let carbon_high_advice = null;
     if (carbon_high_sc[0] == true) {
         carbon_high_advice = await createAdvice(carbon_high_sc[1], CARBON_HIGH_GRADE);
     }
+
     let carbon_low_advice = null;
     if (carbon_low_sc[0] == true) {
         carbon_low_advice = await createAdvice(carbon_low_sc[1], CARBON_LOW_GRADE);
     }
 
     // Save the users profile after changes
-    if (solar_sc[0] == true || wind_sc[0] == true) {
+    if (solar_sc[0] == true || wind_sc[0] == true || carbon_high_sc[0] == true || carbon_low_sc[0] == true) {
         UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
             console.log("\n== entering saving ==");
 
@@ -353,9 +399,16 @@ exports.eventCallStack = async function eventCallStack() {
                     userprofile.advices.push(carbon_high_advice);
                 }
 
+                if (carbon_low_sc[0]) {
+                    while (userprofile.advices.length >= 10) {
+                        userprofile.advices.shift();
+                    }
+                    userprofile.advices.push(carbon_low_advice);
+                }
+
                 userprofile.save(function (err) {
                     if (err) { console.log(`couldn't save user profile \n ${err}`); }
-                    else { console.log(`${userprofile.firstname} saved `); }
+                    else { console.log(`${userprofile.id} saved `); }
                 });
             }
         });

@@ -15,7 +15,7 @@
   <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>Carbon footprint</h5>
+        <h5>CO<sub>2</sub> Total</h5>
       </div>
       <div class="card-body">
         <p>{{profile_data.carbon_footprint.toFixed(2) }} kg CO<sub>2</sub></p>
@@ -41,107 +41,109 @@
   {% set advicesLen = advices.length %} {% if advicesLen> 0 %} {% for advice in
   advices %}
   <div class="col-12 col-md-6">
-    <div class="card mb-3">
-      <div class="row g-0">
-        {% if advice.class == "status" %}
-        <div class="bg-light col-md-4 p-3 d-flex align-middle">
-          {% if advice.grade == 5 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/vgood.svg"
-            alt="..."
-          />
-          {% elif advice.grade == 4 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/good.svg"
-            alt="..."
-          />
-          {% elif advice.grade == 3 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/neutral.svg"
-            alt="..."
-          />
-          {% elif advice.grade == 2 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/bad.svg"
-            alt="..."
-          />
-          {% elif advice.grade == 1 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/vbad.svg"
-            alt="..."
-          />
-          {% endif%}
-        </div>
-        {% else %}
-        <div class="bg-light col-md-4 p-3 d-flex justify-content-center">
-          {% if advice.grade == 4 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/low_carbon_2.svg"
-            alt="..."
-          />
-          {% elif advice.grade == 3 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/pollution.svg"
-            alt="..."
-          />
-          {% elif advice.grade == 2 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/windy.svg"
-            alt="..."
-          />
-          {% elif advice.grade == 1 %}
-          <img
-            class="img-fluid mx-auto d-block"
-            id="recommender-image"
-            src="/images/cards/sunny.svg"
-            alt="..."
-          />
+    <form method="POST" action="/card_remove">
+      <div class="card mb-3" id="{{advice.id}}">
+        <div class="row g-0">
+          {% if advice.class == "status" %}
+          <div class="bg-light col-md-4 p-3 d-flex align-middle">
+            {% if advice.grade == 5 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/vgood.svg"
+              alt="..."
+            />
+            {% elif advice.grade == 4 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/good.svg"
+              alt="..."
+            />
+            {% elif advice.grade == 3 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/neutral.svg"
+              alt="..."
+            />
+            {% elif advice.grade == 2 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/bad.svg"
+              alt="..."
+            />
+            {% elif advice.grade == 1 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/vbad.svg"
+              alt="..."
+            />
+            {% endif%}
+          </div>
+          {% else %}
+          <div class="bg-light col-md-4 p-3 d-flex justify-content-center">
+            {% if advice.grade == 4 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/low_carbon_2.svg"
+              alt="..."
+            />
+            {% elif advice.grade == 3 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/pollution.svg"
+              alt="..."
+            />
+            {% elif advice.grade == 2 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/windy.svg"
+              alt="..."
+            />
+            {% elif advice.grade == 1 %}
+            <img
+              class="img-fluid mx-auto d-block"
+              id="recommender-image"
+              src="/images/cards/sunny.svg"
+              alt="..."
+            />
+            {% endif %}
+          </div>
           {% endif %}
-        </div>
-        {% endif %}
-        <div class="col-md-8">
-          <div class="card-body">
-            <div class="d-flex justify-content-between align-items-end">
-              <h5 class="card-title mb-1">{{ advice.title }}</h5>
-              <small class="text-muted mb-1">
-                {% if advice.timeSince == 0 %}
-                <span class="text-success">New</span> {% else %} {{
-                advice.timeSince }} mins ago {% endif %}
-              </small>
-            </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-end">
+                <h5 class="card-title mb-1">{{ advice.title }}</h5>
+                <small class="text-muted mb-1">
+                  {% if advice.timeSince == 0 %}
+                  <span class="text-success">New</span> {% else %} {{
+                  advice.timeSince }} mins ago {% endif %}
+                </small>
+              </div>
 
-            <p class="card-text">{{ advice.message }}</p>
+              <p class="card-text">{{ advice.message }}</p>
 
-            <div class="d-flex justify-content-end">
-              {% if advice.class == "status" %}
-              <a class="btn btn-outline-success btn-sm me-2" href="/"
-                >See more</a
-              >
-              {% endif %}
-              <a class="btn btn-outline-secondary btn-sm" href="/"
-                ><i class="bi bi-archive"></i
-              ></a>
+              <div class="d-flex justify-content-end">
+                {% if advice.class == "status" %}
+                <a class="btn btn-outline-success btn-sm me-2" href="/"
+                  >See more</a
+                >
+                {% endif %}
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                  <i class="bi bi-archive"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   </div>
   {% endfor %} {% else%}
   <div class="my-3 border p-3">
@@ -202,7 +204,7 @@
       aria-controls="pills-energy"
       aria-selected="false"
     >
-      Danish Energy Production
+      Danish Green Energy Production
     </button>
   </li>
   <li class="nav-item" role="presentation">
@@ -216,7 +218,7 @@
       aria-controls="pills-myhome"
       aria-selected="false"
     >
-      Home Energy Consumption
+      My Home Energy Consumption
     </button>
   </li>
 </ul>
@@ -295,7 +297,7 @@
             <!--Refresh symbol -->
             <div class="my-3 text-center">
               <div
-                id="loading-green-energi"
+                id="loading-green-energy"
                 class="spinner-border"
                 role="status"
               >
@@ -379,7 +381,7 @@
         <div class="card mb-3">
           <div class="card-header d-flex justify-content-between">
             <div class="d-flex align-items-center">
-              <p class="m-0">My home energy consumption</p>
+              <p class="m-0">My home energy consumption (All devices)</p>
             </div>
           </div>
           <div class="card-body p-3">
@@ -525,7 +527,7 @@
   // Kode til hentning of visning af energiproduktion
   async function greenEnergyData() {
     try {
-      let loading = document.getElementById("loading-green-energi");
+      let loading = document.getElementById("loading-green-energy");
       loading.style.display = "inline-block";
 
       let green_energy_data = await fetch("{{green_energy}}").then((response) =>
@@ -590,7 +592,7 @@
                 id: "y_l",
                 scaleLabel: {
                   display: true,
-                  labelString: "MWh",
+                  labelString: "Green Energy Production (MWh)",
                 },
                 position: "left",
                 display: true,
