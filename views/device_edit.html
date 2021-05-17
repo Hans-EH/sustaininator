@@ -39,6 +39,7 @@
       </div>
 
       <div class="wrapper mb-3">
+        <h6 class="text-center">Time of day at which the device is active</h6>
         <div class="d-flex justify-content-center mb-1">
           <input
             type="checkbox"
@@ -270,7 +271,9 @@
       <!-- Hidden input to store array of active time slots to be passed with POST-->
       <input type="hidden" id="timeslots" name="activeArr" value=""/>
       <!-- Submit Button -->
-      <button type="submit" class="btn btn-primary w-25 update-button">Update</button>
+      <div class="d-flex justify-content-center mb-1">
+        <button type="submit" class="btn btn-primary w-25 update-button center">Update</button>
+      </div>
     </form>
   </div>
   <script>
