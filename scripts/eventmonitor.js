@@ -6,6 +6,7 @@ const SOLAR_GRADE = 1;
 const WIND_GRADE = 2;
 const CARBON_HIGH_GRADE = 3;
 const CARBON_LOW_GRADE = 4;
+const MAX_ADVICES = 4;
 
 /**
  * Function used find out if a card of similar type has been
@@ -14,24 +15,17 @@ const CARBON_LOW_GRADE = 4;
  * @return true if above, false otherwise
  */
 async function recentExists(grade) {
-    let exists = true;
-    AdviceCard.find({ class: "event", grade: grade }).exec(function (err, advices_arr) {
-
-        for (let i = 0; i < advices_arr.length; i++) {
-            if ((new Date() - advices_arr[i].created) < ONE_HOUR) {
-                exists = true;
+    let exists = false;
+    await AdviceCard.find({ class: "event", grade: grade })
+        .then((advices_arr) => {
+            for (let i = 0; i < advices_arr.length; i++) {
+                if ((new Date() - advices_arr[i].created) < ONE_HOUR) {
+                    exists = true;
+                }
             }
-        }
-
-        // advices_arr.forEach((advice) => {
-        //     if ((new Date() - advice.created) < ONE_HOUR) {
-        //         exists = true;
-        //     }
-        // });
-        return exists;
-    });
-
-    console.log(`Recent status: ${exists}`) // DEBUGGING
+        }).catch((err) => {
+            console.log(err);
+        });
     return exists;
 }
 
@@ -335,6 +329,7 @@ async function monitorLowCarbon() {
 }
 
 
+
 exports.eventCallStack = async function eventCallStack() {
     // Fetch Energinet.dk - danish energy production data
     const URI =
@@ -378,7 +373,7 @@ exports.eventCallStack = async function eventCallStack() {
             for (let userprofile of user_profiles) {
 
                 if (solar_sc[0]) {
-                    while (userprofile.advices.length >= 10) {
+                    while (userprofile.advices.length >= MAX_ADVICES) {
                         userprofile.advices.shift();
                     }
                     userprofile.advices.push(solar_advice);
@@ -386,21 +381,21 @@ exports.eventCallStack = async function eventCallStack() {
 
 
                 if (wind_sc[0]) {
-                    while (userprofile.advices.length >= 10) {
+                    while (userprofile.advices.length >= MAX_ADVICES) {
                         userprofile.advices.shift();
                     }
                     userprofile.advices.push(wind_advice);
                 }
 
                 if (carbon_high_sc[0]) {
-                    while (userprofile.advices.length >= 10) {
+                    while (userprofile.advices.length >= MAX_ADVICES) {
                         userprofile.advices.shift();
                     }
                     userprofile.advices.push(carbon_high_advice);
                 }
 
                 if (carbon_low_sc[0]) {
-                    while (userprofile.advices.length >= 10) {
+                    while (userprofile.advices.length >= MAX_ADVICES) {
                         userprofile.advices.shift();
                     }
                     userprofile.advices.push(carbon_low_advice);

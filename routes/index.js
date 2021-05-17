@@ -24,7 +24,6 @@ router.get("/", function (req, res, next) {
         advice.timeSince = Math.round((new Date() - advice.created) / (60 * 1000));
       }
 
-
       //Count the number of devices
       Device.find({ user_profile: profile_data })
         .countDocuments(function (err, counted_devices) {
@@ -38,7 +37,8 @@ router.get("/", function (req, res, next) {
             advices: profile_data.advices.reverse(),
             carbon_data: process.env.WEB_HOST + "data/carbondata",
             forecast_data: process.env.WEB_HOST + "data/forecastdata",
-            green_energy: process.env.WEB_HOST + "data/greenenergy"
+            green_energy: process.env.WEB_HOST + "data/greenenergy",
+            time_since_creation: String(profile_data.created).slice(4,15),
           });
         });
     });
@@ -46,7 +46,7 @@ router.get("/", function (req, res, next) {
 
 
 router.post("/card_remove", function (req, res, next) {
-  
+
   res.send("ok");
 });
 

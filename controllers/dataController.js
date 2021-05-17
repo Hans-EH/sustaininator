@@ -254,7 +254,7 @@ exports.forecastdata = function (req, res, next) {
         //tight bound, such that no entry can be larger than the average of mu and the previous entry plus STD
         //to hold it within realistic data level, and previous data level
         //this is an autoregressive part
-        let c = pre_data;
+        let c = mu;
         //so that it doesnt deviatte to far from the standard
         let x = STD(data.slice(from, from + order), mu);
         let max_mvmt = max_movement(data);
@@ -336,7 +336,7 @@ exports.forecastdata = function (req, res, next) {
           }
           //emptien the array.
           forecast_data = [];
-          console.log(i + ": Model fitness: " + model_fits);
+          //console.log(i + ": Model fitness: " + model_fits);
         }
         console.log("best order: " + best_model_order + ", with model fitness: " + best_model);
         generate_forecast(best_model_order, raw_emissions_data, days_past, days_forecasted);

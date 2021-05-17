@@ -38,7 +38,7 @@ exports.update = async function () {
     let average_carbon_data = await fetch(URI_30_days).then((response) => response.json());
     average_carbon_data = average_carbon_data["carbon_30"]
     //Sort the avg_carbon_data from low->high to later find the users percentile line
-    average_carbon_data.sort((a,b) => a - b);
+    average_carbon_data.sort((a, b) => a - b);
 
 
     // Do the updates
@@ -62,7 +62,7 @@ exports.update = async function () {
             updateTotalProfileCarbonEmissions(user_profile, total_energy_of_active_devices, latest_carbon_value)
             updateUserProfileCarbonSavings(user_profile, average_carbon_data, latest_carbon_value, total_energy_of_active_devices);
             updateUserProfileCarbonScoreLastDay(user_profile, average_carbon_data, latest_carbon_value);
-            
+
         }
     });
 
@@ -123,12 +123,12 @@ function updateUserProfileEnergyConsumption(user_profile, total_energy_of_active
 }
 
 function updateTotalProfileCarbonEmissions(user_profile, total_energy_of_active_devices, latest_carbon_value) {
-    
+
     //Convert the carbon footprint to kg instead of grams
     user_profile.carbon_footprint += (total_energy_of_active_devices * latest_carbon_value) / 1000;
-    
+
     user_profile.save(function (err) {
-        if (err) {return new Error("Userprofiles total carbon emissions could not be saved")}
+        if (err) { return new Error("Userprofiles total carbon emissions could not be saved") }
         //Got saved
         //console.log("Carbon emissions updated with value: " + total_energy_of_active_devices * latest_carbon_value)
     })
@@ -139,22 +139,22 @@ function updateTotalProfileCarbonEmissions(user_profile, total_energy_of_active_
 //times the energy currently used
 function updateUserProfileCarbonSavings(user_profile, avg_carbon_data, latest_carbon_value, total_energy_of_active_devices) {
 
-    avg_carbon_data.sort((a,b) => a - b);
+    avg_carbon_data.sort((a, b) => a - b);
     //Get median value
     let median = avg_carbon_data[Math.floor(avg_carbon_data.length / 2)];
     // Get the difference in carbon values between current and median
     let difference = median - latest_carbon_value;
-    
+
     //Only add to savings if the difference is positive
     if (difference > 0) {
         user_profile.carbon_saved += (difference * total_energy_of_active_devices) / 1000 //Convert to kg CO2
     }
-    console.log("Difference: " + difference + " median: " + median);
+    //console.log("Difference: " + difference + " median: " + median);
     user_profile.save(function (err) {
-        if (err) {return new Error("User profiles carbon savings could not be saved!")}
+        if (err) { return new Error("User profiles carbon savings could not be saved!") }
         //Saved
     })
-    
+
 }
 
 //Updates a user profiles carbon the score last day if the current carbon emission is lower than their set carbon goal
@@ -168,7 +168,7 @@ function updateUserProfileCarbonScoreLastDay(user_profile, avg_carbon_data, cur_
         user_profile.carbon_score_last_day.shift();
         user_profile.carbon_score_last_day.push(false)
     }
-    
+
     user_profile.save(function (err) {
         if (err) { return new Error(`User profile "${user_profile.firstname} ${user_profile.lastname}" carbon score could not be updated!`) }
         //console.log(`User profile "${user_profile.firstname}" carbon score was successfully updated!`)
@@ -185,7 +185,7 @@ function isAboveClimateGoal(carbon_goal, avg_carbon_data, cur_carbon_value) {
     //Get the latest datapoint on CO2 emissions from energinet
     //Get data from last 30 days of CO2 emissions to calculate percentile savings
     //Calculate if this point is above or below the climate goal
-    
+
     //Get the index in the sorted avg_carbon_data that is the users carbon goal
     //Ex. Carbon Goal = 10%, avg_carbon_data = [1,2,3,4,5,6,7,8,9,10]
     //Output => index 0
