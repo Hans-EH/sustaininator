@@ -15,7 +15,7 @@
   <div class="col-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>Carbon footprint</h5>
+        <h5>CO<sub>2</sub> Total</h5>
       </div>
       <div class="card-body">
         <p>{{profile_data.carbon_footprint.toFixed(2) }} kg CO<sub>2</sub></p>
@@ -135,7 +135,7 @@
                   >See more</a
                 >
                 {% endif %}
-                <button type="submit" class="btn btn-outline-secondary btn-sm"></button>
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
                   <i class="bi bi-archive"></i>
                 </button>
               </div>
@@ -774,7 +774,8 @@
 
   // onClick eventlistner for Energy refresh button
   document
-    .getElementById("refreshGreenEnergy").addEventListener("click", () => {
+    .getElementById("refreshGreenEnergy")
+    .addEventListener("click", () => {
       greenEnergyData();
       setLastUpdate("lastUpdateGreenEnergy");
     });
