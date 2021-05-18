@@ -4,6 +4,7 @@ let AdviceCard = require("../models/advice_card");
 
 // Functions
 let eventMonitoring = require("./eventmonitor");
+let recomendationMonitoring = require("./recommonitor");
 
 /* This function handles all of the updates and is called every five minutes
 
@@ -68,6 +69,9 @@ exports.update = async function () {
 
     // Monitoring for Events
     eventMonitoring.eventCallStack();
+
+    // Monitoring for Recommendation
+    //recomendationMonitoring.eventCallStack();
 }
 
 // === Update functions ===
@@ -241,7 +245,7 @@ function shouldActivate(device, time_index) {
 exports.updateDaily = async function () {
 
     UserProfile.find({}).exec(function (err, user_profiles) {
-        if (err) {return new Error("Could not find any profiles in daily update")}
+        if (err) { return new Error("Could not find any profiles in daily update") }
         for (user_profile of user_profiles) {
 
             //Do daily profile stuff...
@@ -301,7 +305,7 @@ function updateUserProfileStatus(user_profile) {
 function updateUserProfileCarbonLastWeek(user_profile) { //TODO test if it works
 
     //Sum the profiles carbon emission
-    let daily_carbon_emission = user_profile.reduce((sum, next) => {return sum + next});
+    let daily_carbon_emission = user_profile.reduce((sum, next) => { return sum + next });
 
     //Insert into weekly queue
     user_profile.carbon_emission_last_week.shift();
@@ -309,6 +313,6 @@ function updateUserProfileCarbonLastWeek(user_profile) { //TODO test if it works
 
     //Save
     user_profile.save(function (err) {
-        if (err) {return new Error(`${user_profile.firstname} failed to save weekly carbon data!`)}
+        if (err) { return new Error(`${user_profile.firstname} failed to save weekly carbon data!`) }
     })
 }
