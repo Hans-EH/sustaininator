@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 let UserProfile = require('../models/user_profile')
+let AdviceCard = require("../models/advice_card");
 
 // Functions
 let eventMonitoring = require("./eventmonitor");
@@ -245,8 +246,55 @@ exports.updateDaily = async function () {
 
             //Do daily profile stuff...
             updateUserProfileCarbonLastWeek(user_profile);
+            updateUserProfileStatus(user_profile);
         }
     })
+}
+
+//Updates a profiles status card
+function updateUserProfileStatus(user_profile) {
+
+    // The status is calculated as the following:
+    // Count number of times the user have been above set climate goal (blackline)
+    // Take the positive occurences over total number of occurences to get a percentage
+    // Make a scale from 0%..20%..100% to condition on
+    // Create the correct status card from this
+    // Save the status card on the user profile
+
+    let above_line_count = 0;
+    for (let i = 0; i<user_profile.carbon_score_last_day.length; i++) {
+        if (user_profile.carbon_score_last_day[i]) {
+            above_line_count++;
+        }
+    }
+
+    let above_line_percentage = above_line_count / user_profile.carbon_score_last_day.length
+
+    let grade = -1;
+
+    if (above_line_percentage <= 100 && above_line_percentage > 80) {
+        let grade = 5
+        // Excellent status card
+    }
+    else if (above_line_percentage <= 80 && above_line_percentage > 60) {
+        let grade = 4
+        // Good status card
+    }
+    else if (above_line_percentage <= 60 && above_line_percentage > 40) {
+        let grade = 3
+        // Fine status card
+    }
+    else if (above_line_percentage <= 40 && above_line_percentage > 20) {
+        let grade = 2
+        // Ok status card
+    }
+    else if (above_line_percentage <= 20) {
+        let grade = 1
+        // Could do better card
+    }
+
+    
+
 }
 
 //Creates a datapoint that is the sum of the past day
