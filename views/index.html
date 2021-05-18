@@ -164,14 +164,14 @@
       <div class="row g-0">
         {% if advice.class == "status" %}
         <div class="bg-light col-md-4 p-3 d-flex align-middle">
-          {% if advice.grade == 5 %}
+          {% if advice.grade == 1 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/vgood.svg"
             alt="..."
           />
-          {% elif advice.grade == 4 %}
+          {% elif advice.grade == 2 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
@@ -185,18 +185,29 @@
             src="/images/cards/neutral.svg"
             alt="..."
           />
-          {% elif advice.grade == 2 %}
+          {% elif advice.grade == 4 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/bad.svg"
             alt="..."
           />
-          {% elif advice.grade == 1 %}
+          {% elif advice.grade == 5 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/vbad.svg"
+            alt="..."
+          />
+          {% endif%}
+        </div>
+        {% elif advice.class == "recommendation" %}
+        <div class="bg-light col-md-4 p-3 d-flex align-middle">
+          {% if advice.grade == 1 %}
+          <img
+            class="img-fluid mx-auto d-block"
+            id="recommender-image"
+            src="/images/cards/reco.svg"
             alt="..."
           />
           {% endif%}
@@ -239,9 +250,12 @@
             <div class="d-flex justify-content-between align-items-end">
               <h5 class="card-title mb-1">{{ advice.title }}</h5>
               <small class="text-muted mb-1">
-                {% if advice.timeSince == 0 %}
+                {% if advice.class != "recommendation" %} {% if advice.timeSince
+                == 0 %}
                 <span class="text-success">New</span> {% else %} {{
-                advice.timeSince }} mins ago {% endif %}
+                advice.timeSince }} mins ago {% endif %} {% else %}
+                <i class="text-success bi bi-star-fill"></i>
+                {% endif %}
               </small>
             </div>
 
@@ -562,7 +576,8 @@
       );
 
       // Get home energy data from profile
-      let home_energy_data = "{{profile_data.total_energy_consumption_last_day}}".split(",");
+      let home_energy_data =
+        "{{profile_data.total_energy_consumption_last_day}}".split(",");
 
       var ctx = document.getElementById("chartCO2").getContext("2d");
       var chart = new Chart(ctx, {
@@ -621,7 +636,6 @@
               data: home_energy_data,
               fill: false,
               yAxisID: "y_r",
-              
             },
           ],
         },
@@ -662,8 +676,8 @@
               hoverRadius: 10,
             },
             line: {
-              tension: 0
-            }
+              tension: 0,
+            },
           },
         },
       });
@@ -811,6 +825,12 @@
               radius: 0,
               hitRadius: 10,
               hoverRadius: 10,
+            },
+          },
+          scales: {
+            y: {
+              min: -1,
+              max: 1,
             },
           },
         },

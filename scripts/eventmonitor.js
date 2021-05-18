@@ -34,7 +34,6 @@ async function recentExists(grade) {
  * in the mongoose model for the AdviceCard, including type and value
  * @param {*} pctIncrease The amount that a value strays from average [Integer]
  * @param {*} type The type of GRADE that the card should be created [0-5]
- * @return true if above, false otherwise
  */
 const createAdvice = async (pctIncrease, type) => {
     console.log(`entered createAdvice for type: ${type}`);
@@ -94,6 +93,104 @@ const createAdvice = async (pctIncrease, type) => {
             return err;
         });
 };
+
+/**
+ * Creates a status card for the user profile
+ * @param {*} grade The grading of the card, ranges from 1..5
+ */
+exports.createStatusCard = function (grade, profile) {
+    
+    let advice_card;
+    switch (grade) {
+        case 1:
+            advice_card = new AdviceCard({
+                user_profile: profile,
+                class: "status",
+                grade: grade,
+                title: "You're a true climate hero!",
+                message: `Wooow, you have kept your CO2 emissions under your goal more than 80% of the time. Keep up the good work buddy!`
+            });
+            break;
+
+        case 2:
+            advice_card = new AdviceCard({
+                user_profile: profile,
+                class: "status",
+                grade: grade,
+                title: "You're doing great!",
+                message: `Great status`
+            });
+            break;
+
+        case 3:
+            advice_card = new AdviceCard({
+                user_profile: profile,
+                class: "status",
+                grade: grade,
+                title: "Hang in there!",
+                message: `Hang in there status`
+            });
+            break;
+
+        case 4:
+            advice_card = new AdviceCard({
+                user_profile: profile,
+                class: "status",
+                grade: grade,
+                title: "Keep calm and keep trying!",
+                message: `Okay status`
+            });
+            break;
+
+        case 5:
+            advice_card = new AdviceCard({
+                user_profile: profile,
+                class: "status",
+                grade: grade,
+                title: "Want some help?",
+                message: `Berely okay status`
+            });
+            break;
+
+
+        default:
+            console.log("Incorrect grade received by switch");
+            break;
+    }
+
+    //Save the advice status card
+    advice_card.save(function (err) {
+        if (err) {return new Error("Status card failed to save!")}
+    })
+    //Save status card to profile advices list
+    if (profile.advices.length === MAX_ADVICES){
+        profile.advices.shift()
+        profile.advices.push(advice_card)
+    }
+    else {
+        profile.advices.push(advice_card)
+    }
+
+    profile.save(function(err) {
+        if (err) {return new Error(`Status card could not be saved for profile: ${profile.firstname}`)}
+    })
+    
+}
+/**
+ * Deletes the latest status card from user profile
+ * @param {*} profile User profile instance
+ */
+exports.deleteLatestStatusCard = function (profile) {
+
+    AdviceCard.deleteMany({class: 'status'}).exec((err) => {
+        if (err) {return new Error("Status cards could not be deleted")}
+        //else {console.log("Latest status cards deleted")}
+    });
+
+    //console.log(profile.advices)
+    //profile.advices = profile.advices.filter(cards => cards != );
+
+}
 
 /**
  * Function used the calculate of the current solar energy production
