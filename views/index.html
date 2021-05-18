@@ -164,14 +164,14 @@
       <div class="row g-0">
         {% if advice.class == "status" %}
         <div class="bg-light col-md-4 p-3 d-flex align-middle">
-          {% if advice.grade == 5 %}
+          {% if advice.grade == 1 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/vgood.svg"
             alt="..."
           />
-          {% elif advice.grade == 4 %}
+          {% elif advice.grade == 2 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
@@ -185,14 +185,14 @@
             src="/images/cards/neutral.svg"
             alt="..."
           />
-          {% elif advice.grade == 2 %}
+          {% elif advice.grade == 4 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"
             src="/images/cards/bad.svg"
             alt="..."
           />
-          {% elif advice.grade == 1 %}
+          {% elif advice.grade == 5 %}
           <img
             class="img-fluid mx-auto d-block"
             id="recommender-image"

@@ -7,7 +7,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 var nunjucks = require("nunjucks");
 var mongoose = require("mongoose");
-let { update } = require("./scripts/main.js");
+let update = require("./scripts/main.js");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -68,12 +68,11 @@ let min_until_start = Math.ceil(new Date().getMinutes() / 5) * 5 - new Date().ge
 
 console.log(`Minutes until update: ${min_until_start} mins`)
 setTimeout(() => {
-  setInterval(update, five_minute_interval)
+  setInterval(update.updateFive, five_minute_interval)
 },
   min_until_start * 60 * 1000 //To get milliseconds
 )
 
-update()
 // ==== EVENT/UPDATE LOOP 24 hours ==== 
 const UPDATE_TIME = "03:00"
 const DAY_INTERVAL = 24 * 60 * 60 * 1000
@@ -88,8 +87,10 @@ update_date.setMilliseconds(0)
 //Time in milliseconds until the interval should be started
 let time_until_update = update_date.getTime() - new Date().getTime()
 setTimeout(() => {
-  setInterval(updateDaily, DAY_INTERVAL)
+  setInterval(update.updateDaily, DAY_INTERVAL)
 }, time_until_update
 )
+
+//update.updateDaily()
 
 module.exports = app;

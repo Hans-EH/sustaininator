@@ -95,7 +95,7 @@ exports.device_create_post = [
           });
           
           // Data from form is valid.
-          // Check if Device with same name and links to profile already excist THIS SHOULD NOT CHANGE.
+          // Check if Device with same name and profile already excist THIS SHOULD NOT CHANGE.
           Device.findOne({ user_profile: found_profile._id, name: req.body.devicename }).exec(function (err,found_device) {
             if (err) {return next(err);}
             if (found_device) {

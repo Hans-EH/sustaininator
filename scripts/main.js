@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 let UserProfile = require('../models/user_profile')
+let AdviceCard = require("../models/advice_card");
 
 // Constants
 const CARBON_IMPACT_GRADE = 1;
@@ -18,7 +19,7 @@ let recomend = require("./recommonitor");
     4 - updates the profiles carbon scores to test wether they are doing good or bad
 
 */
-exports.update = async function () {
+exports.updateFive = async function () {
 
     // Get the current local time
     let day = new Date();
@@ -295,21 +296,69 @@ function shouldActivate(device, time_index) {
 */
 exports.updateDaily = async function () {
 
-    UserProfile.find({}).exec(function (err, user_profiles) {
+    UserProfile.find({}).populate('AdviceCard').exec(function (err, user_profiles) {
         if (err) { return new Error("Could not find any profiles in daily update") }
         for (user_profile of user_profiles) {
 
             //Do daily profile stuff...
             updateUserProfileCarbonLastWeek(user_profile);
+            updateUserProfileStatusCard(user_profile);
         }
     })
+}
+
+//Updates a profiles status card by deleting last status card and creating new one
+function updateUserProfileStatusCard(user_profile) {
+
+    // The status is calculated as the following:
+    // Count number of times the user have been above set climate goal (blackline)
+    // Take the positive occurences over total number of occurences to get a percentage
+    // Make a scale from 0%..20%..100% to condition on
+    // Create the correct status card from this
+    // Save the status card on the user profile
+
+    let above_line_count = 0;
+    for (let i = 0; i<user_profile.carbon_score_last_day.length; i++) {
+        if (user_profile.carbon_score_last_day[i]) {
+            above_line_count++;
+        }
+    }
+
+    let above_line_percentage = above_line_count / user_profile.carbon_score_last_day.length
+
+    let grade = -1;
+    if (above_line_percentage <= 100 && above_line_percentage > 80) {
+        grade = 1
+        // Excellent status card
+    }
+    else if (above_line_percentage <= 80 && above_line_percentage > 60) {
+        grade = 2
+        // Good status card
+    }
+    else if (above_line_percentage <= 60 && above_line_percentage > 40) {
+        grade = 3
+        // Fine status card
+    }
+    else if (above_line_percentage <= 40 && above_line_percentage > 20) {
+        grade = 4
+        // Ok status card
+    }
+    else if (above_line_percentage <= 20) {
+        grade = 5
+        // Could do better card
+    }
+    //Handles deletion of status card on user profile
+    eventMonitoring.deleteLatestStatusCard(user_profile);
+    //Handles creation of status card on user profile
+    eventMonitoring.createStatusCard(grade, user_profile);
+
 }
 
 //Creates a datapoint that is the sum of the past day
 function updateUserProfileCarbonLastWeek(user_profile) { //TODO test if it works
 
     //Sum the profiles carbon emission
-    let daily_carbon_emission = user_profile.reduce((sum, next) => { return sum + next });
+    let daily_carbon_emission = user_profile.carbon_emission_last_day.reduce((sum, next) => { return sum + next });
 
     //Insert into weekly queue
     user_profile.carbon_emission_last_week.shift();
