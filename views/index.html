@@ -758,9 +758,17 @@
   function homeEnergyData() {
     try {
       //Import data on users energy consumption the passed day
-      let data = "{{profile_data.total_energy_consumption_last_day}}".split(
-        ","
-      );
+      let data = "{{profile_data.total_energy_consumption_last_day}}".split(",");
+
+      // Let's try smoothing out our 5 minute data points over SMOOTHFACTOR * 5 minutes to avoid the sharp graphs due to turn on/off of devices
+      // Should work so long as data.length is divisible by SMOOTHFACTOR so we stay inside the array
+      const SMOOTHFACTOR = 6;
+      let dataSmooth = [];
+      for (i = 0; i <= data.length - SMOOTHFACTOR; i = i + SMOOTHFACTOR){
+        dataSmooth[i/SMOOTHFACTOR] = (Number(data[i]) + Number(data[i + 1]) + Number(data[i + 2]) + Number(data[i + 3]) + Number(data[i + 4]) + Number(data[i + 5])) / SMOOTHFACTOR;
+      }
+      //console.log("data", data);
+      //console.log("dataSmooth", dataSmooth);
 
       //Push every five-minute interval beginning from current interval to this array
       let time_labels = [];
@@ -768,15 +776,15 @@
       //Get current date
       let date = new Date();
 
-      for (let i = 0; i <= 288; i++) {
+      for (let i = 0; i <= (288/SMOOTHFACTOR); i++) {
         //Format minutes and hours to have leading zero and rounded to five like 00:05
         let f_min = ("0" + Math.floor(date.getMinutes() / 5) * 5).slice(-2);
         let f_hour = ("0" + date.getHours()).slice(-2);
 
         time_labels.push(`${f_hour}:${f_min}`);
 
-        //Increment the date by five minutes
-        date.setMinutes(date.getMinutes() + 5);
+        //Increment the date by five minutes times SMOOTHFACTOR
+        date.setMinutes(date.getMinutes() + (5 * SMOOTHFACTOR));
       }
       time_labels.shift();
 
@@ -791,7 +799,7 @@
               label: "Home Energy Consumption (KWh)",
               borderColor: "rgb(255, 201, 25)",
               fill: false,
-              data: data,
+              data: dataSmooth,
             },
           ],
         },
