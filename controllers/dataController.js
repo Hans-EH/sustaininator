@@ -254,7 +254,7 @@ exports.forecastdata = function (req, res, next) {
         //tight bound, such that no entry can be larger than the average of mu and the previous entry plus STD
         //to hold it within realistic data level, and previous data level
         //this is an autoregressive part
-        let c = mu;
+        let c = (mu+pre_data)/2;
         //so that it doesnt deviatte to far from the standard
         let x = STD(data.slice(from, from + order), mu);
         let max_mvmt = max_movement(data);

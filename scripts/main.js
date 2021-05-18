@@ -1,9 +1,13 @@
 const fetch = require("node-fetch");
 let UserProfile = require('../models/user_profile')
 
+// Constants
+const CARBON_IMPACT_GRADE = 1;
+const MAX_ADVICES = 4;
+
 // Functions
 let eventMonitoring = require("./eventmonitor");
-let recomendationMonitoring = require("./recommonitor");
+let recomend = require("./recommonitor");
 
 /* This function handles all of the updates and is called every five minutes
 
@@ -65,6 +69,54 @@ exports.update = async function () {
 
         }
     });
+
+    /**
+     * 1 - Find all userprofiles
+     * 2 - fetch forecast data
+     * 3 - for each userprofile:
+     *      - call reduce carbon impact.. <--- Function recomonitor
+     *      - createAdviceCard()        <----- Function recomonitor.
+     *      - push til advices array <-- hardcoded
+     *      - save userprofile. <------- hardcoded
+     */
+
+    // 2- Fetch forecast data & last datapoint //process.env.WEB_HOST
+    const URI = "http://localhost:3000/data/forecastdata";
+    let data = await fetch(URI).then((response) => response.json());
+
+    // 1 - find all userprofiles
+    UserProfile.find({}).populate('advices').exec( async function (err, user_profiles) {
+        if (err) { return new Error('User profiles could not be fetched')}
+
+        // 3 - for each userprofile in user_profiles
+        for (let user_profile of user_profiles) {
+
+            // 3.1 - get reduce carbon impact recommendation
+            let carbon_impact_sc = await recomend.reduceCarbonImpact(data, user_profile, average_carbon_data);
+
+            // 3.2 - if reduce carbon recommendation should be created
+            let carbon_impact_advice = null;
+            if (carbon_impact_sc[0] == true) {
+                carbon_impact_advice = await recomend.createAdvice(carbon_impact_sc[1], CARBON_IMPACT_GRADE);
+            }
+
+            // 3.3 - If advice created push to user_profile
+            if (carbon_impact_sc[0]) {
+
+                // PUSH to user profiles.advices
+                while (user_profile.advices.length >= MAX_ADVICES) {
+                    user_profile.advices.shift();
+                }
+                user_profile.advices.push(carbon_impact_advice);
+            }
+
+            // 3.4 - Save to userprofile
+            user_profile.save(function (err) {
+                if (err) { console.log(`couldn't save user profile \n ${err}`); }
+                else { console.log(`${user_profile.id} saved `); }
+            });
+        }
+    }) 
 
     // Monitoring for Events
     eventMonitoring.eventCallStack();

@@ -846,11 +846,11 @@
         "Model order is " +
         data.best_model_order +
         ", with an average error of " +
-        data.best_model_fitness +
+        data.best_model_fitness.toFixed(2) +
         ". Graph median is " +
-        data.median +
+        data.median.toFixed(2) +
         " with a standard deviation of " +
-        data.standard_deviation +
+        data.standard_deviation.toFixed(2) +
         ".";
       console.log(model_text);
       document.getElementById("model_order").innerText = model_text;
