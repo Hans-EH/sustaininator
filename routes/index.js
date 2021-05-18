@@ -24,6 +24,8 @@ router.get("/", function (req, res, next) {
         advice.timeSince = Math.round((new Date() - advice.created) / (60 * 1000));
       }
 
+      console.log(profile_data.advices);
+
       //Count the number of devices
       Device.find({ user_profile: profile_data })
         .countDocuments(function (err, counted_devices) {

@@ -5,6 +5,13 @@ const ONE_HOUR = 3600000;
 const MAX_ADVICES = 4;
 const RECOMMENDATION_GRADE = 1;
 
+//to be removed
+let mongoose = require("mongoose");
+let mongoDB = "mongodb+srv://jsaad:augaug1@cluster0.g6o9l.mongodb.net/project_skarp?retryWrites=true&w=majority";
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+var db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
 
 /**
  * Function used find out if a card of similar type has been
@@ -34,7 +41,7 @@ async function recentExists(grade) {
  * @param {*} type The type of GRADE that the card should be created [0-5]
  * @return true if above, false otherwise
  */
-const createAdvice = async (information, type) => {
+exports.createAdvice = async function createAdvice(information, type) {
     console.log(`entered createAdvice for type: ${type}`);
 
     let advice_card;
@@ -44,7 +51,7 @@ const createAdvice = async (information, type) => {
             advice_card = new AdviceCard({
                 class: "recommendation",
                 grade: type,
-                title: "We've got an recomendation!",
+                title: "We've got a recomendation!",
                 message: information
             });
             break;
@@ -65,42 +72,48 @@ const createAdvice = async (information, type) => {
         });
 };
 
-
-async function reduceCarbonImpact() {
+exports.reduceCarbonImpact = async function reduceCarbonImpact(data, UserProfile, carbon_30) {
     try {
-        //get from profile data
-        let saving_procent = 50;
-        saving_procent = saving_procent / 100;
-        //forecasts data to collect
-        let data = [100, 120, 130, 140, 130, 120, 150, 170, 120, 100, 90, 80, 70, 60, 70, 80, 30, 20, 15, 20, 30, 20, 50, 40, 30, 60, 70, 80];
+        //get sustainable goals from profile data
+        let saving_procent = 100-UserProfile.sustainable_goals;
+        //copies the data
+        let carbon_30_copy = carbon_30.slice();
+        carbon_30_copy.sort((a,b)=>{return a-b;});
+
+        //calculating current percentile constant minis -0.01 becasue otherwise saving 0% gives an undefined error.
+        let saving_procent_data = carbon_30_copy[(Math.floor(((carbon_30_copy.length / 100)-0.01) * UserProfile.sustainable_goals))];
+
+        //slices so only the forecasted data after the last real datapoint is used.
+        let forecast_data = data.forecast_data.slice(data.data.length, data.forecast_data.length);
+
         //last datapoint, to be copied
-        let data_now = 100;
-        console.log(data);
-        //i is hours here
+        let data_now = data.data[data.data.length-1];
         let output = [];
-        for (let i = 0; i < data.length; i++) {
-            if (data_now > data[i] && data[i] < (data_now * saving_procent)) {
+
+        //i is 5 minute intervals here
+        //finds the soonest timepoint which fulfills criterias: 1. lower than the current data, 2. fulfills your goal.
+        for (let i = 0; i < forecast_data.length; i++) {
+            if (data_now > forecast_data[i] && forecast_data[i] < saving_procent_data) {
                 output.push(i);
-                output.push(data[i]);
+                output.push(forecast_data[i]);
                 output.push(saving_procent);
                 break;
             }
         }
-        console.log(`If you wait ${output[0]} hours, you can save ${(1 - (output[1] / data_now)) * 100}% compared to the current carbon footprint per KWh, which achieves your goal of saving ${output[2] * 100}%`);
+        let recommendation_msg = `If our forecast is right, then if you wait ${(output[0]/12).toFixed(2)} hours until the ${data.forecast_labels[data.data.length+output[0]].slice(0,2)}. at time ${data.forecast_labels[data.data.length+output[0]].slice(4,9)},
+         you can save ${((1 - (output[1] / data_now)) * 100).toFixed(0)}% which is equivalent to ${forecast_data[output[0]].toFixed(0)} CO2/KWh, which achieves
+           your goal of saving ${output[2]}% compared to the 30 day average`;
+        //console.log("output: "+output+" , saving procent: "+saving_procent+"data copy: "+carbon_30_copy.length+"saving procent data "+saving_procent_data);
+        console.log(recommendation_msg);
 
         /* ======= ADVICE CARD CREATION SECTION ====== */
         // Compare current energy prod, with average
-        if (carbon_now >= median) { // change back to greater than
+        if (output.length !== 0 && output[0] !== 0) { // if a better time has been found, then it shouldnt be 0.
             // Check if any recent solar advices has been created
-            if (await recentExists(CARBON_HIGH_GRADE) == false) {
-                console.log("Recent Carbon advicecard doesn't exist");
-                return [true, recommendation_msg];
-            } else {
-                console.log("Recent Carbon advicecard exist"); // DEBUGGING
-                return [false];
-            }
+            return [true, recommendation_msg];
+
         } else {
-            console.log("Carbondioxide too high");
+            console.log("No forecast advice found");
             return [false];
         }
 
@@ -111,12 +124,12 @@ async function reduceCarbonImpact() {
     }
 }
 
-
 /**
  * The main function that is used to call all the child functions
  * in the correct order and save the reuslts of those to MongoDB
  */
-exports.eventCallStack = async function eventCallStack() {
+//exports.eventCallStack = 
+/* async function eventCallStack() {
     // Fetch Energinet.dk - danish energy production data
     const URI =
         'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
@@ -138,7 +151,7 @@ exports.eventCallStack = async function eventCallStack() {
             console.log("\n== entering saving ==");
 
             for (let userprofile of user_profiles) {
-
+                reduceCarbonImpact()
                 if (forecast_sc[0]) {
                     while (userprofile.advices.length >= MAX_ADVICES) {
                         userprofile.advices.shift();
@@ -154,3 +167,4 @@ exports.eventCallStack = async function eventCallStack() {
         });
     };
 }
+reduceCarbonImpact(); */
