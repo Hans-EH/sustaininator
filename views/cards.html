@@ -47,6 +47,17 @@
           />
           {% endif%}
         </div>
+        {% elif advice.class == "recommendation" %}
+        <div class="bg-light col-md-4 p-3 d-flex align-middle">
+          {% if advice.grade == 1 %}
+          <img
+            class="img-fluid mx-auto d-block"
+            id="recommender-image"
+            src="/images/cards/reco.svg"
+            alt="..."
+          />
+          {% endif%}
+        </div>
         {% else %}
         <div class="bg-light col-md-4 p-3 d-flex justify-content-center">
           {% if advice.grade == 4 %}
@@ -85,9 +96,12 @@
             <div class="d-flex justify-content-between align-items-end">
               <h5 class="card-title mb-1">{{ advice.title }}</h5>
               <small class="text-muted mb-1">
-                {% if advice.timeSince == 0 %}
+                {% if advice.class != "recommendation" %} {% if advice.timeSince
+                == 0 %}
                 <span class="text-success">New</span> {% else %} {{
-                advice.timeSince }} mins ago {% endif %}
+                advice.timeSince }} mins ago {% endif %} {% else %}
+                <i class="text-success bi bi-star-fill"></i>
+                {% endif %}
               </small>
             </div>
 

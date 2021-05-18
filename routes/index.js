@@ -132,6 +132,13 @@ router.get("/cards", function (req, res, next) {
       message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
       timeSince: 4
     },
+    {
+      class: "recommendation",
+      grade: 1,
+      title: "We've got an recomendation!",
+      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      timeSince: 4
+    },
   ];
 
   res.render("cards", { title: "Lol", advices: advices });
