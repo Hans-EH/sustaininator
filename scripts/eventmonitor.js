@@ -180,16 +180,15 @@ exports.createStatusCard = function (grade, profile) {
  * Deletes the latest status card from user profile
  * @param {*} profile User profile instance
  */
-exports.deleteLatestStatusCard = function (profile) {
+exports.deleteStatusCard = function (profile) {
 
-    AdviceCard.deleteMany({class: 'status'}).exec((err) => {
-        if (err) {return new Error("Status cards could not be deleted")}
-        //else {console.log("Latest status cards deleted")}
-    });
+    //Update the advices list by filtering out cards with status class
+    profile.advices = profile.advices.filter(card => card.class != "status");
 
-    //console.log(profile.advices)
-    //profile.advices = profile.advices.filter(cards => cards != );
-
+    //Save the profile
+    profile.save(function (err) {
+        if (err) {return new Error(`Status card could not be deleted for profile: ${profile.firstname}`)}
+    })
 }
 
 /**

@@ -296,7 +296,13 @@ function shouldActivate(device, time_index) {
 */
 exports.updateDaily = async function () {
 
-    UserProfile.find({}).populate('AdviceCard').exec(function (err, user_profiles) {
+    //Cleanses all status cards before creation
+    AdviceCard.deleteMany({class: 'status'}).exec((err) => {
+        if (err) {return new Error("Status cards could not be deleted")}
+        //else {console.log("Latest status cards deleted")}
+    });
+
+    UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
         if (err) { return new Error("Could not find any profiles in daily update") }
         for (user_profile of user_profiles) {
 
@@ -347,8 +353,9 @@ function updateUserProfileStatusCard(user_profile) {
         grade = 5
         // Could do better card
     }
+    
     //Handles deletion of status card on user profile
-    eventMonitoring.deleteLatestStatusCard(user_profile);
+    eventMonitoring.deleteStatusCard(user_profile);
     //Handles creation of status card on user profile
     eventMonitoring.createStatusCard(grade, user_profile);
 

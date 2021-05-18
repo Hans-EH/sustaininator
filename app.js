@@ -60,7 +60,7 @@ app.use(function (err, req, res, next) {
 // ==== EVENT/UPDATE LOOP 5 min ==== 
 
 // Server side - Update loop
-const five_minute_interval = 5 * 60 * 1000;
+const FIVE_MIN_INTERVAL = 5 * 60 * 1000;
 
 // Wait until next five-minute mark until initialising the update loop
 // min_until_start = next five minute mark - current minute
@@ -68,7 +68,7 @@ let min_until_start = Math.ceil(new Date().getMinutes() / 5) * 5 - new Date().ge
 
 console.log(`Minutes until update: ${min_until_start} mins`)
 setTimeout(() => {
-  setInterval(update.updateFive, five_minute_interval)
+  setInterval(update.updateFive, FIVE_MIN_INTERVAL)
 },
   min_until_start * 60 * 1000 //To get milliseconds
 )
@@ -85,12 +85,10 @@ update_date.setSeconds(0)
 update_date.setMilliseconds(0)
 
 //Time in milliseconds until the interval should be started
-let time_until_update = update_date.getTime() - new Date().getTime()
+let time_until_daily_update = update_date.getTime() - new Date().getTime()
 setTimeout(() => {
   setInterval(update.updateDaily, DAY_INTERVAL)
-}, time_until_update
+}, time_until_daily_update
 )
-
-//update.updateDaily()
 
 module.exports = app;
