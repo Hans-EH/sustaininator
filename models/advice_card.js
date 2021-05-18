@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 let adviceCardSchema = new Schema({
     user_profile: { type: Schema.Types.ObjectId, ref: "UserProfile" },
-    class: { type: String, enum: ["status", "event"] },
+    class: { type: String, enum: ["status", "event", "recommendation"] },
     grade: { type: Number },
     title: { type: String },
     message: { type: String },
