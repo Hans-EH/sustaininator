@@ -160,7 +160,7 @@ exports.forecastdata = function (req, res, next) {
       let forecast_labels = [];
       let forecast_data = [];
       //adjust how many days back it should count
-      let days_past = 1;
+      let days_past = 5;
       //add extra labels and the new datapoints for forecasting the future:
       let days_forecasted = 3;
 
@@ -228,7 +228,7 @@ exports.forecastdata = function (req, res, next) {
         for (i = 0; i < order; i++) {
           let error = data[from + order - i] - eps[i];
           //calculates the correlation, to be used as a weight indicating significance.
-          let theta = correl(eps[i], pre_data, mu)
+          let theta = correl(eps[i], pre_data)
           eps.push(theta * error);
         }
         //sums the data,
@@ -245,16 +245,16 @@ exports.forecastdata = function (req, res, next) {
         let movement = [];
         for (let i = 0; i < data.length - 1; i++) {
           movement.push(Math.abs(data[i] - Math.abs(data[i + 1])));
-        } //divide by 7, why? testing showed it gave the best accuracy, dont know why.
-        return avg(movement, 0, movement.length) / 7;
+        } //take math sqrt because it makes the movements much smaller.
+        return Math.sqrt(avg(movement, 0, movement.length));
       }
 
       //bounds the max and min function values
       function bound(data, mu, pre_data, from, order, result) {
-        //tight bound, such that no entry can be larger than the average of mu and the previous entry plus STD
+        //tight bound, such that no entry can be larger than the previous entry plus STD of MU
         //to hold it within realistic data level, and previous data level
         //this is an autoregressive part
-        let c = (pre_data);
+        let c = pre_data;
         //so that it doesnt deviatte to far from the standard
         let x = STD(data.slice(from, from + order), mu);
         let max_mvmt = max_movement(data);
@@ -287,8 +287,8 @@ exports.forecastdata = function (req, res, next) {
       }
 
       //correlation function, the closer the data is to the previous number, the higher the weight
-      function correl(eps, pre_data, mu) {
-        let x = (eps - mu)
+      function correl(eps, pre_data) {
+        let x = (eps - pre_data)
         //to not get an NaN error
         if (x < 1 && x > -1) { x = 1; }
         //takes sqrt, so that result isnt a tiny decimal
@@ -307,16 +307,6 @@ exports.forecastdata = function (req, res, next) {
       function sum(data, from, to) {
         return data.slice(from, to).reduce((a, b) => a + b, 0);
       }
-      ////sums up 'orders' back, and creates a new array.
-      //function sum_view(order,data,day){
-      //  //sums the entire day worth of orders
-      //  for(let j = 0; j < day; j++){
-      //    //loops through all the lags of orders
-      //    for(let i = 0; i < orders; i++){
-      //      data[i+j]
-      //    }
-      //  }
-      //}
 
       function find_best_model(data, days_past) {
         let model_fits = 0;
@@ -352,21 +342,6 @@ exports.forecastdata = function (req, res, next) {
         //returns the average deviation of the model from the backcasted data
         return avg(data_diff, 0, data_diff.length);
       }
-      //  random_plot(data,days_past,standard_deviation,median);
-      //  //randomely plot points within 1 standard deviation
-      //  model_fit(data,days_past);
-      //  function random_plot(data,days_past,standard_deviation,median){
-      //    let l = forecast_data.length;
-      //    forecast_data = [];
-      //    for(let i = 0; i<l; i++){
-      //      let x = getRandomArbitrary(median-standard_deviation,median+standard_deviation)
-      //      forecast_data.push(x)
-      //    }
-      //  }
-      //  //get random value between 29
-      //  function getRandomArbitrary(min, max) {
-      //    return Math.random() * (max - min) + min;
-      //  }
 
       //seasonal creation of data, we push 30 days of data for the same time, in an array.
       function seasonal_view(data, day) {
@@ -385,24 +360,6 @@ exports.forecastdata = function (req, res, next) {
         //data[time][day]
         return seasonal_data.reverse();
       }
-
-      //puts together a lagged view, if A[1,2,3,4], and order = 2, then
-      //0: [1,2]
-      //1: [2,3]
-      //2: [3,4] 
-      //      function lag_view(order, data) {
-      //        //lagged data array to be used
-      //        let lagged_data = [];
-      //        //loops through, pushing the last order length lagged data sessions
-      //        for (let i = 0; i < data.length - (order + 1); i++) {
-      //          let x = [];
-      //          for (let j = 0; j < order; j++) {
-      //            x.push(data[i + j]);
-      //          }
-      //          lagged_data.push(x);
-      //        }
-      //        return lagged_data;
-      //      };
 
       //test if all functions work correct:
       function forecast_test() {
@@ -430,7 +387,7 @@ exports.forecastdata = function (req, res, next) {
 
         console.log("avg of 1+2+3+4+5 should be 3: " + avg(test_data, 0, 5));
       }
-      //MA_test();
+      //forecast_test();
 
       res.json({ forecast_labels, data, forecast_data, days_past, days_forecasted, best_model_order, best_model_fitness, median, standard_deviation });
     } catch (error) {
