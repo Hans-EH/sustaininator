@@ -89,7 +89,7 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
         
         let recommendation_msg = `If our forecast is right, then if you wait ${wait_msg} until the ${data.forecast_labels[data.data.length+output[0]].slice(0,2)}. at time ${data.forecast_labels[data.data.length+output[0]].slice(4,9)},
          you can save ${((1 - (output[1] / data_now)) * 100).toFixed(0)}% which is equivalent to ${forecast_data[output[0]].toFixed(0)} CO2/KWh, which achieves
-           your goal of saving ${output[2]}%`;
+           your goal of saving ${UserProfile.sustainable_goals}%`;
         //console.log("output: "+output+" , saving procent: "+saving_procent+"data copy: "+carbon_30_copy.length+"saving procent data "+saving_procent_data);
         console.log(recommendation_msg);
 
@@ -116,6 +116,9 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
  * in the correct order and save the reuslts of those to MongoDB
  */
 exports.eventCallStack = async function eventCallStack(carbon30) {
+
+    //Remove all recommendation cards before creating new ones
+    await AdviceCard.deleteMany({class: "recommendation"});
 
     //Fetch own api forecasting data
     const URI_FORECAST = process.env.WEB_HOST + "data/forecastdata";

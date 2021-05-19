@@ -91,6 +91,6 @@ setTimeout(() => {
 }, time_until_daily_update
 )
 
-update.updateFive();
+update.updateDaily();
 
 module.exports = app;

@@ -265,6 +265,13 @@ exports.updateDaily = async function () {
         //else {console.log("Latest status cards deleted")}
     });
 
+    //Cleanses all event cards that is more than one day old
+    let last_day = new Date();
+    last_day.setDate(last_day.getDate() - 1);
+    AdviceCard.deleteMany({class: "event", created: {
+        $lt: last_day //Delete up to last date
+    }});
+
     UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
         if (err) { return new Error("Could not find any profiles in daily update") }
         for (user_profile of user_profiles) {
