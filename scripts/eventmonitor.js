@@ -172,8 +172,8 @@ exports.createStatusCard = function (grade, profile) {
                 user_profile: profile,
                 class: "status",
                 grade: grade,
-                title: "How dare you!",
-                message: "Oh, dear. That's not quite what we hoped for, is it? Your CO2 emissions stayed below your goal less than 20% of the time. But what's a bit extra of CO2, really? The sea levels will be fine... Our advice: Consider buying a boat!"
+                title: "Greta Thunberg would like to know your location!",
+                message: "Oh, dear. That's not quite what we hoped for, is it? Your CO2 emissions stayed below your goal less than 20% of the time. But what's a bit of extra CO2, really? The sea levels will be fine... Our advice: Consider buying a boat!"
             });
             break;
 
