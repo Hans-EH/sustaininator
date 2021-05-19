@@ -228,7 +228,7 @@ exports.forecastdata = function (req, res, next) {
         for (i = 0; i < order; i++) {
           let error = data[from + order - i] - eps[i];
           //calculates the correlation, to be used as a weight indicating significance.
-          let theta = correl(eps[i], pre_data,mu)
+          let theta = correl(eps[i], pre_data, mu)
           eps.push(theta * error);
         }
         //sums the data,
@@ -246,7 +246,7 @@ exports.forecastdata = function (req, res, next) {
         for (let i = 0; i < data.length - 1; i++) {
           movement.push(Math.abs(data[i] - Math.abs(data[i + 1])));
         } //divide by 7, why? testing showed it gave the best accuracy, dont know why.
-        return avg(movement, 0, movement.length)/7;
+        return avg(movement, 0, movement.length) / 7;
       }
 
       //bounds the max and min function values
@@ -287,7 +287,7 @@ exports.forecastdata = function (req, res, next) {
       }
 
       //correlation function, the closer the data is to the previous number, the higher the weight
-      function correl(eps, pre_data,mu) {
+      function correl(eps, pre_data, mu) {
         let x = (eps - mu)
         //to not get an NaN error
         if (x < 1 && x > -1) { x = 1; }

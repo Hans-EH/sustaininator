@@ -101,6 +101,8 @@ const createAdvice = async (pctIncrease, type) => {
  */
 function shiftEvents(advices) {
     if (advices.length >= MAX_ADVICES) {
+        console.log(`Num of adives: ${advices.length}, need chop one`);
+
         let others = advices.filter((card) => card.class != "event");
         let events = advices.filter((card) => card.class == "event");
 

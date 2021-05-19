@@ -12,7 +12,7 @@ const RECOMMENDATION_GRADE = 1;
  * @param {*} type The type of GRADE that the card should be created [0-5]
  * @return true if above, false otherwise
  */
-function createAdvice(information, type) {
+async function createAdvice(information, type) {
     console.log(`entered createAdvice for type: ${type}`);
 
     let advice_card;
@@ -34,7 +34,7 @@ function createAdvice(information, type) {
 
     // Save AdviceCard to MongoDB database
     advice_card.save(function (err) {
-        if (err) {return new Error("Recommendation card could not be saved!")}
+        if (err) { return new Error("Recommendation card could not be saved!") }
         //saved
     })
     //Return advice card back to event call stack to save to profile
@@ -54,16 +54,16 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
         let saving_procent = 100 - UserProfile.sustainable_goals;
         //copies the data
         let carbon_30_copy = carbon_30.slice();
-        carbon_30_copy.sort((a,b)=>{return a-b;});
+        carbon_30_copy.sort((a, b) => { return a - b; });
 
         //calculating current percentile constant minis -0.01 becasue otherwise saving 0% gives an undefined error.
-        let saving_procent_data = carbon_30_copy[(Math.floor(((carbon_30_copy.length / 100)-0.01) * UserProfile.sustainable_goals))];
+        let saving_procent_data = carbon_30_copy[(Math.floor(((carbon_30_copy.length / 100) - 0.01) * UserProfile.sustainable_goals))];
 
         //slices so only the forecasted data after the last real datapoint is used.
         let forecast_data = data.forecast_data.slice(data.data.length, data.forecast_data.length);
 
         //last datapoint, to be copied
-        let data_now = data.data[data.data.length-1];
+        let data_now = data.data[data.data.length - 1];
         let output = [];
 
         //i is 5 minute intervals here
@@ -86,8 +86,8 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
         let and_msg = (wait_hour > 0 && wait_min > 0) ? " and " : ""
         let min_msg = wait_min > 0 ? `${wait_min} mins` : ""
         let wait_msg = `${hour_msg}${and_msg}${min_msg}`
-        
-        let recommendation_msg = `If our forecast is right, then if you wait ${wait_msg} until the ${data.forecast_labels[data.data.length+output[0]].slice(0,2)}. at time ${data.forecast_labels[data.data.length+output[0]].slice(4,9)},
+
+        let recommendation_msg = `If our forecast is right, then if you wait ${wait_msg} until the ${data.forecast_labels[data.data.length + output[0]].slice(0, 2)}. at time ${data.forecast_labels[data.data.length + output[0]].slice(4, 9)},
          you can save ${((1 - (output[1] / data_now)) * 100).toFixed(0)}% which is equivalent to ${forecast_data[output[0]].toFixed(0)} CO2/KWh, which achieves
            your goal of saving ${output[2]}%`;
         //console.log("output: "+output+" , saving procent: "+saving_procent+"data copy: "+carbon_30_copy.length+"saving procent data "+saving_procent_data);
@@ -122,9 +122,9 @@ exports.eventCallStack = async function eventCallStack(carbon30) {
     let forecast_data = await fetch(URI_FORECAST).then((response) => response.json());
 
     //Save the users profile after changes
-    UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
+    UserProfile.find({}).populate('advices').exec(async function (err, user_profiles) {
 
-        console.log("\n== entering saving ==");
+        console.log("\n== Reco - entering saving ==");
 
         for (let user_profile of user_profiles) {
             //Check if we should create recommendation card for this profile
@@ -132,7 +132,7 @@ exports.eventCallStack = async function eventCallStack(carbon30) {
 
             if (forecast_sc[0] == true) {
                 //Create advice card and save this to user profile
-                recommendation_card = createAdvice(forecast_sc[1], RECOMMENDATION_GRADE);
+                recommendation_card = await createAdvice(forecast_sc[1], RECOMMENDATION_GRADE);
 
                 //Insert recommendation card into advice queue and shift if MAX advice cards is exceeded
 

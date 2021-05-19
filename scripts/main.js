@@ -81,9 +81,10 @@ exports.updateFive = async function () {
      */
 
     // Monitoring for recommendations
-    recomendMonitoring.eventCallStack(average_carbon_data);
+    await recomendMonitoring.eventCallStack(average_carbon_data);
+
     // Monitoring for Events
-    eventMonitoring.eventCallStack();
+    await eventMonitoring.eventCallStack();
 
     // Monitoring for Recommendation
     //recomendationMonitoring.eventCallStack();
@@ -260,8 +261,8 @@ function shouldActivate(device, time_index) {
 exports.updateDaily = async function () {
 
     //Cleanses all status cards before creation
-    AdviceCard.deleteMany({class: 'status'}).exec((err) => {
-        if (err) {return new Error("Status cards could not be deleted")}
+    AdviceCard.deleteMany({ class: 'status' }).exec((err) => {
+        if (err) { return new Error("Status cards could not be deleted") }
         //else {console.log("Latest status cards deleted")}
     });
 
@@ -287,7 +288,7 @@ function updateUserProfileStatusCard(user_profile) {
     // Save the status card on the user profile
 
     let above_line_count = 0;
-    for (let i = 0; i<user_profile.carbon_score_last_day.length; i++) {
+    for (let i = 0; i < user_profile.carbon_score_last_day.length; i++) {
         if (user_profile.carbon_score_last_day[i]) {
             above_line_count++;
         }
@@ -316,7 +317,7 @@ function updateUserProfileStatusCard(user_profile) {
         grade = 5
         // Could do better card
     }
-    
+
     //Handles deletion of status card on user profile
     eventMonitoring.deleteStatusCard(user_profile);
     //Handles creation of status card on user profile
