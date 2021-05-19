@@ -1,6 +1,6 @@
 // auth controller for validating that user is logged in
 let auth = require("../controllers/authcontroller");    // This appears unused
-let graph_data = require("../models/cache_graph_data"); // This appears unused
+// let graph_data = require("../models/cache_graph_data"); // This appears unused
 // Node fetch package
 const fetch = require("node-fetch");
 

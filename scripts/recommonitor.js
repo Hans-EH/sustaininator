@@ -124,7 +124,7 @@ exports.eventCallStack = async function eventCallStack(carbon30) {
     //Save the users profile after changes
     UserProfile.find({}).populate('advices').exec(async function (err, user_profiles) {
 
-        console.log("\n== Reco - entering saving ==");
+        console.log("\n== entering saving ==");
 
         for (let user_profile of user_profiles) {
             //Check if we should create recommendation card for this profile

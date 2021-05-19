@@ -76,23 +76,3 @@ exports.auth_logout = function (req, res, next) {
     res.redirect("/login");
   }
 };
-
-// Might remove, maybe can be usefull
-exports.welcome_get = function (req, res, next) {
-  if (auth.isAuthenticated(req, res))
-    UserProfile.findOne({ user: req.cookies["auth"] }).exec(function (
-      err,
-      profile_data
-    ) {
-      if (err) {
-        return next(err);
-      }
-      // render data to settings page
-      res.render("welcome", {
-        title: "Welcome to Sustanify",
-        name: [profile_data.firstname + " " + profile_data.lastname],
-        route: req.originalUrl,
-        profile_data: profile_data,
-      });
-    });
-};
