@@ -252,11 +252,11 @@
             <p class="card-text">{{ advice.message }}</p>
 
             <div class="d-flex justify-content-end position-relative mt-auto">
-              {% if advice.class == "status" %}
+              <!--               {% if advice.class == "status" %}
               <a class="btn btn-outline-success btn-sm me-2" href="/"
                 >See more</a
               >
-              {% endif %}
+              {% endif %} -->
               <form method="POST" action="/remove-advice/{{ advice.id }}">
                 <button type="submit" class="btn btn-outline-secondary btn-sm">
                   <i class="bi bi-archive"></i>

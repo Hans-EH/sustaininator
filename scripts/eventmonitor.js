@@ -100,17 +100,21 @@ const createAdvice = async (pctIncrease, type) => {
  * @return {Array} returns the user_profile advices with the oldest advice removed
  */
 function shiftEvents(advices) {
-    let others = advices.filter((card) => card.class != "event");
-    let events = advices.filter((card) => card.class == "event");
+    if (advices.length >= MAX_ADVICES) {
+        let others = advices.filter((card) => card.class != "event");
+        let events = advices.filter((card) => card.class == "event");
 
-    console.log(events.length);
-    if (events.length > 0) {
-        events.shift(); // remove first element of events
-        let unsorted_arr = others.concat(events); // Merge Arrays after event shift ´
-        advices = unsorted_arr.slice().sort((a, b) => a.created - b.created)
+        console.log(events.length);
+        if (events.length > 0) {
+            events.shift(); // remove first element of events
+            let unsorted_arr = others.concat(events); // Merge Arrays after event shift ´
+            advices = unsorted_arr.slice().sort((a, b) => a.created - b.created)
+        }
+
+        return advices;
+    } else {
+        return advices;
     }
-
-    return advices;
 }
 
 /**
