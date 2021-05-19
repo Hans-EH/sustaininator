@@ -1,6 +1,6 @@
 {% extends 'auth_base.html' %} {% block content %}
 
-<h1 class="display-6 mb-3">Hello {{profile_data.firstname}}</h1>
+<h1 class="display-6 my-4">Hello {{profile_data.firstname}}</h1>
 <div class="row">
   <div class="col-md-4 col-sm-12 mb-4">
     <div class="mini-card card h-100 text-center">
@@ -144,9 +144,9 @@
   <div class="col-md-4 col-sm-12 mb-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>
+        <h3 class="fs-5">
           <a href="/devices">Devices</a>
-        </h5>
+        </h3>
       </div>
       <div class="card-body">
         <p>{{counted_devices}}</p>
