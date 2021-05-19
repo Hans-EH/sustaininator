@@ -2,10 +2,6 @@ a {
   text-decoration: none;
 }
 
-#logincontainer {
-  /*max-width: 500px;*/
-}
-
 #navbarNav {
   justify-content: space-between;
 }

@@ -107,7 +107,7 @@ function shiftEvents(advices) {
     if (events.length > 0) {
         events.shift(); // remove first element of events
         let unsorted_arr = others.concat(events); // Merge Arrays after event shift ´
-        advices = unsorted_arr.slice().sort((a, b) => b.date - a.date)
+        advices = unsorted_arr.slice().sort((a, b) => a.created - b.created)
     }
 
     return advices;
@@ -195,6 +195,7 @@ exports.createStatusCard = function (grade, profile) {
     })
 
 }
+
 /**
  * Deletes the latest status card from user profile
  * @param {*} profile User profile instance
@@ -480,6 +481,7 @@ exports.eventCallStack = async function eventCallStack() {
     // Save the users profile after changes
     if (solar_sc[0] == true || wind_sc[0] == true || carbon_high_sc[0] == true || carbon_low_sc[0] == true) {
         UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
+            if (err) { return new Error("Not able to find any userprofiles") }
             console.log("\n== entering saving ==");
 
             for (let userprofile of user_profiles) {
