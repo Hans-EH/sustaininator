@@ -127,3 +127,15 @@ a:hover {
 .navbar a {
   color: #000 !important;
 }
+
+/* Advice cards height */
+.row-eq-height {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.advice-card {
+  min-height: 100%;
+}

@@ -2,46 +2,17 @@ const fetch = require("node-fetch");
 let AdviceCard = require("../models/advice_card");
 const UserProfile = require("../models/user_profile");
 const ONE_HOUR = 3600000;
-const MAX_ADVICES = 4;
+const MAX_ADVICES = 6;
 const RECOMMENDATION_GRADE = 1;
 
-//to be removed
-let mongoose = require("mongoose");
-let mongoDB = "mongodb+srv://jsaad:augaug1@cluster0.g6o9l.mongodb.net/project_skarp?retryWrites=true&w=majority";
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
-var db = mongoose.connection;
-db.on("error", console.error.bind(console, "MongoDB connection error:"));
-
-
 /**
- * Function used find out if a card of similar type has been
- * created in the time between now and the ONE_HOUR constant
- * @param {*} grade Recieces the grade of that should be checked
- * @return true if above, false otherwise
- */
-async function recentExists(grade) {
-    let exists = false;
-    await AdviceCard.find({ class: "recommendation", grade: grade })
-        .then((advices_arr) => {
-            for (let i = 0; i < advices_arr.length; i++) {
-                if ((new Date() - advices_arr[i].created) < ONE_HOUR) {
-                    exists = true;
-                }
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
-    return exists;
-}
-
-/**
- * Function used The pick the right content that should be used
+ * Function used to pick the right content that should be used
  * in the mongoose model for the AdviceCard, including type and value
  * @param {*} pctIncrease The amount that a value strays from average [Integer]
  * @param {*} type The type of GRADE that the card should be created [0-5]
  * @return true if above, false otherwise
  */
-exports.createAdvice = async function createAdvice(information, type) {
+function createAdvice(information, type) {
     console.log(`entered createAdvice for type: ${type}`);
 
     let advice_card;
@@ -62,20 +33,25 @@ exports.createAdvice = async function createAdvice(information, type) {
     }
 
     // Save AdviceCard to MongoDB database
-    return advice_card.save()
-        .then((new_card) => {
-            console.log(new_card);
-            return new_card;
-        })
-        .catch((err) => {
-            return err;
-        });
+    advice_card.save(function (err) {
+        if (err) {return new Error("Recommendation card could not be saved!")}
+        //saved
+    })
+    //Return advice card back to event call stack to save to profile
+    return advice_card;
 };
 
-exports.reduceCarbonImpact = async function reduceCarbonImpact(data, UserProfile, carbon_30) {
+/**
+ * 
+ * @param {*} data Forecast data
+ * @param {*} UserProfile Profile instance
+ * @param {*} carbon_30 Running average over 30 days data of carbon emissions
+ * @returns [true, msg] [false]
+ */
+function reduceCarbonImpact(data, UserProfile, carbon_30) {
     try {
         //get sustainable goals from profile data
-        let saving_procent = 100-UserProfile.sustainable_goals;
+        let saving_procent = 100 - UserProfile.sustainable_goals;
         //copies the data
         let carbon_30_copy = carbon_30.slice();
         carbon_30_copy.sort((a,b)=>{return a-b;});
@@ -100,9 +76,20 @@ exports.reduceCarbonImpact = async function reduceCarbonImpact(data, UserProfile
                 break;
             }
         }
-        let recommendation_msg = `If our forecast is right, then if you wait ${(output[0]/12).toFixed(2)} hours until the ${data.forecast_labels[data.data.length+output[0]].slice(0,2)}. at time ${data.forecast_labels[data.data.length+output[0]].slice(4,9)},
+        //Quick logic to get hours and minutes until good forecast 
+        let wait_min = output[0] * 5;
+        let wait_hour = Math.floor(wait_min / 60)
+        wait_min = wait_min % 60;
+        //Piecing the wait message together
+        //Example 80 mins becomes: 1 hour and 20 mins
+        let hour_msg = wait_hour > 0 ? (wait_hour > 1 ? `${wait_hour} hours` : `${wait_hour} hour`) : "";
+        let and_msg = (wait_hour > 0 && wait_min > 0) ? " and " : ""
+        let min_msg = wait_min > 0 ? `${wait_min} mins` : ""
+        let wait_msg = `${hour_msg}${and_msg}${min_msg}`
+        
+        let recommendation_msg = `If our forecast is right, then if you wait ${wait_msg} until the ${data.forecast_labels[data.data.length+output[0]].slice(0,2)}. at time ${data.forecast_labels[data.data.length+output[0]].slice(4,9)},
          you can save ${((1 - (output[1] / data_now)) * 100).toFixed(0)}% which is equivalent to ${forecast_data[output[0]].toFixed(0)} CO2/KWh, which achieves
-           your goal of saving ${output[2]}% compared to the 30 day average`;
+           your goal of saving ${output[2]}%`;
         //console.log("output: "+output+" , saving procent: "+saving_procent+"data copy: "+carbon_30_copy.length+"saving procent data "+saving_procent_data);
         console.log(recommendation_msg);
 
@@ -128,43 +115,48 @@ exports.reduceCarbonImpact = async function reduceCarbonImpact(data, UserProfile
  * The main function that is used to call all the child functions
  * in the correct order and save the reuslts of those to MongoDB
  */
-//exports.eventCallStack = 
-/* async function eventCallStack() {
-    // Fetch Energinet.dk - danish energy production data
-    const URI =
-        'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT "Minutes5DK", "PriceArea", "OffshoreWindPower", "OnshoreWindPower", "SolarPower" FROM "electricityprodex5minrealtime" ORDER BY "Minutes5UTC" DESC LIMIT 4032';
-    let data = await fetch(URI).then((response) => response.json());
+exports.eventCallStack = async function eventCallStack(carbon30) {
 
-    console.log("\n== before advice creation ==");
+    //Fetch own api forecasting data
+    const URI_FORECAST = process.env.WEB_HOST + "data/forecastdata";
+    let forecast_data = await fetch(URI_FORECAST).then((response) => response.json());
 
-    // *_sc -> should create advice 
-    const forecast_sc = await reduceCarbonImpact();
+    //Save the users profile after changes
+    UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
 
-    let forecast_advice = null;
-    if (forecast_sc[0] == true) {
-        forecast_advice = await createAdvice(forecast_sc[1], RECOMMENDATION_GRADE);
-    }
+        console.log("\n== entering saving ==");
 
-    // Save the users profile after changes
-    if (forecast_sc[0] == true) {
-        UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
-            console.log("\n== entering saving ==");
+        for (let user_profile of user_profiles) {
+            //Check if we should create recommendation card for this profile
+            let forecast_sc = reduceCarbonImpact(forecast_data, user_profile, carbon30);
 
-            for (let userprofile of user_profiles) {
-                reduceCarbonImpact()
-                if (forecast_sc[0]) {
-                    while (userprofile.advices.length >= MAX_ADVICES) {
-                        userprofile.advices.shift();
-                    }
-                    userprofile.advices.push(forecast_advice);
+            if (forecast_sc[0] == true) {
+                //Create advice card and save this to user profile
+                recommendation_card = createAdvice(forecast_sc[1], RECOMMENDATION_GRADE);
+
+                //Insert recommendation card into advice queue and shift if MAX advice cards is exceeded
+
+                //Filter out recommendation cards before inserting new ones
+                //console.log(`Before Profile: ${user_profile.firstname} | ${user_profile.advices}`)
+                user_profile.advices = user_profile.advices.filter((cards) => cards.class != "recommendation")
+                //console.log(`After Profile: ${user_profile.firstname} | ${user_profile.advices}`)
+                //Insert recommendation card with FIFO method
+                if (user_profile.advices.length >= MAX_ADVICES) {
+                    user_profile.advices.shift();
+                    user_profile.advices.push(recommendation_card);
+                }
+                else {
+                    user_profile.advices.push(recommendation_card);
                 }
 
-                userprofile.save(function (err) {
+                //Save profile changes
+                user_profile.save(function (err) {
                     if (err) { console.log(`couldn't save user profile \n ${err}`); }
-                    else { console.log(`${userprofile.id} saved `); }
                 });
             }
-        });
-    };
+            //Nothing should be done to profile...
+
+        }
+    });
 }
-reduceCarbonImpact(); */
+//reduceCarbonImpact();
