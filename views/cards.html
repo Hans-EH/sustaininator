@@ -5,43 +5,38 @@
 <div class="row mb-3" id="cardContainer">
   {% set advicesLen = advices.length %} {% if advicesLen> 0 %} {% for advice in
   advices %}
-  <div class="col-12 col-md-6">
-    <div class="card mb-3">
-      <div class="row g-0">
+  <div class="col-12 col-md-6 row-eq-height">
+    <div class="card mb-4" id="{{advice.id}}">
+      <div class="row g-0 advice-card">
         {% if advice.class == "status" %}
         <div class="bg-light col-md-4 p-3 d-flex align-middle">
-          {% if advice.grade == 5 %}
+          {% if advice.grade == 1 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/vgood.svg"
             alt="..."
           />
-          {% elif advice.grade == 4 %}
+          {% elif advice.grade == 2 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/good.svg"
             alt="..."
           />
           {% elif advice.grade == 3 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/neutral.svg"
             alt="..."
           />
-          {% elif advice.grade == 2 %}
+          {% elif advice.grade == 4 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/bad.svg"
             alt="..."
           />
-          {% elif advice.grade == 1 %}
+          {% elif advice.grade == 5 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/vbad.svg"
             alt="..."
           />
@@ -52,7 +47,6 @@
           {% if advice.grade == 1 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/reco.svg"
             alt="..."
           />
@@ -63,28 +57,24 @@
           {% if advice.grade == 4 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/low_carbon_2.svg"
             alt="..."
           />
           {% elif advice.grade == 3 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/pollution.svg"
             alt="..."
           />
           {% elif advice.grade == 2 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/windy.svg"
             alt="..."
           />
           {% elif advice.grade == 1 %}
           <img
             class="img-fluid mx-auto d-block"
-            id="recommender-image"
             src="/images/cards/sunny.svg"
             alt="..."
           />
@@ -107,15 +97,17 @@
 
             <p class="card-text">{{ advice.message }}</p>
 
-            <div class="d-flex justify-content-end">
-              {% if advice.class == "status" %}
+            <div class="d-flex justify-content-end position-relative mt-auto">
+              <!--               {% if advice.class == "status" %}
               <a class="btn btn-outline-success btn-sm me-2" href="/"
                 >See more</a
               >
-              {% endif %}
-              <a class="btn btn-outline-secondary btn-sm" href="/"
-                ><i class="bi bi-archive"></i
-              ></a>
+              {% endif %} -->
+              <form method="POST" action="/remove-advice/{{ advice.id }}">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">
+                  <i class="bi bi-archive"></i>
+                </button>
+              </form>
             </div>
           </div>
         </div>
