@@ -1,0 +1,1 @@
+console.log(new Date().setDate(this.getDate() - 1))

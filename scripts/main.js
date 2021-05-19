@@ -271,7 +271,9 @@ exports.updateDaily = async function () {
     last_day.setDate(last_day.getDate() - 1);
     AdviceCard.deleteMany({class: "event", created: {
         $lt: last_day //Delete up to last date
-    }});
+    }}).exec((err) => {
+        if (err) {return new Error("Daily deletion of event cards failed")}
+    });
 
     UserProfile.find({}).populate('advices').exec(function (err, user_profiles) {
         if (err) { return new Error("Could not find any profiles in daily update") }
