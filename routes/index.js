@@ -1,15 +1,14 @@
 var express = require("express");
 var router = express.Router();
 
-let UserProfile = require("../models/user_profile");
-let device_controller = require("../controllers/devicecontroller");
-let settings_controller = require("../controllers/settingscontroller");
-let register_controller = require("../controllers/registercontroller");
-let login_controller = require("../controllers/logincontroller");
-let auth = require("../controllers/authcontroller");
-let graph_data = require("../models/cache_graph_data");
-let Device = require("../models/device");
-let AdviceCard = require("../models/advice_card");
+const UserProfile = require("../models/user_profile");
+const device_controller = require("../controllers/devicecontroller");
+const settings_controller = require("../controllers/settingscontroller");
+const register_controller = require("../controllers/registercontroller");
+const login_controller = require("../controllers/logincontroller");
+const auth = require("../controllers/authcontroller");
+const Device = require("../models/device");
+const AdviceCard = require("../models/advice_card");
 
 /* ======= HOMEPAGE ======= */
 // GET request for homepage
@@ -45,6 +44,7 @@ router.get("/", function (req, res, next) {
 });
 
 
+// POST request for removing advice cards.
 router.post("/remove-advice/:id", function (req, res, next) {
   if (auth.isAuthenticated(req, res))
 
@@ -213,8 +213,5 @@ router.post("/login", login_controller.auth_post);
 
 // GET request for loguout
 router.get("/logout", login_controller.auth_logout);
-
-//GET for welcome message
-router.get("/welcome", login_controller.welcome_get);
 
 module.exports = router;

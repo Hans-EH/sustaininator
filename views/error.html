@@ -1,7 +1,22 @@
-{% extends 'authnon_base.html' %} {% block content%}
+{% extends 'authnon_base.html' %} {% block content%} {% if error.status == "404"
+%}
+<div class="container my-4">
+  <h1 class="display-3">Oops!</h1>
+  <h2 class="mb-4">
+    We can't seem to find the<br />
+    page you're looking for.
+  </h2>
+  <img class="img-fluid mx-auto d-block w-75" src="/images/404.svg" />
+
+  <div class="mx-auto d-block w-50 text-center pt-5">
+    <h3>Take me back to the <a href="/">Homepage</a></h3>
+  </div>
+</div>
+
+{% else %}
 <h1>Oops... something went wrong</h1>
 <h1>{{message}}</h1>
 <h2>{{error.status}}</h2>
 <pre>{{error.stack}}</pre>
 <p>Take me back to the <a href="/">Homepage</a></p>
-{% endblock content%}
+{% endif %} {% endblock content%}
