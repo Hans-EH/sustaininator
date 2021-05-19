@@ -1,6 +1,6 @@
 {% extends 'auth_base.html' %} {% block content %}
 
-<h1 class="display-6 mb-3">Hello {{profile_data.firstname}}</h1>
+<h1 class="display-6 my-4">Hello {{profile_data.firstname}}</h1>
 <div class="row">
   <div class="col-md-4 col-sm-12 mb-4">
     <div class="mini-card card h-100 text-center">
@@ -144,9 +144,9 @@
   <div class="col-md-4 col-sm-12 mb-4">
     <div class="mini-card card h-100 text-center">
       <div class="card-header">
-        <h5>
+        <h3 class="fs-5">
           <a href="/devices">Devices</a>
-        </h5>
+        </h3>
       </div>
       <div class="card-body">
         <p>{{counted_devices}}</p>
@@ -160,7 +160,7 @@
   {% set advicesLen = advices.length %} {% if advicesLen> 0 %} {% for advice in
   advices %}
   <div class="col-12 col-md-6 row-eq-height">
-    <div class="card mb-3" id="{{advice.id}}">
+    <div class="card mb-4" id="{{advice.id}}">
       <div class="row g-0 advice-card">
         {% if advice.class == "status" %}
         <div class="bg-light col-md-4 p-3 d-flex align-middle">
@@ -252,11 +252,11 @@
             <p class="card-text">{{ advice.message }}</p>
 
             <div class="d-flex justify-content-end position-relative mt-auto">
-              {% if advice.class == "status" %}
+              <!--               {% if advice.class == "status" %}
               <a class="btn btn-outline-success btn-sm me-2" href="/"
                 >See more</a
               >
-              {% endif %}
+              {% endif %} -->
               <form method="POST" action="/remove-advice/{{ advice.id }}">
                 <button type="submit" class="btn btn-outline-secondary btn-sm">
                   <i class="bi bi-archive"></i>

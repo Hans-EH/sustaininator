@@ -1,15 +1,14 @@
 var express = require("express");
 var router = express.Router();
 
-let UserProfile = require("../models/user_profile");
-let device_controller = require("../controllers/devicecontroller");
-let settings_controller = require("../controllers/settingscontroller");
-let register_controller = require("../controllers/registercontroller");
-let login_controller = require("../controllers/logincontroller");
-let auth = require("../controllers/authcontroller");
-let graph_data = require("../models/cache_graph_data");
-let Device = require("../models/device");
-let AdviceCard = require("../models/advice_card");
+const UserProfile = require("../models/user_profile");
+const device_controller = require("../controllers/devicecontroller");
+const settings_controller = require("../controllers/settingscontroller");
+const register_controller = require("../controllers/registercontroller");
+const login_controller = require("../controllers/logincontroller");
+const auth = require("../controllers/authcontroller");
+const Device = require("../models/device");
+const AdviceCard = require("../models/advice_card");
 
 /* ======= HOMEPAGE ======= */
 // GET request for homepage
@@ -45,6 +44,7 @@ router.get("/", function (req, res, next) {
 });
 
 
+// POST request for removing advice cards.
 router.post("/remove-advice/:id", function (req, res, next) {
   if (auth.isAuthenticated(req, res))
 
@@ -68,75 +68,77 @@ router.post("/remove-advice/:id", function (req, res, next) {
 
 
 router.get("/cards", function (req, res, next) {
+
+  let pctIncrease = 20;
   let advices = [
     {
       class: "status",
-      grade: 5,
+      grade: 1,
       title: "You're a true climate hero!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      message: `Very impressive! Your CO2 emissions stayed under your goal over 80% of the time. You either set your goals too low, or you're just THAT good. Now challenge yourself, raise the bar and be the climate hero you were born to be!`,
       timeSince: 2
     },
     {
       class: "status",
-      grade: 4,
+      grade: 2,
       title: "You're doing great!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      message: `Wooow, you have kept your CO2 emissions under your goal more than 60% of the time. You're clearly doing something right. Keep doing that! Maybe share your success with others to inspire them to make the same positive change you have. Keep up the good work buddy!`,
       timeSince: 4
     },
     {
       class: "status",
       grade: 3,
-      title: "Hang in there!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      title: "Keep calm and keep trying!",
+      message: `Hang in there! You stayed under your emission goals over 40% of the time. To improve your performance, use energy in periods with low CO2 emmission. Visit us often for advice and see our graphs for the best times to use energy. We have faith in you!`,
       timeSince: 6
     },
     {
       class: "status",
-      grade: 2,
-      title: "Keep calm and keep trying!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      grade: 4,
+      title: "Need a bit of help?",
+      message: `Not bad, but not great. Your CO2 emissions were under your goals over 20% of the time. There's room to improve. Ask yourself: "Do I really need hot food? We know cooked rice is great and all, but we're kind of trying to save the environment.`,
       timeSince: 8
     },
     {
       class: "status",
-      grade: 1,
-      title: "Want some help?",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      grade: 5,
+      title: "How dare you!",
+      message: "Oh, dear. That's not quite what we hoped for, is it? Your CO2 emissions stayed below your goal less than 20% of the time. But what's a bit extra of CO2, really? The sea levels will be fine... Our advice: Consider buying a boat!",
       timeSince: 10
     },
     {
       class: "event",
       grade: 4,
-      title: "Low CO2 emissions!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      title: "Low CO2 emissions",
+      message: `Yay, CO2 levels are ${pctIncrease}% below average. Now is the time to charge your devices and find excuses for why you can't hoover right now. So plug in that Tesla, blast your favourite music, and bake a cake. It's partytime! With a clean conscience!`,
       timeSince: 2
     },
     {
       class: "event",
       grade: 3,
-      title: "High CO2 emissions!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      title: "Too much CO2!",
+      message: `Uh oh, current CO2 levels are ${pctIncrease}% above average. You can help the environment by delaying energy hungry activities. You wouldn't want to be responsible for global warming now, would you? Not that we're logging your information or anything.`,
       timeSince: 2
     },
     {
       class: "event",
       grade: 2,
       title: "It's windy today!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      message: `Woohooo, hold on to your hats! ${pctIncrease}% increased wind energy production, don't blow your chance to use all that cheap, clean energy. By the way, do you know why wind energy is so cheap? Because the birds already paid the price... well, Enjoy!`,
       timeSince: 2
     },
     {
       class: "event",
       grade: 1,
-      title: "The sun is out!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      title: "The Sun is out!",
+      message: `Heyooo, sun's out guns out.. we're seeing ${pctIncrease}% increased solar energy production at the moment, enjoy the clean energy. And probably the great weather, too! Remember to use sunscreen! Unless it's raining... we didn't check for that. Sorry.`,
       timeSince: 4
     },
     {
       class: "recommendation",
       grade: 1,
       title: "We've got an recomendation!",
-      message: "This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.",
+      message: "If our forecast is right, then if you wait 50 mins until the 19. at time 15:10, you can save 7% which is equivalent to 84 CO2/KWh, which achieves your goal of saving 75%",
       timeSince: 4
     },
   ];
@@ -213,8 +215,5 @@ router.post("/login", login_controller.auth_post);
 
 // GET request for loguout
 router.get("/logout", login_controller.auth_logout);
-
-//GET for welcome message
-router.get("/welcome", login_controller.welcome_get);
 
 module.exports = router;
