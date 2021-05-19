@@ -228,7 +228,7 @@ exports.forecastdata = function (req, res, next) {
         for (i = 0; i < order; i++) {
           let error = data[from + order - i] - eps[i];
           //calculates the correlation, to be used as a weight indicating significance.
-          let theta = correl(eps[i], pre_data, mu)
+          let theta = correl(eps[i], pre_data)
           eps.push(theta * error);
         }
         //sums the data,
@@ -251,7 +251,7 @@ exports.forecastdata = function (req, res, next) {
 
       //bounds the max and min function values
       function bound(data, mu, pre_data, from, order, result) {
-        //tight bound, such that no entry can be larger than the average of mu and the previous entry plus STD
+        //tight bound, such that no entry can be larger than the previous entry plus STD of MU
         //to hold it within realistic data level, and previous data level
         //this is an autoregressive part
         let c = pre_data;
@@ -287,7 +287,7 @@ exports.forecastdata = function (req, res, next) {
       }
 
       //correlation function, the closer the data is to the previous number, the higher the weight
-      function correl(eps, pre_data, mu) {
+      function correl(eps, pre_data) {
         let x = (eps - pre_data)
         //to not get an NaN error
         if (x < 1 && x > -1) { x = 1; }
