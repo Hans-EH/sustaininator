@@ -108,7 +108,7 @@ exports.createStatusCard = function (grade, profile) {
                 class: "status",
                 grade: grade,
                 title: "You're a true climate hero!",
-                message: `Wooow, you have kept your CO2 emissions under your goal more than 80% of the time. Keep up the good work buddy!`
+                message: `Very impressive! Your CO2 emissions stayed under your goal over 80% of the time. You either set your goals too low, or you're just THAT good. Now challenge yourself, raise the bar and be the climate hero you were born to be!`
             });
             break;
 
@@ -118,7 +118,7 @@ exports.createStatusCard = function (grade, profile) {
                 class: "status",
                 grade: grade,
                 title: "You're doing great!",
-                message: `Great status`
+                message: `Wooow, you have kept your CO2 emissions under your goal more than 60% of the time. You're clearly doing something right. Keep doing that! Maybe share your success with others to inspire them to make the same positive change you have. Keep up the good work buddy!`
             });
             break;
 
@@ -127,8 +127,8 @@ exports.createStatusCard = function (grade, profile) {
                 user_profile: profile,
                 class: "status",
                 grade: grade,
-                title: "Hang in there!",
-                message: `Hang in there status`
+                title: "Keep calm and keep trying!",
+                message: `Hang in there! You stayed under your emission goals over 40% of the time. To improve your performance, use energy in periods with low CO2 emmission. Visit us often for advice and see our graphs for the best times to use energy. We have faith in you!`
             });
             break;
 
@@ -137,8 +137,8 @@ exports.createStatusCard = function (grade, profile) {
                 user_profile: profile,
                 class: "status",
                 grade: grade,
-                title: "Keep calm and keep trying!",
-                message: `Okay status`
+                title: "Need a bit of help?",
+                message: `Not bad, but not great. Your CO2 emissions were under your goals over 20% of the time. There's room to improve. Ask yourself: "Do I really need hot food? We know cooked rice is great and all, but we're kind of trying to save the environment.`
             });
             break;
 
@@ -147,8 +147,8 @@ exports.createStatusCard = function (grade, profile) {
                 user_profile: profile,
                 class: "status",
                 grade: grade,
-                title: "Want some help?",
-                message: `Berely okay status`
+                title: "How dare you!",
+                message: "Oh, dear. That's not quite what we hoped for, is it? Your CO2 emissions stayed below your goal less than 20% of the time. But what's a bit extra of CO2, really? The sea levels will be fine... Our advice: Consider buying a boat!"
             });
             break;
 
