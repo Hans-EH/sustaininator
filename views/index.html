@@ -566,8 +566,9 @@
       );
 
       // Get home energy data from profile
-      let home_energy_data =
-        "{{profile_data.total_energy_consumption_last_day}}".split(",");
+      // Currently doing this elsewhere once for both use cases
+      // let home_energy_data =
+        // "{{profile_data.total_energy_consumption_last_day}}".split(",");
 
       var ctx = document.getElementById("chartCO2").getContext("2d");
       var chart = new Chart(ctx, {
@@ -621,9 +622,9 @@
               yAxisID: "y",
             },
             {
-              label: "Home Energy Consumption",
+              label: `Home Energy Consumption (${5 * smooth_factor} minute average)`,
               borderColor: "rgb(255, 201, 25)",
-              data: home_energy_data,
+              data: smoothify(home_energy_data),
               fill: false,
               yAxisID: "y_r",
             },
@@ -677,7 +678,7 @@
     }
   }
 
-  // Kode til hentning of visning af energiproduktion
+  // Fetching and displaying green energy production
   async function greenEnergyData() {
     try {
       let loading = document.getElementById("loading-green-energy");
@@ -761,43 +762,23 @@
   //Shows the graph for home energy usage
   function homeEnergyData() {
     try {
-      //Import data on users energy consumption the passed day
-      let data = "{{profile_data.total_energy_consumption_last_day}}".split(
-        ","
-      );
 
-      // Let's try smoothing out our 5 minute data points over SMOOTHFACTOR * 5 minutes to avoid the sharp graphs due to turn on/off of devices
-      // Should work so long as data.length is divisible by SMOOTHFACTOR so we stay inside the array
-      const SMOOTHFACTOR = 6;
-      let dataSmooth = [];
-      for (i = 0; i <= data.length - SMOOTHFACTOR; i = i + SMOOTHFACTOR) {
-        dataSmooth[i / SMOOTHFACTOR] =
-          (Number(data[i]) +
-            Number(data[i + 1]) +
-            Number(data[i + 2]) +
-            Number(data[i + 3]) +
-            Number(data[i + 4]) +
-            Number(data[i + 5])) /
-          SMOOTHFACTOR;
-      }
-      //console.log("data", data);
-      //console.log("dataSmooth", dataSmooth);
 
-      //Push every five-minute interval beginning from current interval to this array
+      //Push every smoothed-out-minute interval beginning from current interval to this array
       let time_labels = [];
 
       //Get current date
       let date = new Date();
 
-      for (let i = 0; i <= 288 / SMOOTHFACTOR; i++) {
+      for (let i = 0; i <= 288; i++) {
         //Format minutes and hours to have leading zero and rounded to five like 00:05
         let f_min = ("0" + Math.floor(date.getMinutes() / 5) * 5).slice(-2);
         let f_hour = ("0" + date.getHours()).slice(-2);
 
         time_labels.push(`${f_hour}:${f_min}`);
 
-        //Increment the date by five minutes times SMOOTHFACTOR
-        date.setMinutes(date.getMinutes() + 5 * SMOOTHFACTOR);
+        //Increment the date by five minutes
+        date.setMinutes(date.getMinutes() + 5);
       }
       time_labels.shift();
 
@@ -810,11 +791,18 @@
           datasets: [
             {
               label:
-                "Home Energy Consumption (KWh) (values smoothed out over 30 minutes)",
+                `Home Energy Consumption (KWh) (${5 * smooth_factor} minute average)`,
               borderColor: "rgb(255, 201, 25)",
               fill: false,
-              data: dataSmooth,
+              data: smoothify(home_energy_data),
             },
+            {
+              label:
+                `Home Energy Consumption (KWh)`,
+              borderColor: "rgba(55, 0, 155, 0.6)",
+              fill: false,
+              data: home_energy_data,
+            }
           ],
         },
 
@@ -899,6 +887,39 @@
       loading.style.display = "none";
     } catch (e) {
       console.log(e);
+    }
+  }
+
+  // Import data on user's energy consumption the past day
+  let home_energy_data = "{{profile_data.total_energy_consumption_last_day}}".split(",");
+
+  // Constant used to smooth out spikes on home energy graph, bigger number = smoother graph
+  // Values = {1, 2, 3, 4, 6, 8, 9, 12, 16, 18, 24, 32, 36, 48, ???, array.length}
+  // 6 seems a good mix between accuracy and visual agreeability
+  let smooth_factor = 6;
+  
+  // Let's try smoothing out our 5 minute data points over smooth_factor * 5 minutes
+  // to avoid the sharp graphs due to devices' intermittent activity
+  // Should work so long as data.length is divisible by smooth_factor so we stay inside the array
+  function smoothify(arrayOfStrings) {
+    if((arrayOfStrings.length % smooth_factor) != 0) {
+      smooth_factor = 1;
+      return arrayOfStrings;
+    }
+    else {
+      let dataSmooth = [];
+      let smooth_avg = 0;
+      for (i = 0; i <= arrayOfStrings.length - smooth_factor; i += smooth_factor) {
+        let tempSum = 0;
+        for (let j = 0; j < smooth_factor; j++) {
+          tempSum += (Number(arrayOfStrings[i + j]))
+        }
+        smooth_avg = tempSum / smooth_factor;
+        for (let j = 0; j < smooth_factor; j++) {
+          dataSmooth[i + j] = smooth_avg;
+        }
+      }
+      return dataSmooth;
     }
   }
 
