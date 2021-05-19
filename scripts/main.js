@@ -4,7 +4,7 @@ let AdviceCard = require("../models/advice_card");
 
 // Constants
 const CARBON_IMPACT_GRADE = 1;
-const MAX_ADVICES = 4;
+const MAX_ADVICES = 6;
 
 // Functions
 let eventMonitoring = require("./eventmonitor");

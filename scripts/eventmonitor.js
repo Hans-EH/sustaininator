@@ -6,7 +6,7 @@ const SOLAR_GRADE = 1;
 const WIND_GRADE = 2;
 const CARBON_HIGH_GRADE = 3;
 const CARBON_LOW_GRADE = 4;
-const MAX_ADVICES = 4;
+const MAX_ADVICES = 6;
 
 /**
  * Function used find out if a card of similar type has been
@@ -99,7 +99,7 @@ const createAdvice = async (pctIncrease, type) => {
  * @param {*} grade The grading of the card, ranges from 1..5
  */
 exports.createStatusCard = function (grade, profile) {
-    
+
     let advice_card;
     switch (grade) {
         case 1:
@@ -160,10 +160,10 @@ exports.createStatusCard = function (grade, profile) {
 
     //Save the advice status card
     advice_card.save(function (err) {
-        if (err) {return new Error("Status card failed to save!")}
+        if (err) { return new Error("Status card failed to save!") }
     })
     //Save status card to profile advices list
-    if (profile.advices.length === MAX_ADVICES){
+    if (profile.advices.length === MAX_ADVICES) {
         profile.advices.shift()
         profile.advices.push(advice_card)
     }
@@ -171,10 +171,10 @@ exports.createStatusCard = function (grade, profile) {
         profile.advices.push(advice_card)
     }
 
-    profile.save(function(err) {
-        if (err) {return new Error(`Status card could not be saved for profile: ${profile.firstname}`)}
+    profile.save(function (err) {
+        if (err) { return new Error(`Status card could not be saved for profile: ${profile.firstname}`) }
     })
-    
+
 }
 /**
  * Deletes the latest status card from user profile
@@ -187,7 +187,7 @@ exports.deleteStatusCard = function (profile) {
 
     //Save the profile
     profile.save(function (err) {
-        if (err) {return new Error(`Status card could not be deleted for profile: ${profile.firstname}`)}
+        if (err) { return new Error(`Status card could not be deleted for profile: ${profile.firstname}`) }
     })
 }
 
