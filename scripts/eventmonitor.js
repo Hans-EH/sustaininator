@@ -95,6 +95,25 @@ const createAdvice = async (pctIncrease, type) => {
 };
 
 /**
+ * Function used only remove old advices of class: event
+ * @param {Array} advices array of advices from: user_profile.advices
+ * @return {Array} returns the user_profile advices with the oldest advice removed
+ */
+function shiftEvents(advices) {
+    let others = advices.filter((card) => card.class != "event");
+    let events = advices.filter((card) => card.class == "event");
+
+    console.log(events.length);
+    if (events.length > 0) {
+        events.shift(); // remove first element of events
+        let unsorted_arr = others.concat(events); // Merge Arrays after event shift ´
+        advices = unsorted_arr.slice().sort((a, b) => b.date - a.date)
+    }
+
+    return advices;
+}
+
+/**
  * Creates a status card for the user profile
  * @param {*} grade The grading of the card, ranges from 1..5
  */
@@ -466,30 +485,22 @@ exports.eventCallStack = async function eventCallStack() {
             for (let userprofile of user_profiles) {
 
                 if (solar_sc[0]) {
-                    while (userprofile.advices.length >= MAX_ADVICES) {
-                        userprofile.advices.shift();
-                    }
+                    userprofile.advices = shiftEvents(userprofile.advices);
                     userprofile.advices.push(solar_advice);
                 }
 
                 if (wind_sc[0]) {
-                    while (userprofile.advices.length >= MAX_ADVICES) {
-                        userprofile.advices.shift();
-                    }
+                    userprofile.advices = shiftEvents(userprofile.advices);
                     userprofile.advices.push(wind_advice);
                 }
 
                 if (carbon_high_sc[0]) {
-                    while (userprofile.advices.length >= MAX_ADVICES) {
-                        userprofile.advices.shift();
-                    }
+                    userprofile.advices = shiftEvents(userprofile.advices);
                     userprofile.advices.push(carbon_high_advice);
                 }
 
                 if (carbon_low_sc[0]) {
-                    while (userprofile.advices.length >= MAX_ADVICES) {
-                        userprofile.advices.shift();
-                    }
+                    userprofile.advices = shiftEvents(userprofile.advices);
                     userprofile.advices.push(carbon_low_advice);
                 }
 
