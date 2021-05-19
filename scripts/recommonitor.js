@@ -76,9 +76,20 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
                 break;
             }
         }
-        let recommendation_msg = `If our forecast is right, then if you wait ${(output[0]/12).toFixed(2)} hours until the ${data.forecast_labels[data.data.length+output[0]].slice(0,2)}. at time ${data.forecast_labels[data.data.length+output[0]].slice(4,9)},
+        //Quick logic to get hours and minutes until good forecast 
+        let wait_min = output[0] * 5;
+        let wait_hour = Math.floor(wait_min / 60)
+        wait_min = wait_min % 60;
+        //Piecing the wait message together
+        //Example 80 mins becomes: 1 hour and 20 mins
+        let hour_msg = wait_hour > 0 ? (wait_hour > 1 ? `${wait_hour} hours` : `${wait_hour} hour`) : "";
+        let and_msg = (wait_hour > 0 && wait_min > 0) ? " and " : ""
+        let min_msg = wait_min > 0 ? `${wait_min} mins` : ""
+        let wait_msg = `${hour_msg}${and_msg}${min_msg}`
+        
+        let recommendation_msg = `If our forecast is right, then if you wait ${wait_msg} until the ${data.forecast_labels[data.data.length+output[0]].slice(0,2)}. at time ${data.forecast_labels[data.data.length+output[0]].slice(4,9)},
          you can save ${((1 - (output[1] / data_now)) * 100).toFixed(0)}% which is equivalent to ${forecast_data[output[0]].toFixed(0)} CO2/KWh, which achieves
-           your goal of saving ${output[2]}% compared to the 30 day average`;
+           your goal of saving ${output[2]}%`;
         //console.log("output: "+output+" , saving procent: "+saving_procent+"data copy: "+carbon_30_copy.length+"saving procent data "+saving_procent_data);
         console.log(recommendation_msg);
 
