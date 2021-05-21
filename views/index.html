@@ -792,16 +792,17 @@
             {
               label:
                 `Home Energy Consumption (KWh) (${5 * smooth_factor} minute average)`,
-              borderColor: "rgb(255, 201, 25)",
+              borderColor: "rgb(255, 204, 0, 0.8)",
               fill: false,
               data: smoothify(home_energy_data),
             },
             {
               label:
                 `Home Energy Consumption (KWh)`,
-              borderColor: "rgba(55, 0, 155, 0.6)",
+              borderColor: "rgba(0, 89, 179, 0.6)",
               fill: false,
               data: home_energy_data,
+              hidden: true
             }
           ],
         },
