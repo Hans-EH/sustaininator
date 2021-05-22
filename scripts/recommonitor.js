@@ -137,7 +137,7 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
     //console.log("output: "+output+" , saving procent: "+saving_procent+"data copy: "+carbon_30_copy.length+"saving procent data "+saving_procent_data);
     console.log(recommendation_msg);
 
-    /* ======= ADVICE CARD CREATION SECTION ====== */
+    /* ======== ADVICE CARD CREATION SECTION ====== */
     // Compare current energy prod, with average
     if (best_time.length !== 0 && best_time[0] !== 0) {
       // if a better time has been found, then it shouldnt be 0.
