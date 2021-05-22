@@ -63,9 +63,9 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
     //calculating current percentile constant minis -0.01 becasue otherwise saving 0% gives an undefined error.
     let saving_procent_data =
       carbon_30_copy[
-        Math.floor(
-          (carbon_30_copy.length / 100 - 0.01) * UserProfile.sustainable_goals
-        )
+      Math.floor(
+        (carbon_30_copy.length / 100 - 0.01) * UserProfile.sustainable_goals
+      )
       ];
 
     //slices so only the forecasted data after the last real datapoint is used.
@@ -95,20 +95,20 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
         //how much you save if you wait until this moment
         temp_data.push(((1 - forecast_data[i] / data_now) * 100).toFixed(0));
         //finds which timepoint is the best advice, currently we are going to check on the basis of highest savings as soon as possible
-        temp_data.push(temp_data[3]/i);
+        temp_data.push(temp_data[3] / i);
         //push the tempdata to output:
         output.push(temp_data);
       }
     }
 
     //finds the best time, and copies it
-    let best_time = [0, 0,0,0,0];
+    let best_time = [0, 0, 0, 0, 0];
     for (let i = 0; i < output.length; i++) {
       if (best_time[4] < output[i][4]) {
         best_time = output[i];
       }
     }
-    console.log("best time array:"+best_time);
+    console.log("best time array:" + best_time);
     //Quick logic to get hours and minutes until good forecast
     let wait_min = best_time[0] * 5;
     let wait_hour = Math.floor(wait_min / 60);
