@@ -78,7 +78,7 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
     let data_now = data.data[data.data.length - 1];
     let output = [];
 
-    //i is 5 minute intervals here
+    //"i" is 5 minute intervals here
     //finds all timepoints which fulfills criterias: 1. lower than the current data, 2. fulfills your sustainability goal.
     for (let i = 1; i < forecast_data.length; i++) {
       let temp_data = [];
