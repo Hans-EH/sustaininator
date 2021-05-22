@@ -19,9 +19,12 @@ router.get("/", function (req, res, next) {
       if (err) { return next(err); }
 
       // Calcute Time since creation for Cards
-      for (advice of profile_data.advices) {
-        advice.timeSince = Math.round((new Date() - advice.created) / (60 * 1000));
+      if (profile_data.advices != null) {
+        for (advice of profile_data.advices) {
+          advice.timeSince = Math.round((new Date() - advice.created) / (60 * 1000));
+        }
       }
+
 
       //Count the number of devices
       Device.find({ user_profile: profile_data })
