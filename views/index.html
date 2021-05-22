@@ -344,6 +344,20 @@
       My Home Energy Consumption
     </button>
   </li>
+  <li class="nav-item" role="presentation">
+    <button
+      class="nav-link"
+      id="pills-myhomeco2-tab"
+      data-bs-toggle="pill"
+      data-bs-target="#pills-myhomeco2"
+      type="button"
+      role="tab"
+      aria-controls="pills-myhomeco2"
+      aria-selected="false"
+    >
+      My CO2 emissions
+    </button>
+  </li>
 </ul>
 <div class="tab-content" id="pills-tabContent">
   <div
@@ -509,6 +523,36 @@
           </div>
           <div class="card-body p-3">
             <canvas id="chartMyhome"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="tab-pane fade"
+    id="pills-myhomeco2"
+    role="tabpanel"
+    aria-labelledby="pills-myhomeco2-tab"
+  >
+    <!-- Home CO2 emissions graph -->
+    <div class="row mb-3" id="MyhomeCO2Chart">
+      <div class="col-12">
+        <div class="card mb-3">
+          <div class="card-header d-flex justify-content-between">
+            <div class="d-flex align-items-center">
+              <small><p id="myco2graphtop">Average</p></small><br>
+              <h5 id="myco2graphmiddle"></h5><small><p>g CO<sub>2</sub></p></small><br>
+              <small><p id="myco2graphdate"></p></small>
+            </div>
+          </div>
+          <div class="card-body p-3" id="chartReport">
+            <canvas id="chartMyhomeCO2"></canvas>
+          </div>
+          <div class="card-footer">
+            <small>
+              <button class="m-0 btn btn-secondary" id="btnco2day">Day</button>
+              <button class="m-1 btn btn-secondary" id="btnco2week">Week</button>
+            </small>
           </div>
         </div>
       </div>
@@ -759,11 +803,10 @@
     }
   }
 
-  //Shows the graph for home energy usage
+  //Shows the graph for home energy usage and CO2 emissions
   function homeEnergyData() {
     try {
-
-
+      
       //Push every smoothed-out-minute interval beginning from current interval to this array
       let time_labels = [];
 
@@ -828,7 +871,169 @@
       console.error();
     }
   }
+  //CO2 Week graph
+  function homeEmissionWeekGraph(chart) {
+    try {
+      //Clear graph object before writing a new one
+      document.querySelector("#chartReport").innerHTML = '<canvas id="chartMyhomeCO2"></canvas>';
 
+      //Get CO2 Emissions from the user past week
+      let emissions_last_week = "{{profile_data.carbon_emission_last_week}}".split(",");
+
+      //Produce day labels Fri, Sat, ...
+      let day_labels = [];
+      let weekday = []
+      weekday[0] = "Sun.";
+      weekday[1] = "Mon.";
+      weekday[2] = "Tues.";
+      weekday[3] = "Wed.";
+      weekday[4] = "Thu.";
+      weekday[5] = "Fri.";
+      weekday[6] = "Sat.";
+
+      let day = new Date();
+      //Go seven days back
+      day.setDate(day.getDate() - 7)
+
+      for (let i=0 ;i<7 ;i++) {
+        day_labels.push(weekday[day.getDay()])
+        day.setDate(day.getDate() + 1)
+      }
+      //Set the header text to be avg co2 over the week and a week string
+      let middle_header = document.getElementById("myco2graphmiddle");
+      let date_header = document.getElementById("myco2graphdate");
+      let top_header = document.getElementById("myco2graphtop").innerHTML = "Average"
+
+      let avg = emissions_last_week.reduce((a,b) => Number(a) + Number(b)) / emissions_last_week.length
+
+      let new_date = new Date();
+      let week_back = new Date();
+      week_back.setDate(new_date.getDate() - 7);
+      date_header.innerHTML = `${week_back.getDate()}.-${new_date.getDate()}. ${new_date.toLocaleString('default', { month: 'short' })} ${new_date.getFullYear()}`;
+      middle_header.innerHTML = `${Math.round(avg)}`
+
+      
+      //CO2 emissions graph for 1 week
+      let ctx = document.getElementById("chartMyhomeCO2").getContext("2d");
+      
+      chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: day_labels,
+          datasets: [
+            {
+              label: "CO2 emission (g)",
+              borderColor: "rgb(37, 141, 44)",
+              backgroundColor: "rgb(37, 141, 44)",
+              fill: true,
+              data: emissions_last_week,
+            },
+          ],
+        },
+
+        // Configuration options go here
+        options: {
+          elements: {
+            point: {
+              radius: 0,
+              hitRadius: 10,
+              hoverRadius: 10,
+            },
+          },
+        },
+      });
+
+      //Create event listener for day button
+      document.getElementById("btnco2day").addEventListener("click", (chart) => {
+        homeEmissionDayGraph(chart)
+      })
+
+    } catch (error) {
+        console.log(error)
+    }
+  }
+  //CO2 Day graph
+  function homeEmissionDayGraph(chart) {
+    try {
+      //Clear graph object before writing a new one
+      document.querySelector("#chartReport").innerHTML = '<canvas id="chartMyhomeCO2"></canvas>';
+
+      //Get CO2 Emissions from the user past day
+      let emissions_last_day = "{{profile_data.carbon_emission_last_day}}".split(",");
+
+      //Sum up 12, 5 minute datapoints into single hour datapoint
+      let emissions_hourly = [];
+      let sum=0;
+      for (let i = 0; i<emissions_last_day.length; i++){
+        sum += Number(emissions_last_day[i])
+        
+        if (i % 12 == 0){
+          emissions_hourly.push(sum);
+          sum = 0;
+        }
+      }
+      //Produce 1 hour interval labels
+      let hour_labels = [];
+      let day = new Date();
+      let day_back = new Date();
+      let another_day_back = new Date();
+
+      //Go 24 hours back 
+      day_back.setDate(day.getDate() - 1);
+      another_day_back.setDate(day.getDate() - 1)
+
+      for (let i=0; i<24; i++){
+        //Add 1 hour each iteration
+        day_back.setHours(day_back.getHours() + 1)
+        hour_labels.push(`${day_back.getDate()}. ${day_back.toLocaleString('default', { month: 'short' })} ${day_back.getHours()}:00`);
+      }
+      //Set the header text to be total CO2 and a datestring like 22. may - 23. may
+      let top_header = document.getElementById("myco2graphtop").innerHTML = "Total today"
+      let middle_header = document.getElementById("myco2graphmiddle");
+      let date_header = document.getElementById("myco2graphdate");
+
+      let total_today = emissions_last_day.reduce((a,b) => Number(a) + Number(b));
+
+      middle_header.innerHTML = `${Math.round(total_today)}`
+      date_header.innerHTML = `${another_day_back.getDate()}. ${another_day_back.toLocaleString('default', { month: 'short' })} - ${day.getDate()}. ${day.toLocaleString('default', { month: 'short' })}`
+      //CO2 emissions graph for 1 day
+      let ctx = document.getElementById("chartMyhomeCO2").getContext("2d");
+   
+      chart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: hour_labels,
+          datasets: [
+            {
+              label: "CO2 emission (g)",
+              borderColor: "rgb(37, 141, 44)",
+              backgroundColor: "rgb(37, 141, 44)",
+              fill: true,
+              data: emissions_hourly,
+            },
+          ],
+        },
+
+        // Configuration options go here
+        options: {
+          elements: {
+            point: {
+              radius: 0,
+              hitRadius: 10,
+              hoverRadius: 10,
+            },
+          },
+        },
+      });
+      //Create event listener for week button
+      document.getElementById("btnco2week").addEventListener("click", (chart) => {
+        homeEmissionWeekGraph(chart)
+      })
+
+    } catch (err) {
+      console.log(err)
+    }
+  }
   //Forecast graph
   async function forecastGraph() {
     try {
@@ -937,7 +1142,7 @@
     document.getElementById(lastUpdate).innerText = timeString;
   };
 
-  // Fetch data after page content has loaded
+  // Fetch data after page content has loaded and show all the graphs
   window.addEventListener("load", function () {
     CO2Data();
     setLastUpdate("lastUpdateCO2");
@@ -946,6 +1151,7 @@
     forecastGraph();
     setLastUpdate("lastUpdateForecast");
     homeEnergyData();
+    homeEmissionDayGraph();
   });
 
   // onClick eventlistner for refresh button

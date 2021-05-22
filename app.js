@@ -74,7 +74,7 @@ setTimeout(() => {
 )
 
 // ==== EVENT/UPDATE LOOP 24 hours ==== 
-const UPDATE_TIME = "03:00"
+const UPDATE_TIME = "00:00"
 const DAY_INTERVAL = 24 * 60 * 60 * 1000
 //Create a new date at the specified update time
 let update_date = new Date()
