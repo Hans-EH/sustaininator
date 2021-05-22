@@ -79,7 +79,7 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
     let output = [];
 
     //i is 5 minute intervals here
-    //finds the soonest timepoint which fulfills criterias: 1. lower than the current data, 2. fulfills your goal.
+    //finds all timepoints which fulfills criterias: 1. lower than the current data, 2. fulfills your sustainability goal.
     for (let i = 1; i < forecast_data.length; i++) {
       let temp_data = [];
       if (
@@ -100,7 +100,7 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
         output.push(temp_data);
       }
     }
-    
+
     //finds the best time, and copies it
     let best_time = [0, 0,0,0,0];
     for (let i = 0; i < output.length; i++) {
