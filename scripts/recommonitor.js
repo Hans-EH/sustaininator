@@ -118,7 +118,7 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
 exports.eventCallStack = async function eventCallStack(carbon30) {
 
     //Remove all recommendation cards before creating new ones
-    await AdviceCard.deleteMany({class: "recommendation"});
+    await AdviceCard.deleteMany({ class: "recommendation" });
 
     //Fetch own api forecasting data
     const URI_FORECAST = process.env.WEB_HOST + "data/forecastdata";
@@ -141,14 +141,13 @@ exports.eventCallStack = async function eventCallStack(carbon30) {
 
                 //Filter out recommendation cards before inserting new ones
                 //console.log(`Before Profile: ${user_profile.firstname} | ${user_profile.advices}`)
-                user_profile.advices = user_profile.advices.filter((cards) => cards.class != "recommendation")
+                user_profile.advices = user_profile.advices.filter((cards) => cards.class != "recommendation");
                 //console.log(`After Profile: ${user_profile.firstname} | ${user_profile.advices}`)
                 //Insert recommendation card with FIFO method
                 if (user_profile.advices.length >= MAX_ADVICES) {
                     user_profile.advices.shift();
                     user_profile.advices.push(recommendation_card);
-                }
-                else {
+                } else {
                     user_profile.advices.push(recommendation_card);
                 }
 

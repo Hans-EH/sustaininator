@@ -100,13 +100,15 @@ const createAdvice = async (pctIncrease, type) => {
  * @return {Array} returns the user_profile advices with the oldest advice removed
  */
 function shiftEvents(advices) {
+
+    console.log("Entered Shift events");
     if (advices.length >= MAX_ADVICES) {
         console.log(`Num of adives: ${advices.length}, need chop one`);
 
-        let others = advices.filter((card) => card.class != "event");
         let events = advices.filter((card) => card.class == "event");
+        let others = advices.filter((card) => card.class != "event");
 
-        console.log(events.length);
+        console.log(`There are ${events.length} number of events`);
         if (events.length > 0) {
             events.shift(); // remove first element of events
             let unsorted_arr = others.concat(events); // Merge Arrays after event shift ´
