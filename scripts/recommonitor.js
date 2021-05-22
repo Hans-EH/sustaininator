@@ -133,7 +133,7 @@ function reduceCarbonImpact(data, UserProfile, carbon_30) {
          you can save ${best_time[3]}% which is equivalent to ${forecast_data[
       best_time[0]
     ].toFixed(0)} CO2/KWh, which achieves
-           your goal of saving ${saving_procent}%`;
+           your goal of saving ${UserProfile.sustainable_goals}%`;
     //console.log("output: "+output+" , saving procent: "+saving_procent+"data copy: "+carbon_30_copy.length+"saving procent data "+saving_procent_data);
     console.log(recommendation_msg);
 
