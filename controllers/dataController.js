@@ -1,5 +1,5 @@
 // auth controller for validating that user is logged in
-let auth = require("../controllers/authcontroller");    // This appears unused
+let auth = require("./authcontroller");    // This appears unused
 // Node fetch package
 const fetch = require("node-fetch");
 
