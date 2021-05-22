@@ -1,6 +1,5 @@
 // auth controller for validating that user is logged in
-let auth = require("../controllers/authcontroller");    // This appears unused
-// let graph_data = require("../models/cache_graph_data"); // This appears unused
+let auth = require("./authcontroller");    // This appears unused
 // Node fetch package
 const fetch = require("node-fetch");
 
@@ -226,8 +225,9 @@ exports.forecastdata = function (req, res, next) {
       function max_movement(data) {
         let movement = [];
         for (let i = 0; i < data.length - 1; i++) {
+          //finds all the different movements, to at last find the average movement
           movement.push(Math.abs(data[i] - Math.abs(data[i + 1])));
-        } //take math sqrt because it makes the movements much smaller.
+        } //take math sqrt because it makes the allowed movements much smaller.
         return Math.sqrt(avg(movement, 0, movement.length));
       }
 
@@ -256,6 +256,13 @@ exports.forecastdata = function (req, res, next) {
         if (result <= 0) {
           result = 0;
         };
+        //makes sure no data forecasted is lower or higher than previous data points.
+        if(result <= Math.min.apply(Math, data)){
+          result = Math.min.apply(Math, data);
+        }
+        if(result >= Math.max.apply(Math, data)){
+          result = Math.max.apply(Math, data);
+        }
         return result;
       }
 
