@@ -4,7 +4,7 @@ Cypress involves therefore testing an application’s workflow from beginning to
 */
 describe('My logout Test', () => {
     it('Visits the login page for any user', () => {
-        cy.visit('localhost:3000/login');
+        cy.visit('http://sustaininator.eu/');
         cy.get('.action-register').click();
         cy.get('.action-login').click();
 

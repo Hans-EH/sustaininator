@@ -8,7 +8,7 @@ describe('My device and add page Test', () => {
     // Testing device test until n is 5
     while(n != 5) {
         it('Visits the overview device page', () => {
-            cy.visit('localhost:3000/login');
+            cy.visit('http://sustaininator.eu/');
             cy.get('.action-register').click();
             cy.get('.action-login').click();
     

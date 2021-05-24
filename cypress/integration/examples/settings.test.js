@@ -4,7 +4,7 @@ Cypress involves therefore testing an application’s workflow from beginning to
 */
 describe('My settings page Test', () => {
     it('Visits the login page for any user', () => {
-        cy.visit('localhost:3000/login');
+        cy.visit('http://sustaininator.eu/');
         cy.get('.action-register').click();
         cy.get('.action-login').click();
 
@@ -37,7 +37,7 @@ describe('My settings page Test', () => {
         .type('Fakesen')
         .should('have.value', 'Fakesen');
 
-        // Invoke a function on the previously yielded subject, then use that to have equal to the subject.
+        // Invoke is a function on the previously yielded subject, then use that to be equal to the subject.
         cy.get('select').select(['EUR'])
         .invoke('val')
         .should('have.equal', 'EUR');

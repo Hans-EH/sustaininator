@@ -4,7 +4,7 @@ Cypress involves therefore testing an application’s workflow from beginning to
 */
 describe('My Register Test', () => {
     it('Visits the Register page to sign up', () => {
-        cy.visit('localhost:3000/register');
+        cy.visit('http://sustaininator.eu/');
         cy.get('.action-login').click();
         cy.get('.action-register').click();
 
