@@ -2,7 +2,7 @@
 Cypress is an end-to-end test where developers can set up, write, running and debugging tests,
 Cypress involves therefore testing an application’s workflow from beginning to end. 
 */
-describe('My Register Test', () => {
+describe('My register test', () => {
     it('Visits the Register page to sign up', () => {
         cy.visit('http://130.226.98.69:3000/register');
         cy.get('.action-login').click();
