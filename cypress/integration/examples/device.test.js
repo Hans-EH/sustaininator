@@ -53,7 +53,7 @@ describe('My device and add page Test', () => {
             cy.wait(3000);
     
             // Returns to device page
-            cy.visit('http://localhost:3000/devices');
+            cy.visit('http://130.226.98.69:3000/devices');
     
             //cy.get('a[href*="devices/edit/608ab1934378f36adc8c60a6"]').click();
             // Edit device phase
@@ -75,7 +75,7 @@ describe('My device and add page Test', () => {
             cy.get('.update-button').click();
     
             // Delete device phase
-            cy.visit('http://localhost:3000/devices');
+            cy.visit('http://130.226.98.69:3000/devices');
             cy.get('.delete-device').eq(1).click();
         });
         
