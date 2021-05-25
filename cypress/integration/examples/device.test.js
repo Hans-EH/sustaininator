@@ -78,7 +78,6 @@ describe('My device and add page Test', () => {
             cy.visit('http://130.226.98.69:3000/devices');
             cy.get('.delete-device').eq(1).click();
         });
-        
         n++;
     }
 });
