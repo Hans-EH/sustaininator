@@ -10,13 +10,11 @@ describe('My device test', () => {
     
         // Get an email input, type into it and verify that the value has been updated
         cy.get('.action-email')
-        .type('fake@email.com')
-        .should('have.value', 'fake@email.com');
+        .type('fake@email.com');
             
         // Get an password input, type into it and verify that the value has been updated
         cy.get('.action-password')
-        .type('Ming#1359')
-        .should('have.value', 'Ming#1359');
+        .type('Ming#1359');
         cy.get('.action-submit').click();
             
         // When you login a test will be conducted to check if the user got a cookie.
@@ -27,12 +25,10 @@ describe('My device test', () => {
         cy.wait(2000);
         cy.get('.add-device').click();
         cy.get('.name-input')
-        .type('samsungtv')
-        .should('have.value', 'samsungtv');
+        .type('samsungtv');
     
         cy.get('.energy-consumption')
-        .type('136')
-        .should('have.value', '136');
+        .type('136');
             
         // This will enter the time interval for the device to turn on.
         cy.get('.time-00').click();
@@ -60,13 +56,11 @@ describe('My device test', () => {
     
         cy.get('.name-input')
         .clear()
-        .type('SamsungTVQLED')
-        .should('have.value', 'SamsungTVQLED');
+        .type('SamsungTVQLED');
     
         cy.get('.energy-consumption')
         .clear()
-        .type('148')
-        .should('have.value', '148');
+        .type('148');
         cy.get('.time-00').click();
         cy.get('.time-11').click();
         cy.get('.time-18').click();

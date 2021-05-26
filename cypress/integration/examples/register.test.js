@@ -10,26 +10,21 @@ describe('My register test', () => {
 
         // Get an first and last name input
         cy.get('.action-first-name')
-        .type('Test')
-        .should('have.have', 'Test');
+        .type('Test');
 
         cy.get('.action-last-name')
-        .type('Testsen')
-        .should('have.have', 'Testsen');
+        .type('Testsen');
 
         // Get an email input
         cy.get('.action-email')
-        .type('fake@email.com')
-        .should('have.value', 'fake@email.com');
+        .type('fake@email.com');
         
         // Get an password input
         cy.get('.action-password')
-        .type('Ming#1359')
-        .should('have.value', 'Ming#1359');
+        .type('Ming#1359');
 
         cy.get('.action-confirm-password')
-        .type('Ming#1359')
-        .should('have.value', 'Ming#1359');
+        .type('Ming#1359');
 
         cy.get('.submit-register').click();
     })

@@ -10,13 +10,11 @@ describe('My logout test', () => {
 
         // Get an email input
         cy.get('.action-email')
-        .type('fake@email.com')
-        .should('have.value', 'fake@email.com');
+        .type('fake@email.com');
         
         // Get an password input
         cy.get('.action-password')
-        .type('Ming#1359')
-        .should('have.value', 'Ming#1359');
+        .type('Ming#1359');
         cy.get('.action-submit').click();
         
         // When you login a test will be conducted to check if the user got a cookie.
