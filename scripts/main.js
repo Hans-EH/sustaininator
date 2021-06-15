@@ -302,7 +302,7 @@ function updateUserProfileStatusCard(user_profile) {
         }
     }
 
-    let above_line_percentage = above_line_count / user_profile.carbon_score_last_day.length * 100
+    let above_line_percentage = (above_line_count / user_profile.carbon_score_last_day.length) * 100;
 
     let grade = -1;
     if (above_line_percentage <= 100 && above_line_percentage > 80) {
