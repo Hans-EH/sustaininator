@@ -34,6 +34,7 @@ exports.updateFive = async function () {
 
     // Get the latest CO2 emissions value from energinet
     let URI_latest = 'https://www.energidataservice.dk/proxy/api/datastore_search_sql?sql=SELECT"Minutes5UTC", "Minutes5DK", "PriceArea", "CO2Emission" FROM "co2emis" ORDER BY "Minutes5UTC" DESC LIMIT 1';
+    let latest_carbon_data = await fetch(URI_latest).then((response) => response.json());
     let latest_carbon_value = latest_carbon_data["result"]["records"]["0"]["CO2Emission"];
     // Get the latest 30 days average worth of CO2 datapoints from own api endpoint
     let URI_30_days = process.env.WEB_HOST + "data/carbon30";
@@ -302,7 +303,7 @@ function updateUserProfileStatusCard(user_profile) {
         }
     }
 
-    let above_line_percentage = above_line_count / user_profile.carbon_score_last_day.length * 100
+    let above_line_percentage = above_line_count / user_profile.carbon_score_last_day.length
 
     let grade = -1;
     if (above_line_percentage <= 100 && above_line_percentage > 80) {
