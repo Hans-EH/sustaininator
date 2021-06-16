@@ -57,6 +57,7 @@ exports.device_create_post = [
   body("devicename")
     .trim()
     .isLength({ min: 1 })
+    // Replace some special symbol if the name contain i.e. >, < etc.
     .escape()
     .withMessage("Device name must be specified"),
   body("energyusage")
