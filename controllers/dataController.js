@@ -28,6 +28,24 @@ exports.co2emission = function (req, res, next) {
       // Reverse Arrays
       dataValues = dataValues.reverse();
 
+      //saving data to mongodb
+      //var new_graph_data = new graph_data({
+      //  date: Date(),
+      //  carbon_30: dataValuesMonth,
+      //  carbon_7: dataValuesWeek,
+      //  carbon_3: dataValuesDays,
+      //  carbon_1: dataValues,
+      //  labels_1: data_labels,
+      //})
+      //new_graph_data.save(function (err, result) {
+      //  if (err) {
+      //    console.log(err);
+      //  }
+      //  else {
+      //    //console.log(result)
+      //  }
+      //})
+
       res.json(dataValues);
     } catch (error) {
       console.error(error);
